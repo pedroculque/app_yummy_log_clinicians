@@ -44,7 +44,7 @@ Nenhum no momento.
 
 ## Próximos passos (prioridade)
 
-1. **Configurar Firebase:** Adicionar novo app no Firebase Console para o clínico.
+1. **Configurar Firebase:** Seguir o guia [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md): registrar app Android e iOS no projeto **app-yummy-log-diary**, baixar `google-services.json` e `GoogleService-Info.plist` e substituir em `android/app/` e `ios/Runner/` (os arquivos atuais são do app do paciente).
 2. **Testar fluxo completo:** Login → gerar código → paciente vincular → ver na lista.
 3. **Implementar navegação para diário:** Botão "ACOMPANHAR" → tela de diário do paciente.
 4. **Adaptar diary_feature:** Criar versão read-only para visualizar diário do paciente.
@@ -55,5 +55,6 @@ Nenhum no momento.
 ## Referências
 
 - [docs/ROADMAP.md](docs/ROADMAP.md) – Fases e entregáveis
+- [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md) – Configurar Firebase (registrar app do clínico)
 - [REQUIREMENTS.md](REQUIREMENTS.md) – Requisitos v1/v2/v3
 - App do paciente: docs/BACKEND_CONECTAR.md – Estrutura Firestore compartilhada

@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1051191917330-m2ftdhr7b1vbipo4t1fm5obdon8fvcs1.apps.googleusercontent.com</string>
+	<string>1051191917330-b0kjkd63rdo7cosr285f3cgphtcbe0ri.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1051191917330-m2ftdhr7b1vbipo4t1fm5obdon8fvcs1</string>
+	<string>com.googleusercontent.apps.1051191917330-b0kjkd63rdo7cosr285f3cgphtcbe0ri</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBdHXuTY-mVdmVmW59brHgIIWoUBS5wwzw</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.yummylogdiary.app</string>
+	<string>com.yummylogdiaryforclinicians.app</string>
 	<key>PROJECT_ID</key>
 	<string>app-yummy-log-diary</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1051191917330:ios:7c023f8e6e9e7e9b80d1cb</string>
+	<string>1:1051191917330:ios:5e9e5b0a1ea783f680d1cb</string>
 </dict>
 </plist>

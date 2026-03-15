@@ -39,7 +39,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 - [x] Configurações adaptadas do app paciente
 - [x] Empty state visual na aba Pacientes
 - [x] Alerta de login ao convidar sem estar logado
-- [ ] Configurar Firebase (novo app)
+- [ ] Configurar Firebase (novo app) → ver [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md)
 - [ ] Testar fluxo completo
 
 ---

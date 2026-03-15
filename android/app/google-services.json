@@ -31,10 +31,46 @@
               "client_type": 3
             },
             {
-              "client_id": "1051191917330-m2ftdhr7b1vbipo4t1fm5obdon8fvcs1.apps.googleusercontent.com",
+              "client_id": "1051191917330-b0kjkd63rdo7cosr285f3cgphtcbe0ri.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.yummylogdiary.app"
+                "bundle_id": "com.yummylogdiaryforclinicians.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1051191917330:android:76e72302ff67ce1580d1cb",
+        "android_client_info": {
+          "package_name": "com.yummylogdiaryforclinicians.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1051191917330-gtucqpe091dtok2bin8sv66nr546g7dt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkJjGDSABH8CDQQzK2YVcUXQdBrEwT-DM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1051191917330-gtucqpe091dtok2bin8sv66nr546g7dt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1051191917330-b0kjkd63rdo7cosr285f3cgphtcbe0ri.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yummylogdiaryforclinicians.app"
               }
             }
           ]
