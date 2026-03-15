@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # SSH key para clonar dependência privada (flutter_ui_kit)
       - name: Setup SSH for private repo
