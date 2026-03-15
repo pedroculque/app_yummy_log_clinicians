@@ -98,23 +98,27 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 ### Fase 3: Insights e Métricas 📊
 
-**Status:** Em desenvolvimento
+**Status:** Fase 3.1 concluída ✅
 
 **Objetivo:** Dashboard com métricas e visualizações dos dados dos pacientes para apoio à decisão clínica.
 
-#### Fase 3.1 - MVP Insights (Alta prioridade)
+#### Fase 3.1 - MVP Insights (Alta prioridade) ✅
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Dashboard resumo | Cards: pacientes ativos, registros da semana, alertas ativos | Pendente |
-| Alertas de risco | Lista de comportamentos de risco detectados (vômito, laxantes, etc.) | Pendente |
-| Ranking de atenção | Pacientes ordenados por necessidade de atenção | Pendente |
+| Dashboard resumo | Cards: pacientes ativos, registros do período, alertas ativos | ✅ |
+| Seletor de período | 7 dias, 30 dias, 90 dias | ✅ |
+| Última atualização | Data/hora da última carga de dados | ✅ |
+| Alertas de risco | Lista de comportamentos de risco detectados (vômito, laxantes, etc.) | ✅ |
+| Ranking de atenção | Pacientes ordenados por necessidade de atenção | ✅ |
+| Tags no diário | Cards de refeição com tags de comportamentos de risco | ✅ |
+| Detalhes da refeição | Bottom sheet com todos os dados (read-only) | ✅ |
 
 #### Fase 3.2 - Análises por Paciente (Média prioridade)
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Análise de sentimentos | Distribuição de sentimentos (7/30 dias) | Pendente |
+| Análise de sentimentos | Gráfico de distribuição de sentimentos | Pendente |
 | Frequência de registros | Calendário de calor, média refeições/dia | Pendente |
 | Quantidade consumida | Distribuição de `amountEaten` | Pendente |
 
@@ -130,7 +134,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 **Dados utilizados:**
 - `Patient`: id, name, photoUrl, linkedAt
-- `MealEntry`: mealType, dateTime, feelingLabel, amountEaten, hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives
+- `MealEntry`: mealType, dateTime, feelingLabel, amountEaten, hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives, whereAte, ateWithOthers, description, feelingText
 
 ---
 

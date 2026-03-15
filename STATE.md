@@ -6,7 +6,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 ## Posição atual
 
-- **Fase:** 3.1 (Insights MVP) em desenvolvimento.
+- **Fase:** 3.1 (Insights MVP) concluída. Fase 3.2 planejada.
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
 - **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.
 - **Pacientes:** Feature `patients_feature` implementada com:
@@ -21,13 +21,18 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Modo calendário (visão mensal com indicadores)
   - Cards de refeição com foto, tipo, horário, sentimento
   - Conectores de tempo entre refeições (alerta se > 4h)
+  - Tags de comportamentos de risco nos cards (vômito, laxantes, etc.)
+  - Chips de detalhes (quantidade, onde comeu, acompanhado)
+  - Bottom sheet com detalhes completos da refeição (tap no card)
 - **Monetização:** Sistema de planos implementado:
   - Plano Gratuito: limite de 2 pacientes
   - Plano Pro: pacientes ilimitados (R$ 24,90/mês ou R$ 179,90/ano)
   - Seção "Assinatura" na tela de configurações
   - `PlansPage` com UI de upgrade
 - **Insights:** Feature `insights_feature` implementada com:
-  - Dashboard resumo (pacientes ativos, registros da semana, alertas)
+  - Dashboard resumo (pacientes ativos, registros do período, alertas)
+  - Seletor de período (7 dias, 30 dias, 90 dias)
+  - Data/hora da última atualização
   - Alertas de comportamentos de risco (vômito forçado, laxantes, regurgitação, etc.)
   - Ranking de pacientes por necessidade de atenção (score baseado em comportamentos)
   - Navegação direta para o diário do paciente
@@ -60,9 +65,9 @@ Nenhum no momento.
 ## Próximos passos (prioridade)
 
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
-2. **Insights Fase 3.2:** Análise de sentimentos, frequência de registros, quantidade consumida por paciente.
-3. **Detalhe da refeição:** Tela full-screen com todos os dados da refeição.
-4. **Notificações push:** Alertar clínico quando paciente registra refeição ou comportamento de risco.
+2. **Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.
+3. **Notificações push:** Alertar clínico quando paciente registra comportamento de risco.
+4. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 
 ---
 

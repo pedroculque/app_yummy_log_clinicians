@@ -11,7 +11,8 @@ O **YummyLog for Clinicians** permite que nutricionistas, psicólogos e outros p
 1. **Convidem pacientes** através de um código de 6 caracteres
 2. **Visualizem o diário alimentar** dos pacientes vinculados (read-only)
 3. **Acompanhem sentimentos** associados às refeições
-4. **Analisem métricas** de frequência e padrões alimentares (em desenvolvimento)
+4. **Identifiquem comportamentos de risco** (vômito forçado, laxantes, etc.)
+5. **Analisem métricas** de frequência e padrões alimentares via dashboard de Insights
 
 ### Modelo de Negócio
 

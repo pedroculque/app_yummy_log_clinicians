@@ -12,7 +12,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | **v1** | MVP: tab bar, código de convite, lista de pacientes, empty state visual | ✅ Concluído |
 | **v2** | Visualizar diário do paciente (read-only) | ✅ Concluído |
 | **v2.1** | Monetização: planos Free/Pro, limite de pacientes | ✅ Concluído |
-| **v3** | Insights e métricas dos pacientes | Planejado |
+| **v3** | Insights e métricas dos pacientes | ✅ Em andamento |
 
 ---
 
@@ -63,14 +63,25 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 | ID | Descrição | Prioridade | Status |
 |----|-----------|------------|--------|
-| C23 | **Dashboard resumo:** cards com total de pacientes, registros da semana, alertas ativos. | Alta | Pendente |
-| C24 | **Alertas de risco:** lista de comportamentos de risco (vômito forçado, laxantes, regurgitação, esconder comida, comer em segredo). | Alta | Pendente |
-| C25 | **Ranking de atenção:** lista de pacientes ordenada por necessidade de atenção (score baseado em comportamentos de risco, sentimentos negativos, baixa frequência). | Alta | Pendente |
+| C23 | **Dashboard resumo:** cards com total de pacientes, registros do período, alertas ativos. | Alta | ✅ |
+| C24 | **Alertas de risco:** lista de comportamentos de risco (vômito forçado, laxantes, regurgitação, esconder comida, comer em segredo). | Alta | ✅ |
+| C25 | **Ranking de atenção:** lista de pacientes ordenada por necessidade de atenção (score baseado em comportamentos de risco, sentimentos negativos, baixa frequência). | Alta | ✅ |
 | C26 | **Análise de sentimentos:** distribuição de sentimentos por paciente (últimos 7/30 dias). | Média | Pendente |
 | C27 | **Frequência de registros:** calendário de calor e média de refeições/dia por paciente. | Média | Pendente |
 | C28 | **Quantidade consumida:** distribuição de `amountEaten` por paciente para identificar restrição. | Média | Pendente |
 | C29 | **Análise por refeição:** quais refeições são mais puladas, correlação com sentimentos. | Baixa | Pendente |
-| C30 | **Filtros de período:** 7 dias, 30 dias, 90 dias. | Média | Pendente |
+| C30 | **Filtros de período:** 7 dias, 30 dias, 90 dias. | Média | ✅ |
+
+---
+
+## Requisitos funcionais (v3.1 – Diário Detalhado)
+
+| ID | Descrição | Prioridade | Status |
+|----|-----------|------------|--------|
+| C31 | **Tags de comportamentos:** cards de refeição mostram tags coloridas de comportamentos de risco. | Alta | ✅ |
+| C32 | **Chips de detalhes:** cards mostram quantidade comida, onde comeu, se comeu acompanhado. | Alta | ✅ |
+| C33 | **Detalhe da refeição:** tap no card abre bottom sheet com todos os detalhes (read-only). | Alta | ✅ |
+| C34 | **Borda de alerta:** cards com comportamentos de risco têm borda vermelha/laranja. | Média | ✅ |
 
 ---
 

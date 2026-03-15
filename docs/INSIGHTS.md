@@ -121,6 +121,8 @@ int calculateAttentionScore(Patient patient, List<MealEntry> meals) {
 ```
 Tab Insights
 ├── Dashboard (visão geral)
+│   ├── Seletor de período (7d / 30d / 90d)
+│   ├── Data/hora da última atualização
 │   ├── Cards resumo (pacientes, registros, alertas)
 │   ├── Alertas recentes (comportamentos de risco)
 │   └── Ranking de atenção (pacientes ordenados)
@@ -129,6 +131,15 @@ Tab Insights
     ├── Sentimentos (gráfico)
     ├── Frequência (calendário)
     └── Quantidade (distribuição)
+
+Diário do Paciente (PatientDiaryPage)
+├── Timeline de refeições
+│   ├── Cards com tags de comportamentos de risco
+│   ├── Chips de detalhes (quantidade, local, acompanhado)
+│   └── Tap → Bottom sheet com detalhes completos
+│
+└── Modo calendário
+    └── Indicadores de dias com registros
 ```
 
 ---
@@ -179,12 +190,38 @@ class InsightsSummary extends Equatable {
 
 ---
 
+## Funcionalidades Implementadas
+
+### Tela de Insights (InsightsPage)
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Dashboard resumo | Cards com pacientes ativos, registros, alertas | ✅ |
+| Seletor de período | 7 dias, 30 dias, 90 dias | ✅ |
+| Última atualização | Data/hora da última carga de dados | ✅ |
+| Alertas de risco | Lista com prioridade (alta/média/baixa) | ✅ |
+| Ranking de atenção | Pacientes ordenados por score | ✅ |
+| Navegação | Tap no alerta/paciente → diário | ✅ |
+
+### Diário do Paciente (PatientDiaryPage)
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Tags de comportamentos | Chips coloridos nos cards de refeição | ✅ |
+| Chips de detalhes | Quantidade, local, acompanhado | ✅ |
+| Borda de alerta | Cards com risco têm borda vermelha/laranja | ✅ |
+| Bottom sheet detalhes | Tap no card → todos os dados da refeição | ✅ |
+
+---
+
 ## Considerações UX
 
-1. **Empty states:** Cada seção deve ter mensagem quando não há dados suficientes
-2. **Período mínimo:** Sugerir "Aguarde 7 dias de registros para insights mais precisos"
-3. **Ação clara:** Cada insight deve ter CTA (ver diário do paciente)
-4. **Cores consistentes:** Usar sistema de cores do ui_kit
+1. **Empty states:** Cada seção tem mensagem quando não há dados suficientes
+2. **Período configurável:** Usuário pode escolher 7d, 30d ou 90d
+3. **Última atualização:** Mostra quando os dados foram carregados
+4. **Ação clara:** Cada insight tem CTA (ver diário do paciente)
+5. **Cores consistentes:** Usar sistema de cores do ui_kit
+6. **Visual de risco:** Cards com comportamentos têm borda colorida
 
 ---
 
