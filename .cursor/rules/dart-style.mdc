@@ -1,0 +1,174 @@
+---
+description: Dart Code Style Guidelines
+globs: ["**/*.dart"]
+---
+
+# Dart Code Style Guidelines
+
+## Imports
+
+Ordenar imports em grupos separados por linha em branco:
+
+```dart
+// 1. Dart SDK
+import 'dart:async';
+import 'dart:math';
+
+// 2. Packages externos
+import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+
+// 3. Packages do projeto (commons_dependencies, modules)
+import 'package:commons_dependencies/commons_dependencies.dart';
+import 'package:module_core/module_core.dart';
+
+// 4. Imports relativos do mesmo módulo
+import '../model/feature.dart';
+import 'feature_state.dart';
+```
+
+## Classes
+
+### Ordem dos membros
+
+```dart
+class MyClass {
+  // 1. Construtores (factory primeiro se houver singleton)
+  factory MyClass() => _instance ??= MyClass._();
+  MyClass._();
+  
+  const MyClass({
+    required this.requiredField,
+    this.optionalField,
+  });
+
+  // 2. Campos estáticos
+  static const defaultValue = 10;
+  static MyClass? _instance;
+
+  // 3. Campos de instância (final primeiro)
+  final String requiredField;
+  final String? optionalField;
+  
+  // 4. Campos mutáveis
+  int _counter = 0;
+
+  // 5. Getters/Setters
+  int get counter => _counter;
+
+  // 6. Métodos estáticos
+  static void staticMethod() {}
+
+  // 7. Métodos de instância
+  void instanceMethod() {}
+
+  // 8. Overrides (@override)
+  @override
+  String toString() => 'MyClass($requiredField)';
+}
+```
+
+## Documentação
+
+```dart
+/// Descrição breve da classe/método.
+///
+/// Descrição mais detalhada se necessário.
+/// Pode incluir exemplos:
+///
+/// ```dart
+/// final result = MyClass.calculate(10);
+/// print(result); // 100
+/// ```
+class MyClass {
+  /// Calcula o valor baseado no [input].
+  ///
+  /// Retorna o quadrado do input.
+  /// Lança [ArgumentError] se input for negativo.
+  static int calculate(int input) {
+    if (input < 0) throw ArgumentError('Input must be positive');
+    return input * input;
+  }
+}
+```
+
+## Null Safety
+
+```dart
+// Preferir tipos não-nulos quando possível
+final String name;  // ✓
+final String? name; // Apenas se realmente pode ser null
+
+// Usar late apenas quando necessário
+late final Database _db;  // Inicializado depois, mas garantido
+
+// Evitar ! quando possível, preferir ??
+final value = nullableValue ?? defaultValue;  // ✓
+final value = nullableValue!;  // Evitar se possível
+
+// Pattern matching para null checks
+if (value case final nonNull?) {
+  // usar nonNull
+}
+```
+
+## Enums
+
+```dart
+enum FeatureStatus {
+  initial,
+  loading,
+  success,
+  failure;
+
+  bool get isLoading => this == FeatureStatus.loading;
+  bool get isSuccess => this == FeatureStatus.success;
+}
+```
+
+## Extensions
+
+```dart
+extension DateTimeX on DateTime {
+  String get formatted => '$day/$month/$year';
+  
+  bool get isToday {
+    final now = DateTime.now();
+    return year == now.year && month == now.month && day == now.day;
+  }
+}
+```
+
+## Constantes
+
+```dart
+// Preferir const quando possível
+const defaultPadding = EdgeInsets.all(16);
+const emptyList = <String>[];
+
+// Usar static const para constantes de classe
+class AppConstants {
+  static const apiTimeout = Duration(seconds: 30);
+  static const maxRetries = 3;
+}
+```
+
+## Async/Await
+
+```dart
+// Preferir async/await sobre .then()
+Future<void> loadData() async {
+  try {
+    final data = await repository.getData();
+    emit(state.copyWith(data: data));
+  } catch (e) {
+    emit(state.copyWith(error: e.toString()));
+  }
+}
+
+// Usar Future.wait para operações paralelas
+final results = await Future.wait([
+  repository.getData1(),
+  repository.getData2(),
+]);
+```

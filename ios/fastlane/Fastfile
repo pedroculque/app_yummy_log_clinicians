@@ -1,0 +1,31 @@
+require 'dotenv'
+import('../../fastlane/GeneralFastfile')
+
+default_platform(:ios)
+platform :ios do
+    desc "Build an ipa"
+
+    before_all do
+        update_gem
+        clean_project
+        load_env
+        increment_app_build_number
+        connect_app_store
+        rematch
+        flutter_build
+        build_ios_and_export_ipa
+    end
+
+    lane :dev do
+        uploading_firebase_distribution
+    end
+
+    lane :prod do
+        # upload_crashlytics_symbols
+        # upload_sentry_symbols
+        upload_store
+    end
+    lane :certificates do
+        certificates
+    end
+end

@@ -1,0 +1,161 @@
+---
+description: Authentication Guidelines (auth_foundation — Firebase, AuthFlowCubit)
+globs: ["**/auth_foundation/**/*.dart", "**/auth/**/*.dart"]
+---
+
+# Authentication Guidelines
+
+Padrões para implementação e uso do módulo de autenticação (Yummy Log).
+
+## Estrutura
+
+```
+modules/foundation/auth/   # auth_foundation
+├── lib/
+│   ├── auth_foundation.dart
+│   └── src/
+│       ├── auth_repository.dart
+│       ├── auth_exceptions.dart
+│       ├── firebase_auth_repository.dart
+│       ├── stub_auth_repository.dart
+│       ├── presentation/auth_cubit.dart      # AuthFlowCubit
+│       ├── presentation/auth_state.dart    # AuthFlowState e subclasses
+│       ├── presentation/page/login_page.dart
+│       └── presentation/widget/
+```
+
+## Uso Básico
+
+```dart
+// Verificar se está logado (AuthFlowCubit registrado no getIt via init_auth)
+final authCubit = getIt<AuthFlowCubit>();
+final isLoggedIn = authCubit.state is AuthFlowAuthenticated;
+
+// Login com Google
+await authCubit.signInWithGoogle();
+
+// Login com Apple (iOS only)
+await authCubit.signInWithApple();
+
+// Logout
+await authCubit.signOut();
+
+// Obter usuário atual
+if (authCubit.state is AuthFlowAuthenticated) {
+  final user = (authCubit.state as AuthFlowAuthenticated).user;
+  print(user.displayName);
+}
+```
+
+## Estados (AuthFlowState)
+
+| Estado | Descrição |
+|--------|-----------|
+| `AuthFlowInitial` | Verificando estado inicial |
+| `AuthFlowLoading` | Login em progresso |
+| `AuthFlowUnauthenticated` | Não logado |
+| `AuthFlowAuthenticated` | Logado (contém `AuthUser`) |
+| `AuthFlowError` | Erro (contém `AuthException`) |
+
+## Exceções (AuthException)
+
+| Exceção | Quando |
+|---------|--------|
+| `AuthCancelledException` | Usuário cancelou |
+| `AuthNetworkException` | Erro de rede |
+| `AuthInvalidCredentialException` | Credencial inválida |
+| `AuthAccountExistsException` | Conta existe com outro provider |
+| Outras | Ver `auth_foundation/lib/src/auth_exceptions.dart` |
+
+## Widgets
+
+### AuthGuard
+
+```dart
+AuthGuard(
+  authenticated: const HomePage(),
+  unauthenticated: const LoginPage(),
+  loading: const LoadingWidget(), // opcional
+)
+```
+
+### UserAvatar
+
+```dart
+UserAvatar(
+  user: authUser,
+  size: 40,
+)
+```
+
+### SocialSignInButton
+
+```dart
+SocialSignInButton(
+  text: 'Continuar com Google',
+  icon: const GoogleIcon(),
+  onPressed: () => context.read<AuthFlowCubit>().signInWithGoogle(),
+  isLoading: isLoading,
+)
+```
+
+## Rotas
+
+| Rota | Página |
+|------|--------|
+| `/login` | LoginPage (BlocProvider.value com getIt<AuthFlowCubit>) |
+
+Registro do cubit: `lib/core/auth/init_auth.dart`. Rota em `lib/core/router/app_router.dart`.
+
+## Providers Suportados
+
+| Provider | Plataforma | Obrigatório |
+|----------|------------|-------------|
+| Google | Android, iOS | Sim |
+| Apple | iOS | Sim* |
+| Email | Todos | Opcional |
+
+*Apple exige Sign in with Apple se o app oferece login social.
+
+## Configuração Firebase
+
+1. Firebase Console > Authentication > Sign-in method
+2. Habilitar Google
+3. Habilitar Apple (iOS)
+
+### Android
+
+SHA-1 fingerprint deve estar no Firebase Console.
+
+### iOS
+
+```xml
+<!-- Info.plist -->
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>com.googleusercontent.apps.YOUR_CLIENT_ID</string>
+    </array>
+  </dict>
+</array>
+```
+
+Xcode: Signing & Capabilities > + Sign in with Apple
+
+## Boas Práticas
+
+1. Sempre tratar `AuthCancelledException` silenciosamente
+2. Mostrar mensagem de erro para outras exceções
+3. Usar `clearError()` após mostrar erro
+4. Apple Sign-In obrigatório se tiver Google no iOS
+
+## Arquivos Relacionados
+
+- `auth_foundation/lib/src/auth_repository.dart` - Interface
+- `auth_foundation/lib/src/presentation/auth_state.dart` - Estados
+- `auth_foundation/lib/src/firebase_auth_repository.dart` - Implementação Firebase
+- `auth_foundation/lib/src/presentation/auth_cubit.dart` - AuthFlowCubit
+- `auth_foundation/lib/src/presentation/page/login_page.dart` - UI
+- `lib/core/auth/init_auth.dart` - Registro no getIt

@@ -1,0 +1,131 @@
+---
+description: Sync Guidelines (sync_foundation — offline-first, Firestore)
+globs: ["**/sync_foundation/**/*.dart", "**/sync/**/*.dart"]
+---
+
+# Sync Guidelines
+
+> **Nota (App do Clínico):** Este app NÃO usa sync offline-first. Os dados são lidos diretamente do Firestore. O módulo `sync_foundation` está presente apenas para reutilizar utilitários como `ClinicianInviteCode`.
+
+Padrões para implementação e uso do módulo de sincronização (referência do app paciente).
+
+## Estrutura
+
+```
+modules/foundation/sync/   # sync_foundation
+├── lib/
+│   ├── sync_foundation.dart
+│   └── src/
+│       ├── sync_service.dart
+│       ├── sync_queue.dart
+│       ├── sembast_sync_queue.dart
+│       ├── sync_operation.dart
+│       ├── sync_config.dart
+│       ├── sync_init.dart
+│       ├── presentation/cubit/sync_cubit.dart
+│       └── presentation/widget/sync_indicator.dart
+```
+
+## Uso Básico
+
+```dart
+// Obter SyncCubit (via getIt, registrado em sync_init)
+final syncCubit = getIt<SyncCubit>();
+
+// Sync manual
+await syncCubit.sync();
+
+// Forçar sync
+await syncCubit.forceSync();
+
+// Pausar/resumir
+syncCubit.pause();
+syncCubit.resume();
+```
+
+## Estados
+
+| Estado | Descrição | Ação |
+|--------|-----------|------|
+| `SyncDisabled` | Usuário não logado | Mostrar "Faça login" |
+| `SyncInProgress` | Sincronizando | Mostrar loading |
+| `SyncCompleted` | Sincronizado | Mostrar "✓ Sincronizado" |
+| `SyncPending` | Pendente | Mostrar contador |
+| `SyncError` | Erro | Mostrar erro + retry |
+
+## SyncIndicator
+
+```dart
+// Completo (com label)
+SyncIndicator(
+  showLabel: true,
+  onTap: () => context.read<SyncCubit>().sync(),
+)
+
+// Compacto (só ícone)
+SyncIndicator(compact: true)
+```
+
+## Enfileirar Operações
+
+```dart
+// No repository, após salvar localmente
+final operation = SyncOperation(
+  id: uuid.v4(),
+  type: SyncOperationType.create, // ou update, delete
+  entityType: 'meal_entry',      // ou 'connection', etc.
+  entityId: entry.id,
+  data: entry.toSyncMap(),
+  createdAt: DateTime.now(),
+);
+
+await syncQueue.enqueue(operation);
+```
+
+## Configuração
+
+```dart
+SyncConfig(
+  autoSyncEnabled: true,        // Sync automático
+  syncIntervalSeconds: 30,     // Intervalo
+  maxRetries: 3,               // Tentativas
+  batchSize: 50,                // Tamanho do lote
+  conflictStrategy: ConflictStrategy.lastWriteWins,
+  syncOnConnectivity: true,     // Sync ao reconectar
+  syncOnAppResume: true,       // Sync ao voltar do background
+)
+```
+
+## Resolução de Conflitos
+
+| Estratégia | Descrição |
+|------------|-----------|
+| `lastWriteWins` | Última escrita vence (padrão) |
+| `localWins` | Local sempre vence |
+| `remoteWins` | Remoto sempre vence |
+| `fieldMerge` | Merge por campo |
+
+## Firestore Structure (Yummy Log)
+
+```
+users/{userId}/
+  meal_entries/{entryId}/
+  connections/...
+  sync_metadata/
+```
+
+## Boas Práticas
+
+1. Sempre salvar localmente primeiro (local-first)
+2. Enfileirar operação após save local
+3. Tratar `SyncDisabled` silenciosamente
+4. Mostrar feedback visual com `SyncIndicator`
+5. Usar soft delete (deletedAt) ao invés de delete real
+
+## Arquivos Relacionados
+
+- `sync_foundation/lib/src/sync_service.dart` - Orquestração push/pull
+- `sync_foundation/lib/src/sync_queue.dart` - Interface da fila
+- `sync_foundation/lib/src/sembast_sync_queue.dart` - Implementação Sembast
+- `sync_foundation/lib/src/presentation/cubit/sync_cubit.dart` - Cubit
+- `sync_foundation/lib/src/presentation/widget/sync_indicator.dart` - Widget

@@ -1,0 +1,47 @@
+---
+description: Responsabilidades da camada de apresentação (Page vs Cubit)
+globs: ["**/presentation/**/*.dart", "**/*_page.dart", "**/*_feature.dart"]
+---
+
+# Camada de Apresentação: Page vs Cubit
+
+Estado de UI e preferências do usuário **não** ficam no State da Page/View. Ficam no **Cubit** (ou controller).
+
+## Cubit/Bloc: prover na rota, não no construtor
+
+**A Page/View não deve receber Cubit (nem Bloc) por construtor.** O Cubit é provido na **rota** via `BlocProvider.value` e acessado na Page com `context.read<Cubit>()` ou `BlocBuilder`/`BlocListener`.
+
+- **Na definição da rota** (ex.: `getRoutes(GetIt getIt)` ou `routes(RouteManager r)`): envolver a Page em `BlocProvider.value(value: getIt<Cubit>(), child: const FeaturePage())`.
+- **Na Page**: usar `context.read<Cubit>()` para ações e `BlocBuilder<Cubit, State>` para reatividade; a Page não tem parâmetro `cubit` no construtor.
+
+Isso mantém a View desacoplada da origem do Cubit e permite testes e troca de implementação (ex.: GetIt, Modular) só na camada de rotas.
+
+## Onde colocar
+
+| Tipo | Onde | Exemplo |
+|------|------|--------|
+| Preferência de visualização (grid/lista, tema) | Cubit | `PatientListViewCubit`, `ThemeModeCubit` |
+| Persistência (SharedPreferences, etc.) | Cubit ou repositório injetado no Cubit | Nunca na Page |
+| Estado de lista/dados da feature | Cubit | `ChildCubit`, `GrowthCubit` |
+| Estado só de UI efêmero | Page (State) | `TextEditingController`, foco, animação em andamento |
+
+## Responsabilidades da Page/View
+
+- **Observar** estado: `BlocBuilder<Cubit, State>`, `BlocListener`
+- **Despachar** ações: `context.read<Cubit>().load()`, `.toggleView()`
+- Manter apenas estado **local e efêmero** (controllers, índice de página não persistido, etc.)
+
+## O que a Page não deve fazer
+
+- **Receber Repository, DataSource ou qualquer camada de dados** no construtor: regras de negócio e acesso a dados ficam **apenas nos Cubits**; a Page só lê estado e dispara ações (`context.read<Cubit>().load()`, `.save()`, etc.).
+- Acessar SharedPreferences (ou outro storage) diretamente
+- Guardar preferências do usuário em `setState` para uso entre sessões
+- Conhecer detalhes de como a preferência é persistida
+
+## Padrão para preferências persistidas
+
+1. Criar um Cubit que carrega no construtor e expõe método para alterar + persistir.
+2. Registrar o Cubit no módulo e **fornecer na rota** (`BlocProvider.value`); a Page **não** recebe o Cubit por construtor.
+3. Na Page: usar `BlocBuilder<Cubit, T>` para ler o valor e chamar o Cubit ao interagir (`context.read<Cubit>()`).
+
+Assim a View permanece “burra” (apenas reage e dispara ações) e o Cubit pode ser testado isoladamente.

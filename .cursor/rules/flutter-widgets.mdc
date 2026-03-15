@@ -1,0 +1,338 @@
+---
+description: Flutter Widget Patterns
+globs: ["**/widget/**/*.dart", "**/widgets/**/*.dart", "**/page/**/*.dart"]
+---
+
+# Flutter Widget Patterns
+
+Padrões para criar widgets reutilizáveis neste projeto.
+
+## Estrutura de Widget
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:ui_kit/ui_kit.dart';
+import 'package:module_growth_standards/src/l10n/growth_localizations.dart';
+
+/// Descrição breve do widget.
+///
+/// Exemplo de uso:
+/// ```dart
+/// MyWidget(
+///   title: 'Hello',
+///   onTap: () => print('tapped'),
+/// )
+/// ```
+class MyWidget extends StatelessWidget {
+  /// Creates a [MyWidget].
+  const MyWidget({
+    required this.title,
+    this.subtitle,
+    this.onTap,
+    super.key,
+  });
+
+  /// The main title text.
+  final String title;
+
+  /// Optional subtitle text.
+  final String? subtitle;
+
+  /// Callback when widget is tapped.
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    final l10n = GrowthLocalizations.of(context);
+    
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: appColors.neutralWhite,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: AppTextStyles.h3),
+            if (subtitle != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                subtitle!,
+                style: AppTextStyles.body2.copyWith(
+                  color: appColors.gray,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Convenções
+
+### Parâmetros
+
+```dart
+// Ordem dos parâmetros:
+const MyWidget({
+  // 1. Required primeiro
+  required this.requiredParam,
+  
+  // 2. Opcionais com valores default
+  this.optionalWithDefault = defaultValue,
+  
+  // 3. Opcionais nullable
+  this.optionalNullable,
+  
+  // 4. Callbacks por último
+  this.onTap,
+  this.onChanged,
+  
+  // 5. super.key sempre no final
+  super.key,
+});
+```
+
+### Documentação
+
+```dart
+/// Card que exibe informações de uma criança.
+///
+/// Mostra nome, idade e foto da criança. Ao tocar,
+/// navega para a página de detalhes.
+class ChildCard extends StatelessWidget {
+  /// Creates a [ChildCard].
+  const ChildCard({
+    required this.child,
+    required this.onTap,
+    super.key,
+  });
+
+  /// The child data to display.
+  final Child child;
+
+  /// Called when the card is tapped.
+  final VoidCallback onTap;
+```
+
+## Internacionalização em Widgets
+
+### Usando GrowthLocalizations
+
+```dart
+import 'package:module_growth_standards/src/l10n/growth_localizations.dart';
+
+class MyPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = GrowthLocalizations.of(context);
+    
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.settings)),
+      body: Column(
+        children: [
+          Text(l10n.addPatient),
+          Text(l10n.searchPatient),
+        ],
+      ),
+    );
+  }
+}
+
+// Ou usando a extensão
+class MyWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Text(context.l10n.addPatient);
+  }
+}
+```
+
+### Strings Disponíveis
+
+Principais strings em GrowthLocalizations:
+- `growthStandardsTitle`, `growthStandardsSubtitle`
+- `searchPatient`, `addPatient`, `editPatient`
+- `settings`, `language`, `about`
+- `weight`, `height`, `bmi`
+- `save`, `cancel`, `delete`
+- `noPatients`, `noMeasurements`
+- E mais 50+ strings...
+
+## Widgets Stateful
+
+```dart
+class MyStatefulWidget extends StatefulWidget {
+  const MyStatefulWidget({
+    required this.initialValue,
+    this.onChanged,
+    super.key,
+  });
+
+  final int initialValue;
+  final ValueChanged<int>? onChanged;
+
+  @override
+  State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
+}
+
+class _MyStatefulWidgetState extends State<MyStatefulWidget> {
+  late int _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.initialValue;
+  }
+
+  void _increment() {
+    setState(() {
+      _value++;
+    });
+    widget.onChanged?.call(_value);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('$_value');
+  }
+}
+```
+
+## Widgets Privados
+
+Para widgets auxiliares usados apenas internamente:
+
+```dart
+class GrowthChart extends StatelessWidget {
+  // ... widget principal
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _ChartHeader(title: 'IMC'),  // Widget privado
+        _ChartBody(data: data),
+        _ChartLegend(),
+      ],
+    );
+  }
+}
+
+// Widget privado no mesmo arquivo
+class _ChartHeader extends StatelessWidget {
+  const _ChartHeader({required this.title});
+  
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(title, style: AppTextStyles.h3);
+  }
+}
+```
+
+## Padrões Comuns
+
+### Lista com Estado Vazio (Localizado)
+
+```dart
+class ItemList extends StatelessWidget {
+  const ItemList({
+    required this.items,
+    required this.onItemTap,
+    super.key,
+  });
+
+  final List<Item> items;
+  final void Function(Item) onItemTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = GrowthLocalizations.of(context);
+    
+    if (items.isEmpty) {
+      return _EmptyState(message: l10n.noPatients);
+    }
+
+    return ListView.separated(
+      itemCount: items.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return ItemCard(
+          item: item,
+          onTap: () => onItemTap(item),
+        );
+      },
+    );
+  }
+}
+```
+
+### Widget com Loading/Error States (Localizado)
+
+```dart
+class DataWidget extends StatelessWidget {
+  const DataWidget({
+    required this.status,
+    required this.data,
+    super.key,
+  });
+
+  final DataStatus status;
+  final List<Data>? data;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    final l10n = GrowthLocalizations.of(context);
+
+    return switch (status) {
+      DataStatus.loading => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      DataStatus.failure => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                l10n.errorLoadingPatients,
+                style: AppTextStyles.body1.copyWith(color: appColors.error),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => _retry(),
+                child: Text(l10n.tryAgain),
+              ),
+            ],
+          ),
+        ),
+      DataStatus.success => _buildContent(data!),
+      DataStatus.initial => const SizedBox.shrink(),
+    };
+  }
+
+  Widget _buildContent(List<Data> data) {
+    // ...
+  }
+}
+```
+
+## Boas Práticas
+
+1. **const**: Use `const` sempre que possível
+2. **Keys**: Use `super.key` em vez de `Key? key`
+3. **Cores**: Sempre use `AppColors.fromContext(context)`
+4. **Tipografia**: Sempre use `AppTextStyles`
+5. **Spacing**: Use valores consistentes (8, 12, 16, 24)
+6. **BorderRadius**: Use `BorderRadius.circular(10)` para cards
+7. **Strings**: Use `GrowthLocalizations.of(context)` para textos de UI
+8. **Evite hardcode**: Nunca use strings literais em português/inglês diretamente

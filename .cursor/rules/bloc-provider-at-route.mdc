@@ -1,0 +1,42 @@
+---
+description: Cubit/Bloc deve ser provido na rota, nunca passado por construtor da Page
+globs: ["**/*_page.dart", "**/*_feature.dart", "**/router/**/*.dart", "**/routes/**/*.dart"]
+---
+
+# Cubit/Bloc: prover na rota
+
+## Regra
+
+- **Page/View**: não recebe `Cubit` nem `Bloc` por construtor.
+- **Rota** (builder da rota): provê o Cubit com `BlocProvider.value`; a Page é filha e obtém o Cubit via `context.read<Cubit>()` ou `BlocBuilder`.
+
+## Correto
+
+```dart
+// No feature / router — prover na rota
+builder: (context, state) => BlocProvider.value(
+  value: getIt<DiaryCubit>(),
+  child: const DiaryPage(),
+)
+
+// Na Page — sem parâmetro cubit
+class DiaryPage extends StatelessWidget {
+  const DiaryPage({super.key});
+  // ...
+  context.read<DiaryCubit>().load();
+  BlocBuilder<DiaryCubit, DiaryState>(...)
+}
+```
+
+## Evitar
+
+```dart
+// ❌ Não passar Cubit pelo construtor da Page
+builder: (context, state) => DiaryPage(cubit: getIt<DiaryCubit>())
+class DiaryPage extends StatelessWidget {
+  const DiaryPage({super.key, required this.cubit});
+  final DiaryCubit cubit;
+}
+```
+
+Ver também: **presentation-layer.mdc** (responsabilidades Page vs Cubit).

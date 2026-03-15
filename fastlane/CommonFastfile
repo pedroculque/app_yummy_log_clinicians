@@ -1,0 +1,8 @@
+lane :platform_name do
+	ENV['FASTLANE_PLATFORM_NAME']
+end
+
+# Retorna o flavor curto (dev ou prod) para uso nas lanes
+lane :flavor do
+	ENV['FASTLANE_LANE_NAME']
+end

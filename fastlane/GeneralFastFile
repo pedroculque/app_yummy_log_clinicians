@@ -1,0 +1,220 @@
+import('../../fastlane/CommonFastfile')
+import('../../fastlane/NotificationFastfile')
+
+private_lane :load_env do
+    Dir.chdir('../..') do
+        Dotenv.load('.env')
+        # FASTLANE_LANE_NAME é "ios prod" ou "android prod" (platform + lane); carregar .env.prod ou .env.dev
+        flavor = ENV['FASTLANE_LANE_NAME'].to_s.split.last
+        Dotenv.load(".env.#{flavor}") if flavor && !flavor.empty?
+    end
+end
+
+lane :clean_project do
+    Dir.chdir('../..') do
+        sh('flutter', 'clean')
+        sh('flutter', 'packages', 'get')
+    end
+end
+
+lane :flutter_build do
+    build
+end
+
+lane :increment_app_build_number do
+    Dir.chdir('../..') do
+        pubspec_path = 'pubspec.yaml'
+        pubspec_content = File.read(pubspec_path)
+        
+        # Extract current version (e.g., 1.0.0+29)
+        version_match = pubspec_content.match(/version:\s*(\d+\.\d+\.\d+)\+(\d+)/)
+        
+        if version_match
+            version_name = version_match[1]
+            current_build = version_match[2].to_i
+            new_build = current_build + 1
+            
+            new_version = "version: #{version_name}+#{new_build}"
+            updated_content = pubspec_content.gsub(/version:\s*\d+\.\d+\.\d+\+\d+/, new_version)
+            
+            File.write(pubspec_path, updated_content)
+            
+            puts "Build number incremented: #{current_build} → #{new_build}"
+            ENV['APP_BUILD_NUMBER'] = new_build.to_s
+        else
+            UI.user_error!("Could not find version in pubspec.yaml")
+        end
+    end
+end
+
+private_lane :build do
+    Dir.chdir('../..') do
+        project_root = Dir.pwd
+        command = ['flutter', 'build', build_type, '--flavor', flavor == 'prod' ? 'production' : 'development', '--target', ENV['TARGET']]
+
+        # Produção: ofuscação + symbols para Crashlytics e Sentry (stack traces legíveis)
+        if flavor == 'prod'
+            symbols_path = ENV['SPLIT_DEBUG_INFOPATH']
+            UI.user_error!('SPLIT_DEBUG_INFOPATH deve estar definido em .env.prod para build de produção') if symbols_path.nil? || symbols_path.empty?
+            command.push('--obfuscate', '--split-debug-info', symbols_path)
+            # Mapa de ofuscação para títulos legíveis no Sentry (caminho absoluto para evitar "Unable to write file" quando o build roda via Xcode)
+            obfuscation_map_path = File.join(project_root, 'build/app/obfuscation.map.json')
+            FileUtils.mkdir_p(File.dirname(obfuscation_map_path))
+            command.push('--extra-gen-snapshot-options', "--save-obfuscation-map=#{obfuscation_map_path}")
+        end
+
+        # Adiciona RevenueCat API Key se configurada
+        if ENV['REVENUECAT_API_KEY'] && !ENV['REVENUECAT_API_KEY'].empty?
+            command.push('--dart-define', "REVENUECAT_API_KEY=#{ENV['REVENUECAT_API_KEY']}")
+        end
+
+        sh(
+            command: command
+        )
+    end
+end
+
+private_lane :build_type do
+    platform_name == 'ios'? platform_name : flavor == 'prod'? 'appbundle' : 'apk'
+end
+
+lane :build_ios_and_export_ipa do
+    ENV['GYM_SCHEME'] = flavor == 'prod' ? 'production' : 'development'
+    ENV['GYM_EXPORT_METHOD'] = ENV['GYM_SCHEME'] == 'production' ? 'app-store' : 'development'
+    build_app
+end
+
+desc "Upload Dart obfuscation symbols to Firebase Crashlytics (prod only)"
+lane :upload_crashlytics_symbols do
+    app_id = platform_name == 'ios' ? ENV['FIREBASE_IOS_APP_ID'] : ENV['FIREBASE_ANDROID_APP_ID']
+    symbols_path = ENV['SPLIT_DEBUG_INFOPATH']
+    if app_id.nil? || app_id.empty?
+        UI.important('FIREBASE_IOS_APP_ID (ou FIREBASE_ANDROID_APP_ID) não definido: pulando upload de symbols para Crashlytics')
+        next
+    end
+    if symbols_path.nil? || symbols_path.empty?
+        UI.important('SPLIT_DEBUG_INFOPATH não definido: pulando upload de symbols')
+        next
+    end
+    Dir.chdir('../..') do
+        # Caminho absoluto para evitar que o Firebase CLI interprete mal (ex.: usar só "build")
+        abs_symbols = File.expand_path(symbols_path)
+        unless File.directory?(abs_symbols)
+            UI.important("Pasta de symbols não encontrada: #{abs_symbols} – pulando upload Crashlytics")
+            next
+        end
+        begin
+            sh('firebase', 'crashlytics:symbols:upload', "--app=#{app_id}", abs_symbols)
+        rescue => ex
+            # Upload de Dart symbols no iOS costuma falhar (breakpad); não abortar o deploy
+            UI.important("Upload Crashlytics symbols falhou (deploy continua): #{ex.message}")
+        end
+    end
+end
+
+desc "Upload Dart debug symbols to Sentry (prod only)"
+lane :upload_sentry_symbols do
+    if ENV['SENTRY_ORG'].to_s.empty? || ENV['SENTRY_PROJECT'].to_s.empty? || ENV['SENTRY_AUTH_TOKEN'].to_s.empty?
+        UI.important('SENTRY_ORG, SENTRY_PROJECT ou SENTRY_AUTH_TOKEN não definidos: pulando upload de symbols para Sentry')
+        next
+    end
+    Dir.chdir('../..') do
+        sh('dart', 'run', 'sentry_dart_plugin')
+    end
+end
+
+lane :uploading_firebase_distribution do
+    if platform_name == 'ios' then
+        ENV['FIREBASEAPPDISTRO_APP'] = ENV['FIREBASE_IOS_APP_ID']
+        ENV['FIREBASEAPPDISTRO_APK_PATH'] = ''
+    elsif platform_name == 'android' then
+        ENV['FIREBASEAPPDISTRO_APP'] = ENV['FIREBASE_ANDROID_APP_ID']
+        ENV['FIREBASEAPPDISTRO_IPA_PATH'] = ''
+    end
+
+    firebase_app_distribution(
+        service_credentials_file: ENV['GOOGLE_APPLICATION_CREDENTIALS']
+    )
+    firebase_distribution_notification
+end
+
+lane :connect_app_store do
+    app_store_connect_api_key(
+        key_id: ENV['APP_STORE_CONNECT_KEY_ID'],
+        issuer_id: ENV['APP_STORE_CONNECT_ISSUER_ID'],
+        key_content: ENV['APP_STORE_CONNECT_KEY_CONTENT'],
+    )
+end
+lane :upload_store do
+    if platform_name == 'ios' then
+        project_root = File.expand_path(Dir.pwd.end_with?('fastlane') ? '../..' : '..', Dir.pwd)
+        ipa_path = File.join(project_root, 'build/Runner.ipa')
+        upload_to_testflight(
+            app_identifier: 'com.yummylogdiary.app',
+            notify_external_testers: true,
+            ipa: ipa_path,
+            skip_waiting_for_build_processing: true,
+        )
+    elsif platform_name == 'android' then
+        # AAB gerado pelo Flutter (a partir de android/ ou android/fastlane/)
+        project_root = File.expand_path(Dir.pwd.end_with?('fastlane') ? '../..' : '..', Dir.pwd)
+        aab_path = File.join(project_root, 'build/app/outputs/bundle/productionRelease/app-production-release.aab')
+        # supply aceita json_key (path) ou json_key_data (string); path absoluto pois CWD = android/fastlane
+        json_key_file = ENV['SUPPLY_JSON_KEY_FILE'].to_s.strip
+        if json_key_file != ''
+            json_key_file = File.expand_path(json_key_file) unless json_key_file.start_with?('/')
+            json_key_file = File.join(project_root, 'android', File.basename(json_key_file)) unless File.exist?(json_key_file)
+        end
+        supply_params = {
+            aab: aab_path,
+            package_name: 'com.yummylogdiary.app',
+            track: ENV['SUPPLY_TRACK'] || 'internal',
+            skip_upload_metadata: true,
+            skip_upload_images: true,
+            skip_upload_screenshots: true,
+        }
+        supply_params[:json_key] = json_key_file if json_key_file && File.exist?(json_key_file)
+        supply(supply_params)
+    end
+
+    upload_store_notification
+end
+
+lane :update_gem do
+    next unless File.exist?('Gemfile')
+    sh(command: ['bundle', 'update'])
+end
+
+desc "Download provisioning profiles"
+lane :rematch do
+    sync_code_signing(
+        app_identifier: flavor == 'prod' ? 'com.yummylogdiary.app' : 'com.yummylogdiary.app.stg',
+        type: flavor == 'prod' ? 'appstore' : 'adhoc',
+        force_for_new_devices: true,
+        git_branch: 'master',
+        keychain_name: ENV['KEYCHAIN_NAME'],
+        keychain_password: ENV['KEYCHAIN_PASSWORD'],
+    )
+end
+
+desc "Get certificates and provisioning profiles from gtihub run: fastlane certificates"
+  lane :certificates do
+    sync_code_signing(
+        type: "development",
+        app_identifier: 'com.yummylogdiary.app.dev',
+        force_for_new_devices: true,
+        readonly: true
+    )
+    sync_code_signing(
+        type: "adhoc",
+        app_identifier: 'com.yummylogdiary.app.stg',
+        force_for_new_devices: true,
+        readonly: true
+    )
+    sync_code_signing(
+        type: "appstore",
+        app_identifier: 'com.yummylogdiary.app',
+        force_for_new_devices: true,
+        readonly: true
+    )
+end

@@ -1,0 +1,197 @@
+---
+description: Sembast Database Guidelines
+globs: ["**/*_local_datasource.dart", "**/sembast*.dart"]
+---
+
+# Sembast Persistence Guidelines
+
+Este projeto usa Sembast como banco de dados local NoSQL.
+
+## Singleton do Database
+
+```dart
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sembast/sembast_io.dart';
+
+class SembastDatabase {
+  /// Gets the singleton instance of [SembastDatabase].
+  factory SembastDatabase() => _instance ??= SembastDatabase._();
+  SembastDatabase._();
+
+  static SembastDatabase? _instance;
+  Database? _database;
+
+  Future<Database> get database async {
+    _database ??= await _initDatabase();
+    return _database!;
+  }
+
+  Future<Database> _initDatabase() async {
+    final dir = await getApplicationDocumentsDirectory();
+    await dir.create(recursive: true);
+    final dbPath = join(dir.path, 'app_database.db');
+    return databaseFactoryIo.openDatabase(dbPath);
+  }
+
+  Future<void> close() async {
+    await _database?.close();
+    _database = null;
+  }
+
+  Future<void> clearAll() async {
+    final db = await database;
+    final stores = ['children', 'measurements']; // listar stores
+    for (final storeName in stores) {
+      final store = stringMapStoreFactory.store(storeName);
+      await store.delete(db);
+    }
+  }
+}
+```
+
+## Estrutura do Local Datasource
+
+```dart
+import 'package:sembast/sembast.dart';
+
+class FeatureLocalDatasource implements FeatureRepository {
+  FeatureLocalDatasource({SembastDatabase? database})
+      : _sembastDatabase = database ?? SembastDatabase();
+
+  final SembastDatabase _sembastDatabase;
+  final _store = stringMapStoreFactory.store('features');
+
+  Future<Database> get _db => _sembastDatabase.database;
+
+  @override
+  Future<List<Feature>> getAll() async {
+    final db = await _db;
+    final records = await _store.find(db);
+    return records.map((r) => Feature.fromJson(r.value)).toList();
+  }
+
+  @override
+  Future<Feature?> getById(String id) async {
+    final db = await _db;
+    final record = await _store.record(id).get(db);
+    if (record == null) return null;
+    return Feature.fromJson(record);
+  }
+
+  @override
+  Future<Feature> add(Feature feature) async {
+    final db = await _db;
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    final newFeature = feature.copyWith(id: id);
+    await _store.record(id).put(db, newFeature.toJson());
+    return newFeature;
+  }
+
+  @override
+  Future<void> update(Feature feature) async {
+    final db = await _db;
+    await _store.record(feature.id).put(db, feature.toJson());
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    final db = await _db;
+    await _store.record(id).delete(db);
+  }
+}
+```
+
+## Queries com Filtros
+
+```dart
+// Filtrar por campo
+Future<List<Feature>> getByParentId(String parentId) async {
+  final db = await _db;
+  final finder = Finder(
+    filter: Filter.equals('parentId', parentId),
+    sortOrders: [SortOrder('name')],
+  );
+  final records = await _store.find(db, finder: finder);
+  return records.map((r) => Feature.fromJson(r.value)).toList();
+}
+
+// Ordenação
+final finder = Finder(
+  sortOrders: [SortOrder('date', false)], // false = descending
+);
+
+// Limite
+final finder = Finder(
+  sortOrders: [SortOrder('date', false)],
+  limit: 10,
+);
+
+// Contagem
+Future<int> getCount(String parentId) async {
+  final db = await _db;
+  final filter = Filter.equals('parentId', parentId);
+  return _store.count(db, filter: filter);
+}
+```
+
+## Streams Reativos
+
+```dart
+Stream<List<Feature>> watchAll() async* {
+  final db = await _db;
+  final query = _store.query();
+  yield* query.onSnapshots(db).map(
+    (snapshots) => snapshots.map((s) => Feature.fromJson(s.value)).toList(),
+  );
+}
+```
+
+## Model com JSON
+
+```dart
+class Feature extends Equatable {
+  const Feature({
+    required this.id,
+    required this.name,
+    this.createdAt,
+  });
+
+  factory Feature.fromJson(Map<String, dynamic> json) {
+    return Feature(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'] as String)
+          : null,
+    );
+  }
+
+  final String id;
+  final String name;
+  final DateTime? createdAt;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'createdAt': createdAt?.toIso8601String(),
+    };
+  }
+
+  Feature copyWith({
+    String? id,
+    String? name,
+    DateTime? createdAt,
+  }) {
+    return Feature(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, name, createdAt];
+}
+```

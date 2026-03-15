@@ -1,0 +1,17 @@
+name: feature_contract
+description: Contrato base (YummyLogFeature) para feature packages do Yummy Log.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get_it: ^8.0.2
+  go_router: ^14.6.3
+
+dev_dependencies:
+  bloc_lint: ^0.3.7
+  very_good_analysis: ^10.2.0

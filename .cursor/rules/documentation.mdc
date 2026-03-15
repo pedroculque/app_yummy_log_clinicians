@@ -1,0 +1,160 @@
+---
+description: Documentation and README standards
+globs: ["**/README.md", "**/docs/**/*.md", "**/*.md"]
+alwaysApply: true
+---
+
+# Documentation Standards
+
+## Internacionalização (módulos features e foundation)
+
+**Todos os módulos em `modules/features` e `modules/foundation` devem suportar os idiomas pt, es e en.** Textos de UI devem usar o pacote `yummy_log_l10n`; novas chaves devem ser adicionadas nos três ARBs (app_pt.arb, app_es.arb, app_en.arb). Ver regra [i18n-modules.mdc](i18n-modules.mdc).
+
+## Estrutura de Documentação
+
+Cada módulo deve ter:
+
+```
+module_name/
+├── README.md              # Índice e visão geral (~50-80 linhas)
+└── docs/                  # Documentação detalhada
+    ├── architecture.md    # Arquitetura e estrutura
+    ├── features.md        # Funcionalidades e fluxos
+    └── [topic].md         # Docs específicas do módulo
+```
+
+## README.md (Índice)
+
+O README deve ser **enxuto** e servir como índice:
+
+```markdown
+# Module Name
+
+Descrição breve (1-2 linhas).
+
+## Funcionalidades
+- Lista de features principais
+
+## Quick Start
+- Código mínimo para usar
+
+## Documentação
+| Documento | Descrição |
+|-----------|-----------|
+| [Arquitetura](docs/architecture.md) | ... |
+| [Features](docs/features.md) | ... |
+
+## Estrutura
+- Visão geral das pastas
+
+## Internacionalização (obrigatório em features/foundation)
+- Idiomas suportados: **pt, es, en** (via pacote yummy_log_l10n)
+- Como usar (context.l10n, AppLocalizations)
+
+## Dependências
+- Pacotes principais
+
+## Referências
+- Links externos
+```
+
+## Docs Separadas
+
+### architecture.md
+- Clean Architecture / estrutura de pastas
+- Camadas (data, domain, presentation, l10n)
+- Injeção de dependências
+- Fluxo de dados
+- Internacionalização (se aplicável)
+
+### features.md
+- Funcionalidades do módulo
+- Fluxos de usuário
+- Rotas e navegação
+- Modos de operação
+- Configurações
+
+### Docs Específicas
+- `who-calculations.md` - Cálculos OMS (growth_standards)
+- `ui-components.md` - Widgets e páginas
+- `api-reference.md` - Referência de classes
+
+## Quando Criar/Atualizar Docs
+
+### Criar nova doc quando:
+- Adicionar funcionalidade complexa
+- Implementar algoritmo/cálculo específico
+- Criar novos componentes reutilizáveis
+- Adicionar sistema de internacionalização
+
+### Atualizar docs quando:
+- Modificar arquitetura ou estrutura
+- Adicionar novas rotas
+- Alterar regras de negócio
+- Adicionar dependências
+- Adicionar novos idiomas
+
+## Estilo de Documentação
+
+### Idioma
+- **Português (pt-BR)** para docs de usuário/negócio
+- **Inglês** para docs técnicas/código (opcional)
+
+### Formatação
+- Usar tabelas para comparações
+- Incluir exemplos de código
+- Manter seções curtas e focadas
+- Usar headers hierárquicos (##, ###)
+
+### Código em Docs
+```dart
+// Sempre incluir imports relevantes
+// Mostrar uso real, não abstrato
+context.read<MyCubit>().doSomething();
+
+// Para localização
+final l10n = GrowthLocalizations.of(context);
+Text(l10n.addPatient);
+```
+
+## Módulos Documentados
+
+### module_growth_standards
+```
+lib/src/
+├── data/           # Persistência, tabelas LMS
+├── domain/         # Modelos, serviços de cálculo
+├── l10n/           # Internacionalização (pt, en, es)
+└── presentation/   # Cubits, páginas, widgets
+
+docs/
+├── architecture.md      # Clean Architecture Light + l10n
+├── who-calculations.md  # LMS, Z-score, tabelas OMS
+├── features.md          # Pacientes, medições, gráficos, configurações
+└── ui-components.md     # Widgets, páginas
+```
+
+### module_core
+- App configuration (AppConfig, AppMode)
+- User management
+- Locale management (LocaleCubit)
+- Shared exceptions
+
+### commons_dependencies
+- Shared dependencies
+- App-wide configurations
+
+## Context para IA
+
+Ao iniciar uma conversa, a IA deve:
+
+1. **Verificar README** do módulo relevante
+2. **Consultar docs/** para detalhes específicos
+3. **Seguir padrões** estabelecidos
+4. **Atualizar docs** após mudanças significativas
+
+### Prioridade de Leitura
+1. `README.md` - Visão geral
+2. `docs/architecture.md` - Entender estrutura
+3. `docs/features.md` - Entender funcionalidades
+4. Docs específicas conforme necessidade

@@ -1,0 +1,65 @@
+---
+description: Otimização de tokens usando RTK para comandos shell
+alwaysApply: true
+---
+
+# RTK Token Optimization
+
+**REGRA OBRIGATÓRIA**: Sempre usar `rtk` como prefixo para comandos git, ls, find e grep no Shell tool.
+
+## Por quê?
+
+RTK comprime outputs de comandos shell, economizando 60-90% dos tokens. Tokens economizados = sessões mais longas, menos compactação.
+
+## Comandos Git (sempre usar rtk)
+
+```bash
+# Em vez de:          # Usar:
+git status            rtk git status
+git diff              rtk git diff
+git diff HEAD         rtk git diff HEAD
+git log               rtk git log
+git add .             rtk git add .
+git commit -m "msg"   rtk git commit -m "msg"
+git push              rtk git push
+git pull              rtk git pull
+```
+
+## Comandos de Listagem
+
+```bash
+# Em vez de:          # Usar:
+ls -la                rtk ls .
+find . -name "*.dart" rtk find "*.dart" .
+tree                  rtk ls . (com estrutura)
+```
+
+## Comandos de Busca
+
+```bash
+# Em vez de:          # Usar:
+grep "pattern" .      rtk grep "pattern" .
+rg "pattern"          rtk grep "pattern" .
+```
+
+## Exceções (não usar rtk)
+
+- `flutter` / `dart` — não tem filtro específico
+- `firebase` — não tem filtro específico
+- Comandos interativos
+- Heredocs (`<<EOF`)
+
+## Economia Esperada
+
+| Comando | Economia típica |
+|---------|-----------------|
+| git status | ~80% |
+| git diff | ~60-75% |
+| git log | ~80% |
+| ls | ~68% |
+| find | ~91% |
+| grep | ~80% |
+
+## Verificar Economia
+
+Para ver estatísticas de economia: `rtk gain`

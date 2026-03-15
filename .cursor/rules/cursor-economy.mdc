@@ -1,0 +1,71 @@
+---
+description: Dicas para economizar tokens no Cursor com Claude
+alwaysApply: true
+---
+
+# Economia de Tokens no Cursor
+
+## Comunicação Eficiente
+
+### Seja Específico
+```
+❌ "me explica o projeto"
+✅ "como funciona o sync no FirestoreSyncService?"
+```
+
+### Agrupe Tarefas
+```
+❌ Múltiplas mensagens para erros relacionados
+✅ "corrige os erros A, B e C no arquivo X"
+```
+
+### Use Comandos Curtos
+- `/commit` - criar commit
+- `/status` - ver status git
+
+## Leitura de Arquivos
+
+### Especifique Linhas
+```
+❌ "leia o arquivo todo"
+✅ "veja linhas 50-100 do arquivo X"
+```
+
+### Evite Releituras
+Se já li um arquivo na conversa, não precisa pedir de novo.
+
+## Subagents (Tasks)
+
+### Modelo Fast para Tarefas Simples
+```
+✅ "use modelo fast para buscar arquivos"
+✅ "explore com modelo rápido"
+```
+
+### Modelo Padrão para Tarefas Complexas
+- Refatorações grandes
+- Debugging complexo
+- Arquitetura
+
+## Imagens
+
+### Prefira Texto
+```
+❌ Screenshot de erro
+✅ Copiar/colar mensagem de erro
+```
+
+### Use Imagens Apenas Quando Necessário
+- UI/Layout
+- Gráficos
+- Problemas visuais
+
+## Contexto
+
+### Mantenha Conversa Focada
+- Uma feature por conversa
+- Inicie nova conversa para temas diferentes
+
+### Aproveite Rules
+- Rules já carregadas não consomem tokens extras
+- Crie rules para padrões repetitivos

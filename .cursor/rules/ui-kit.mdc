@@ -1,0 +1,187 @@
+---
+description: UI Kit (ui_kit) — componentes e tokens visuais
+globs: ["**/*.dart"]
+---
+
+# UI Kit
+
+Este projeto usa o pacote `ui_kit` para componentes e tokens visuais.
+
+## Ao criar ou editar telas (pages, widgets)
+
+**Obrigatório:** em qualquer tela nova ou alteração de UI, use os componentes do ui_kit. Não use os widgets do Material quando existir equivalente.
+
+| Não use (Material) | Use (ui_kit) |
+|--------------------|--------------|
+| `FilledButton`, `ElevatedButton` | `UiFixedButton` |
+| `OutlinedButton`, `TextButton` (ação secundária) | `UiAutoWidthButton` ou `UiLinkButton` |
+| `CircleAvatar` | `UiAvatar` |
+| `Icon(Icons.xxx)` quando houver equivalente | `UiIcon(UiIcons.xxx)` |
+| `SnackBar(...)` | `uiSnackBar(context: context, message: ..., type: ...)` |
+| Radio/opções de escolha única customizadas | `UiRadioButton<T>` |
+| Cores hardcoded (`Colors.blue`, `Color(0xFF...)`) | `AppColors.fromContext(context)` |
+| Estilos de texto soltos | `AppTextStyles` (h1, h2, body1, body2, etc.) |
+| Input de texto genérico | `UiTextInput` |
+| Checkbox/switch genérico | `UiCheckBox`, `UiSwitch` |
+| Dropdown genérico | `UiDropdownButton` |
+
+Exceção: `Icon(Icons.xxx)` quando **não** existir equivalente em `UiIcons` (ex.: ícones de marca, ícones muito específicos).
+
+## Prioridade
+
+**Sempre priorizar componentes do ui_kit.** Usar widgets do Material apenas quando não existir equivalente no ui_kit (ex.: ícones específicos como Icons.free_breakfast).
+
+## Import
+
+```dart
+import 'package:ui_kit/ui_kit.dart';
+```
+
+## Cores (AppColors)
+
+Sempre use `AppColors` do contexto, nunca cores hardcoded:
+
+```dart
+// ✓ Correto
+final appColors = AppColors.fromContext(context);
+Container(color: appColors.primary)
+Text('Hello', style: TextStyle(color: appColors.error))
+
+// ✗ Errado
+Container(color: Colors.blue)
+Container(color: Color(0xFF123456))
+```
+
+### Cores disponíveis
+
+| Cor | Uso |
+|-----|-----|
+| `primary`, `primaryDark`, `primaryLight` | Cor principal da marca |
+| `secondary`, `secondaryDark`, `secondaryLight` | Cor secundária |
+| `success`, `successDark`, `successLight` | Estados de sucesso |
+| `error`, `errorDark`, `errorLight` | Estados de erro |
+| `alert`, `alertDark`, `alertLight` | Alertas/warnings |
+| `gray`, `grayDark`, `grayLight` | Tons neutros |
+| `neutralWhite`, `neutralBlack`, `neutralSilver` | Neutros puros |
+| `backgroundDefault` | Fundo padrão |
+
+## Tipografia (AppTextStyles)
+
+```dart
+Text('Título', style: AppTextStyles.h1)
+Text('Subtítulo', style: AppTextStyles.h2)
+Text('Texto normal', style: AppTextStyles.body1)
+Text('Texto menor', style: AppTextStyles.body2)
+Text('Texto pequeno', style: AppTextStyles.body3)
+Text('Erro', style: AppTextStyles.body2.copyWith(color: appColors.error))
+```
+
+## Ícones (UiIcon / UiIcons)
+
+```dart
+UiIcon(UiIcons.calendar)
+UiIcon(UiIcons.settings, color: appColors.primary)
+UiIcon(UiIcons.user, size: 24)
+```
+
+### Ícones disponíveis
+
+- Navegação: `tabHome`, `tabHomeOutline`, `tabProfile`, `tabProfileOutline`
+- Ações: `camera`, `trash`, `copy`, `logout`, `settings`
+- UI: `eyeShow`, `eyeHide`, `calendar`, `list`, `email`
+- Sentimentos: `feelingHappy`, `feelingSad`, `feelingAngry`, `feelingPride`
+
+## Componentes
+
+### UiTextInput
+
+```dart
+UiTextInput(
+  hintText: 'Digite seu email',
+  controller: _emailController,
+  state: UiTextInputState.normal,  // normal, error, success
+  errorText: 'Email inválido',
+  keyboardType: TextInputType.emailAddress,
+  starIcon: UiIcons.email,
+  onChanged: (value) => print(value),
+)
+
+// Campo de senha
+UiTextInput(
+  hintText: 'Senha',
+  textFieldAction: UiTextFieldAction.obscureText,
+)
+```
+
+### Botões
+
+```dart
+UiFixedButton(text: 'Salvar', onPressed: () => save())
+UiAutoWidthButton(text: 'Cancelar', onPressed: () => cancel())
+UiLinkButton(text: 'Esqueci a senha', onPressed: () => forgotPassword())
+```
+
+### UiAvatar
+
+```dart
+UiAvatar(imageUrl: user.photoUrl, size: UiAvatarSize.medium)  // small, medium, large
+```
+
+### UiSwitch
+
+```dart
+UiSwitch(
+  value: isEnabled,
+  onChanged: (value) => setState(() => isEnabled = value),
+)
+```
+
+### Snackbar
+
+```dart
+uiSnackBar(
+  context: context,
+  message: 'Salvo com sucesso!',
+  type: UiSnackbarType.success,  // success, error, warning, normal
+);
+```
+
+### UiCheckBox e UiRadioButton
+
+```dart
+UiCheckBox(
+  value: isChecked,
+  onChanged: (value) => setState(() => isChecked = value),
+)
+
+UiRadioButton<String>(
+  value: selectedOption,
+  groupValue: currentSelection,
+  onChanged: (value) => setState(() => currentSelection = value),
+)
+```
+
+### UiDropdownButton
+
+```dart
+UiDropdownButton<String>(
+  value: selectedValue,
+  items: ['Opção 1', 'Opção 2', 'Opção 3'],
+  onChanged: (value) => setState(() => selectedValue = value),
+)
+```
+
+## Spacing
+
+```dart
+const SizedBox(height: 8)
+const SizedBox(height: 16)
+SizedBox(height: AppSpacing.tiny)  // 2pt
+```
+
+## Border radius
+
+```dart
+BorderRadius.circular(10)  // inputs e cards
+BorderRadius.circular(8)   // botões e elementos menores
+```

@@ -1,0 +1,177 @@
+---
+description: Remote Config e Force Update (Futuro — não implementado no Yummy Log; referência)
+globs: ["**/package_remote_config/**/*.dart", "**/module_force_update/**/*.dart"]
+---
+
+# Remote Config e Force Update
+
+**Nota:** Remote Config e Force Update ainda não estão implementados no Yummy Log. Rule mantida como referência. Ao implementar, usar `getIt` em vez de `Modular.get`.
+
+---
+
+## Package Remote Config
+
+Abstração para configuração remota com suporte a múltiplos providers.
+
+### Estrutura
+
+```
+package_remote_config/
+├── lib/src/
+│   ├── remote_config.dart           # Facade singleton
+│   ├── remote_config_provider.dart  # Interface abstrata
+│   ├── remote_config_exception.dart
+│   └── providers/
+│       ├── firebase_remote_config_provider.dart
+│       └── in_memory_remote_config_provider.dart
+```
+
+### Uso
+
+```dart
+// Configuração (no bootstrap.dart)
+RemoteConfig.instance.configure(
+  FirebaseRemoteConfigProvider(
+    defaults: {'key': 'value'},
+  ),
+);
+await RemoteConfig.instance.initialize();
+
+// Leitura de valores
+final value = RemoteConfig.instance.getString('key');
+final enabled = RemoteConfig.instance.getBool('feature_enabled');
+```
+
+### Providers
+
+| Provider | Uso |
+|----------|-----|
+| `FirebaseRemoteConfigProvider` | Produção |
+| `InMemoryRemoteConfigProvider` | Testes e desenvolvimento |
+
+### Criando Novo Provider
+
+```dart
+class MyProvider extends RemoteConfigProvider {
+  @override
+  Future<void> initialize() async { ... }
+
+  @override
+  Future<bool> fetchAndActivate() async { ... }
+
+  @override
+  String getString(String key, {String defaultValue = ''}) { ... }
+
+  // ... outros métodos
+}
+```
+
+## Module Force Update
+
+Verificação de versão mínima do app com dialog bloqueante.
+
+### Estrutura
+
+```
+module_force_update/
+├── lib/src/
+│   ├── domain/
+│   │   ├── model/
+│   │   │   ├── app_version.dart
+│   │   │   └── force_update_config.dart
+│   │   └── service/
+│   │       ├── force_update_service.dart
+│   │       └── version_checker.dart
+│   ├── presentation/
+│   │   ├── cubit/
+│   │   ├── page/
+│   │   └── widget/
+│   │       └── force_update_dialog.dart
+│   └── force_update_module.dart
+```
+
+### Remote Config Keys
+
+Use as constantes de `ForceUpdateKeys`:
+
+```dart
+ForceUpdateKeys.enabled           // 'force_update_enabled'
+ForceUpdateKeys.minVersionAndroid // 'force_update_min_version_android'
+ForceUpdateKeys.minVersionIos     // 'force_update_min_version_ios'
+ForceUpdateKeys.storeUrlAndroid   // 'force_update_store_url_android'
+ForceUpdateKeys.storeUrlIos       // 'force_update_store_url_ios'
+ForceUpdateKeys.message           // 'force_update_message'
+```
+
+### Verificação de Versão
+
+```dart
+// Usando VersionChecker (recomendado)
+final checker = Modular.get<VersionChecker>();
+final result = await checker.check();
+
+if (result.isUpdateRequired) {
+  await ForceUpdateDialog.show(
+    context,
+    currentVersion: result.currentVersion,
+    storeUrl: result.storeUrl,
+    updateMessage: result.updateMessage,
+  );
+}
+```
+
+### AppVersion
+
+Model para versão semântica:
+
+```dart
+final v1 = AppVersion.parse('1.2.3');
+final v2 = AppVersion.parse('1.3.0');
+
+v1 < v2  // true
+v1 > v2  // false
+v1 == v2 // false
+```
+
+### Integração com Splash
+
+A verificação ocorre automaticamente no `SplashPage` após o loading completar.
+
+### Injeção de Dependências
+
+```dart
+// No AppModule
+ForceUpdateModule.registerBinds(injector);
+
+// Registra:
+// - ForceUpdateService
+// - VersionChecker
+// - ForceUpdateCubit
+```
+
+## Boas Práticas
+
+1. **Sempre use constantes** de `ForceUpdateKeys` para chaves
+2. **Trate erros** - se a verificação falhar, continue para o app
+3. **Use InMemoryProvider** para testes
+4. **Defina defaults** ao configurar o provider
+5. **Mensagem customizada** via Remote Config é opcional
+
+## Testes
+
+```dart
+// Setup
+RemoteConfig.instance.configure(
+  InMemoryRemoteConfigProvider(
+    values: {
+      ForceUpdateKeys.enabled: true,
+      ForceUpdateKeys.minVersionAndroid: '99.0.0',
+    },
+  ),
+);
+
+// Verificar
+final checker = VersionChecker(forceUpdateService: service);
+final result = await checker.check();
+expect(result.isUpdateRequired, isTrue);
+```

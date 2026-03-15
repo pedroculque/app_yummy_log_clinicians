@@ -1,0 +1,40 @@
+name: diary_feature
+description: Feature Diário do app Yummy Log (lista + adicionar refeição).
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  auth_foundation:
+    path: ../../../modules/foundation/auth
+  bloc: ^9.2.0
+  cached_network_image: ^3.4.1
+  feature_contract:
+    path: ../../../packages/feature_contract
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  get_it: ^8.0.2
+  go_router: ^14.6.3
+  image_picker: ^1.0.7
+  intl: any
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  persistence_foundation:
+    path: ../../../modules/foundation/persistence
+  sync_foundation:
+    path: ../../../modules/foundation/sync
+  ui_kit:
+    git:
+      url: https://github.com/pedroculque/flutter_ui_kit.git
+      ref: main
+  yummy_log_l10n:
+    path: ../../../packages/yummy_log_l10n
+
+dev_dependencies:
+  bloc_lint: ^0.3.7
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0

@@ -1,0 +1,49 @@
+---
+description: Navegação com go_router — rotas por feature, full screen com rootNavigatorKey
+globs: ["**/*.dart"]
+alwaysApply: false
+---
+
+# Navegação (go_router)
+
+Este projeto usa **go_router** com tab bar (`StatefulShellRoute.indexedStack`). Cada feature expõe rotas via `getRoutes(GetIt getIt, {GlobalKey<NavigatorState>? rootNavigatorKey})`.
+
+## Estrutura
+
+- **Router:** `lib/core/router/app_router.dart` — `createAppRouter()` monta o `GoRouter` com branches por feature (Pacientes, Insights, Configurações).
+- **Shell:** `AppShell` recebe o `navigationShell` e renderiza a tab bar.
+- **Features:** Cada feature (patients, insights, settings) implementa `getRoutes()` e retorna lista de `RouteBase`.
+
+## Regras
+
+1. **Navegação dentro do app:** usar `context.go('/path')` ou `context.push('/path')`. Não usar `Navigator.of(context)` para rotas nomeadas.
+2. **Telas full screen** (acima da tab bar): passar `parentNavigatorKey: rootNavigatorKey` no `GoRoute`.
+3. **Prover Cubit na rota:** em cada `GoRoute`, usar `BlocProvider.value(value: getIt<Cubit>(), child: const Page())` — ver **bloc-provider-at-route.mdc**.
+
+## Exemplos
+
+```dart
+// Na feature — definir rota com parentNavigatorKey para full screen
+GoRoute(
+  path: ':id/diary',
+  parentNavigatorKey: rootNavigatorKey,
+  builder: (context, state) {
+    final id = state.pathParameters['id']!;
+    return PatientDiaryPage(patientId: id);
+  },
+)
+
+// Na Page — navegar
+context.push('/patients/${patient.id}/diary');
+context.go('/patients');
+context.pop();
+```
+
+## Resumo
+
+| Situação | Ação |
+|----------|------|
+| Navegar para outra tela da mesma aba | `context.push('/patients/...')` ou `context.go(...)` |
+| Tela que deve aparecer acima da tab bar | Rota com `parentNavigatorKey: rootNavigatorKey` |
+| Voltar | `context.pop()` |
+| Trocar de aba | `context.go('/patients')`, `context.go('/insights')`, `context.go('/settings')` |

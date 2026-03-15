@@ -1,0 +1,4 @@
+# The bundle identifier of your app
+app_identifier("com.yummylog.app")
+team_id("YGC8DVQ24H") # Developer Portal Team ID
+apple_id "gonzales4r@hotmail.com" # Your Apple email address

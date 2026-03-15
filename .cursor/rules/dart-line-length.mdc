@@ -1,0 +1,90 @@
+---
+description: Limite de 80 caracteres por linha (very_good_analysis)
+globs: ["**/*.dart"]
+---
+
+# Dart Line Length (80 caracteres)
+
+## Regra
+
+O projeto usa `very_good_analysis` que impõe limite de **80 caracteres por linha**.
+
+## Para agentes / IA
+
+- **Sempre** que criar ou editar arquivos `.dart`: manter cada linha com **no máximo 80 caracteres**.
+- Ao finalizar edições em Dart: rodar `dart analyze` e corrigir qualquer `lines_longer_than_80_chars` antes de encerrar.
+- Comentários longos: encurtar ou quebrar em duas linhas; não usar `// ignore: lines_longer_than_80_chars` a não ser que seja exceção justificada.
+
+## Ao Escrever Código Dart
+
+### Quebrar linhas longas em:
+
+**Chamadas de função com múltiplos argumentos:**
+```dart
+// ❌ Errado
+expect(AppRatingDefaults.all[AppRatingConfigKeys.actionsRequired], 5);
+
+// ✅ Correto
+expect(
+  AppRatingDefaults.all[AppRatingConfigKeys.actionsRequired],
+  5,
+);
+```
+
+**Strings longas:**
+```dart
+// ❌ Errado
+const message = 'Esta é uma mensagem muito longa que excede o limite de caracteres';
+
+// ✅ Correto
+const message = 'Esta é uma mensagem muito longa '
+    'que excede o limite de caracteres';
+```
+
+**Declarações de classe/função:**
+```dart
+// ❌ Errado
+void myFunction(String param1, int param2, bool param3, double param4) {}
+
+// ✅ Correto
+void myFunction(
+  String param1,
+  int param2,
+  bool param3,
+  double param4,
+) {}
+```
+
+**Listas e Maps:**
+```dart
+// ❌ Errado
+final list = ['item1', 'item2', 'item3', 'item4', 'item5', 'item6'];
+
+// ✅ Correto
+final list = [
+  'item1',
+  'item2',
+  'item3',
+  'item4',
+  'item5',
+  'item6',
+];
+```
+
+## Trailing Comma
+
+Sempre use trailing comma em listas multi-linha para melhor formatação:
+
+```dart
+// ✅ Com trailing comma (formatter alinha corretamente)
+expect(
+  value,
+  expected,
+);
+
+// ❌ Sem trailing comma (formatter pode juntar em uma linha)
+expect(
+  value,
+  expected
+)
+```

@@ -1,0 +1,103 @@
+# YummyLog for Clinicians
+
+App para profissionais de saúde acompanharem os diários alimentares de seus pacientes.
+
+---
+
+## Visão do Produto
+
+O **YummyLog for Clinicians** permite que nutricionistas, psicólogos e outros profissionais de saúde:
+
+1. **Convidem pacientes** através de um código de 6 caracteres
+2. **Visualizem o diário alimentar** dos pacientes vinculados (read-only)
+3. **Acompanhem sentimentos** associados às refeições
+4. **Analisem métricas** de frequência e padrões alimentares
+
+O app funciona em conjunto com o **YummyLog** (app do paciente), compartilhando o mesmo backend Firebase.
+
+---
+
+## Stack Técnica
+
+| Camada | Tecnologia |
+|--------|------------|
+| **Framework** | Flutter 3.41+ |
+| **Estado** | BLoC / Cubit |
+| **Navegação** | go_router (StatefulShellRoute) |
+| **DI** | get_it |
+| **Backend** | Firebase (Auth, Firestore) |
+| **UI** | ui_kit (design system compartilhado) |
+| **i18n** | yummy_log_l10n (pt, en, es) |
+
+---
+
+## Estrutura do Projeto
+
+```
+app_yummy_log_clinicians/
+├── lib/
+│   ├── app/                    # App widget, cubits globais
+│   ├── core/
+│   │   ├── auth/               # Inicialização do Firebase Auth
+│   │   ├── di/                 # Injeção de dependências (get_it)
+│   │   └── router/             # go_router, tab bar shell
+│   └── main_*.dart             # Entry points por flavor
+├── modules/
+│   ├── features/
+│   │   ├── patients/           # Lista de pacientes, código de convite
+│   │   ├── insights/           # Métricas e dashboard (placeholder)
+│   │   └── settings/           # Configurações, login/logout
+│   └── foundation/
+│       ├── auth/               # AuthRepository, LoginPage
+│       ├── persistence/        # Sembast (cache local)
+│       └── sync/               # Firestore connection (do app paciente)
+├── packages/
+│   ├── feature_contract/       # Interface YummyLogFeature
+│   └── yummy_log_l10n/         # Localizações
+└── docs/                       # Documentação
+```
+
+---
+
+## Especificações
+
+| Item | Valor |
+|------|-------|
+| **Nome do app** | YummyLog for Clinicians |
+| **Bundle ID** | `com.yummylogdiaryforclinicians.app` |
+| **Flavors** | development (`.dev`), staging (`.stg`), production |
+| **Login** | Google (Android + iOS), Apple (iOS only) |
+| **Firebase** | Mesmo projeto do app paciente |
+
+---
+
+## Fluxo Principal
+
+1. **Usuário abre o app** → vai direto para a tab bar (aba Pacientes)
+2. **Aba Pacientes (sem login)** → mostra empty state visual
+3. **Clica em "CONVIDAR PACIENTE"** → alerta pede login, direciona para Configurações
+4. **Faz login nas Configurações** → volta para Pacientes
+5. **Clica em "CONVIDAR PACIENTE"** → bottom sheet com código
+6. **Compartilha código** → paciente insere no app dele
+7. **Paciente aparece na lista** → clica em "ACOMPANHAR"
+8. **Visualiza diário** → calendário, refeições, sentimentos (read-only)
+
+---
+
+## Documentação
+
+| Documento | Descrição |
+|-----------|-----------|
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1-C14) |
+| [STATE.md](STATE.md) | Posição atual, decisões, próximos passos |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica |
+| [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore |
+
+---
+
+## Links
+
+- **App do paciente:** `/Users/pedroculque/dev-mobile/app_yummy_log`
+- **UI Kit:** `https://github.com/pedroculque/flutter_ui_kit`
+- **Firebase Console:** (configurar)

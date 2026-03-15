@@ -1,0 +1,153 @@
+import 'dart:io';
+
+import 'package:auth_foundation/src/auth_exceptions.dart';
+import 'package:auth_foundation/src/auth_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+/// Implementação do [AuthRepository] usando Firebase Auth.
+class FirebaseAuthRepository implements AuthRepository {
+  FirebaseAuthRepository({
+    firebase_auth.FirebaseAuth? firebaseAuth,
+    GoogleSignIn? googleSignIn,
+  })  : _auth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
+
+  final firebase_auth.FirebaseAuth _auth;
+  final GoogleSignIn _googleSignIn;
+
+  @override
+  Stream<AuthUser?> get authStateChanges =>
+      _auth.authStateChanges().map(_userFromFirebase);
+
+  @override
+  AuthUser? get currentUser => _userFromFirebase(_auth.currentUser);
+
+  static AuthUser? _userFromFirebase(firebase_auth.User? u) {
+    if (u == null) return null;
+    return AuthUser(
+      uid: u.uid,
+      email: u.email,
+      displayName: u.displayName,
+      photoUrl: u.photoURL,
+    );
+  }
+
+  AuthException _mapFirebaseException(firebase_auth.FirebaseAuthException e) {
+    return switch (e.code) {
+      'user-not-found' => const AuthUserNotFoundException(),
+      'wrong-password' => const AuthWrongPasswordException(),
+      'invalid-credential' => const AuthInvalidCredentialException(),
+      'email-already-in-use' => const AuthEmailAlreadyInUseException(),
+      'weak-password' => const AuthWeakPasswordException(),
+      'network-request-failed' => const AuthNetworkException(),
+      'account-exists-with-different-credential' =>
+        AuthAccountExistsException(_getExistingProvider(e)),
+      _ => AuthUnknownException(e.message ?? ''),
+    };
+  }
+
+  String _getExistingProvider(firebase_auth.FirebaseAuthException e) {
+    final message = e.message ?? '';
+    if (message.contains('google')) return 'Google';
+    if (message.contains('apple')) return 'Apple';
+    if (message.contains('password')) return 'Email';
+    return 'outro método';
+  }
+
+  @override
+  Future<AuthUser> signInWithGoogle() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        throw const AuthCancelledException();
+      }
+      final googleAuth = await googleUser.authentication;
+      final accessToken = googleAuth.accessToken;
+      final idToken = googleAuth.idToken;
+      if (accessToken == null || idToken == null) {
+        throw const AuthUnknownException(
+          'Google Sign-In não retornou token (accessToken ou idToken nulo)',
+        );
+      }
+      final credential = firebase_auth.GoogleAuthProvider.credential(
+        accessToken: accessToken,
+        idToken: idToken,
+      );
+      final userCredential = await _auth.signInWithCredential(credential);
+      final user = _userFromFirebase(userCredential.user);
+      if (user == null) {
+        throw const AuthUnknownException('No user after sign in');
+      }
+      return user;
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw _mapFirebaseException(e);
+    } on AuthException {
+      rethrow;
+    } catch (e) {
+      throw AuthUnknownException(e.toString());
+    }
+  }
+
+  @override
+  Future<AuthUser> signInWithApple() async {
+    try {
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      final oauthCredential =
+          firebase_auth.OAuthProvider('apple.com').credential(
+        idToken: appleCredential.identityToken,
+        accessToken: appleCredential.authorizationCode,
+      );
+      final userCredential = await _auth.signInWithCredential(oauthCredential);
+
+      // Apple só retorna o nome na primeira vez; atualiza no Firebase se veio.
+      if (Platform.isIOS &&
+          appleCredential.givenName != null &&
+          userCredential.user != null) {
+        final displayName =
+            '${appleCredential.givenName} ${appleCredential.familyName ?? ''}'
+                .trim();
+        if (displayName.isNotEmpty) {
+          await userCredential.user!.updateDisplayName(displayName);
+        }
+      }
+
+      final user = _userFromFirebase(userCredential.user);
+      if (user == null) {
+        throw const AuthUnknownException('No user after sign in');
+      }
+      return user;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw const AuthCancelledException();
+      }
+      throw AuthUnknownException(e.message);
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      throw _mapFirebaseException(e);
+    } on AuthException {
+      rethrow;
+    } catch (e) {
+      throw AuthUnknownException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> signOut() async {
+    await Future.wait([_auth.signOut(), _googleSignIn.signOut()]);
+  }
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    final u = _auth.currentUser;
+    if (u == null) return;
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return;
+    await u.updateDisplayName(trimmed);
+  }
+}

@@ -1,0 +1,180 @@
+---
+description: Flutter Testing Guidelines
+globs: ["**/test/**/*.dart"]
+---
+
+# Flutter Testing Guidelines
+
+## Estrutura de Testes
+
+Os testes devem espelhar a estrutura de `lib/src/`:
+
+```
+test/
+├── src/
+│   ├── cubit/
+│   │   ├── feature_cubit_test.dart
+│   │   └── feature_state_test.dart
+│   ├── model/
+│   │   └── feature_test.dart
+│   └── service/
+│       └── feature_service_test.dart
+└── helpers/
+    └── pump_app.dart
+```
+
+## Testes de Cubit
+
+```dart
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockFeatureRepository extends Mock implements FeatureRepository {}
+
+void main() {
+  late MockFeatureRepository mockRepository;
+
+  setUp(() {
+    mockRepository = MockFeatureRepository();
+  });
+
+  group('FeatureCubit', () {
+    blocTest<FeatureCubit, FeatureState>(
+      'emits [loading, success] when loadData succeeds',
+      build: () {
+        when(() => mockRepository.getAll())
+            .thenAnswer((_) async => [testFeature]);
+        return FeatureCubit(featureRepository: mockRepository);
+      },
+      act: (cubit) => cubit.loadData(),
+      expect: () => [
+        const FeatureState(status: FeatureStatus.loading),
+        FeatureState(
+          status: FeatureStatus.success,
+          data: [testFeature],
+        ),
+      ],
+    );
+
+    blocTest<FeatureCubit, FeatureState>(
+      'emits [loading, failure] when loadData fails',
+      build: () {
+        when(() => mockRepository.getAll())
+            .thenThrow(Exception('Error'));
+        return FeatureCubit(featureRepository: mockRepository);
+      },
+      act: (cubit) => cubit.loadData(),
+      expect: () => [
+        const FeatureState(status: FeatureStatus.loading),
+        isA<FeatureState>()
+            .having((s) => s.status, 'status', FeatureStatus.failure),
+      ],
+    );
+  });
+}
+```
+
+## Testes de Model
+
+```dart
+void main() {
+  group('Feature', () {
+    test('fromJson creates correct instance', () {
+      final json = {
+        'id': '1',
+        'name': 'Test',
+        'createdAt': '2024-01-01T00:00:00.000',
+      };
+
+      final feature = Feature.fromJson(json);
+
+      expect(feature.id, '1');
+      expect(feature.name, 'Test');
+      expect(feature.createdAt, DateTime(2024, 1, 1));
+    });
+
+    test('toJson creates correct map', () {
+      final feature = Feature(
+        id: '1',
+        name: 'Test',
+        createdAt: DateTime(2024, 1, 1),
+      );
+
+      final json = feature.toJson();
+
+      expect(json['id'], '1');
+      expect(json['name'], 'Test');
+    });
+
+    test('copyWith creates new instance with updated values', () {
+      const feature = Feature(id: '1', name: 'Original');
+      final updated = feature.copyWith(name: 'Updated');
+
+      expect(updated.id, '1');
+      expect(updated.name, 'Updated');
+      expect(feature.name, 'Original'); // original unchanged
+    });
+
+    test('props returns correct values for Equatable', () {
+      const feature1 = Feature(id: '1', name: 'Test');
+      const feature2 = Feature(id: '1', name: 'Test');
+      const feature3 = Feature(id: '2', name: 'Test');
+
+      expect(feature1, equals(feature2));
+      expect(feature1, isNot(equals(feature3)));
+    });
+  });
+}
+```
+
+## Testes de Service
+
+```dart
+void main() {
+  group('FeatureService', () {
+    test('calculate returns correct value', () {
+      final result = FeatureService.calculate(input: 10);
+      expect(result, 100);
+    });
+
+    test('validate throws on invalid input', () {
+      expect(
+        () => FeatureService.validate(input: -1),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+  });
+}
+```
+
+## Helpers
+
+```dart
+// test/helpers/pump_app.dart
+extension PumpApp on WidgetTester {
+  Future<void> pumpApp(Widget widget) {
+    return pumpWidget(
+      MaterialApp(
+        home: widget,
+      ),
+    );
+  }
+}
+```
+
+## Comandos
+
+```bash
+# Rodar todos os testes
+flutter test
+
+# Rodar com coverage
+flutter test --coverage
+
+# Rodar testes específicos
+flutter test test/src/cubit/feature_cubit_test.dart
+
+# Rodar em modo verbose
+flutter test --reporter expanded
+```

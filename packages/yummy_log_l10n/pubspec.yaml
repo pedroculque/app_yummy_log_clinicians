@@ -1,0 +1,21 @@
+name: yummy_log_l10n
+description: Localizações (pt-BR, en, es) do app Yummy Log.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+dev_dependencies:
+  bloc_lint: ^0.3.7
+  very_good_analysis: ^10.2.0
+
+flutter:
+  generate: true

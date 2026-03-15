@@ -1,0 +1,138 @@
+---
+description: Bloc/Cubit State Management Guidelines
+globs: ["**/*_cubit.dart", "**/*_state.dart"]
+---
+
+# Bloc/Cubit Guidelines
+
+Este projeto usa Cubit (simplificação do Bloc) para gerenciamento de estado.
+
+## Quando Usar Cubit vs Bloc
+
+- **Cubit**: Para a maioria dos casos (mais simples, menos boilerplate)
+- **Bloc**: Quando precisar de rastreabilidade de eventos ou lógica complexa de eventos
+
+## Estrutura do Cubit
+
+```dart
+import 'package:commons_dependencies/commons_dependencies.dart';
+
+class FeatureCubit extends Cubit<FeatureState> {
+  FeatureCubit({
+    required FeatureRepository featureRepository,
+  })  : _featureRepository = featureRepository,
+        super(const FeatureState());
+
+  final FeatureRepository _featureRepository;
+
+  Future<void> loadData() async {
+    emit(state.copyWith(status: FeatureStatus.loading));
+    
+    try {
+      final data = await _featureRepository.getData();
+      emit(state.copyWith(
+        status: FeatureStatus.success,
+        data: data,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: FeatureStatus.failure,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+}
+```
+
+## Estrutura do State
+
+```dart
+import 'package:equatable/equatable.dart';
+
+enum FeatureStatus { initial, loading, success, failure }
+
+class FeatureState extends Equatable {
+  const FeatureState({
+    this.status = FeatureStatus.initial,
+    this.data = const [],
+    this.errorMessage,
+  });
+
+  final FeatureStatus status;
+  final List<Data> data;
+  final String? errorMessage;
+
+  FeatureState copyWith({
+    FeatureStatus? status,
+    List<Data>? data,
+    String? errorMessage,
+  }) {
+    return FeatureState(
+      status: status ?? this.status,
+      data: data ?? this.data,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
+  }
+
+  @override
+  List<Object?> get props => [status, data, errorMessage];
+}
+```
+
+## Injeção de Dependência
+
+Cubits são registrados no **getIt** (em `lib/core/di/injection.dart` ou init da feature/foundation):
+
+```dart
+getIt.registerLazySingleton<FeatureCubit>(
+  () => FeatureCubit(featureRepository: getIt<FeatureRepository>()),
+);
+```
+
+## Uso nas Pages
+
+**Cubit é provido na rota, não passado por construtor.** Ver rule **bloc-provider-at-route.mdc**.
+
+```dart
+// Na definição da rota (ex.: getRoutes(getIt)) — provendo o Cubit
+BlocProvider.value(
+  value: getIt<FeatureCubit>(),
+  child: const FeaturePage(),
+)
+
+// Consumindo o estado
+BlocBuilder<FeatureCubit, FeatureState>(
+  builder: (context, state) {
+    return switch (state.status) {
+      FeatureStatus.initial => const SizedBox.shrink(),
+      FeatureStatus.loading => const CircularProgressIndicator(),
+      FeatureStatus.success => FeatureContent(data: state.data),
+      FeatureStatus.failure => ErrorWidget(message: state.errorMessage),
+    };
+  },
+)
+
+// Reagindo a mudanças
+BlocListener<FeatureCubit, FeatureState>(
+  listenWhen: (previous, current) => 
+    previous.status != current.status,
+  listener: (context, state) {
+    if (state.status == FeatureStatus.failure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(state.errorMessage ?? 'Erro')),
+      );
+    }
+  },
+  child: const FeatureContent(),
+)
+```
+
+## Boas Práticas
+
+1. **State imutável**: Sempre use `copyWith` para criar novos estados
+2. **Equatable**: Sempre estenda `Equatable` nos states
+3. **Status enum**: Use enum para representar estados de loading/success/failure
+4. **Separação**: Cubit não deve conhecer widgets, apenas emitir estados
+5. **Regras de negócio e dados no Cubit**: Repository/DataSource são injetados **só no Cubit**. A Page é “dumb”: não recebe repositório; só consome estado (`BlocBuilder`) e chama métodos do Cubit (`context.read<Cubit>().save()`, `.load()`, etc.).
+6. **Inicialização no construtor**: Quando o Cubit é dono da lista/dados da tela, disparar o carregamento no construtor (`unawaited(load())`) para que, ao ser criado (ex.: singleton na primeira vez que a rota é aberta), os dados já comecem a carregar. A Page não precisa chamar `load()` no `initState`. Estado inicial pode ser `loading: true` para não exibir “vazio” antes do loading. Manter `load()` público para refresh manual (ex.: pull-to-refresh ou após voltar de outra tela).
+7. **Testes**: Cubits devem ser facilmente testáveis com mocks dos repositories

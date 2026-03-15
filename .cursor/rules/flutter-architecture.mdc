@@ -1,0 +1,103 @@
+---
+description: Flutter Clean Architecture Guidelines (Yummy Log — modules/features, getIt, go_router)
+globs: ["**/*.dart"]
+---
+
+# Flutter Clean Architecture
+
+Este projeto segue uma arquitetura Clean Architecture light. Navegação com **go_router**; DI com **getIt**. Features e foundation em `modules/`.
+
+## Estrutura do Projeto
+
+```
+app_yummy_log/
+├── lib/                      # App principal
+│   ├── main_*.dart           # Entry points (dev, staging, production)
+│   ├── bootstrap.dart
+│   ├── app/
+│   ├── core/                 # Router, DI, auth init
+│   │   ├── di/injection.dart
+│   │   ├── router/app_router.dart
+│   │   └── auth/init_auth.dart
+│   └── ...
+├── modules/
+│   ├── features/             # Features por aba/fluxo
+│   │   ├── diary/            # Diário (meal entries)
+│   │   ├── conectar/         # Conectar com nutricionista
+│   │   └── settings/         # Configurações
+│   └── foundation/          # Infra compartilhada
+│       ├── auth/             # auth_foundation
+│       ├── persistence/      # persistence_foundation (Sembast)
+│       └── sync/             # sync_foundation (Firestore)
+└── packages/
+    ├── yummy_log_l10n/       # i18n (pt, es, en)
+    ├── feature_contract/     # Contrato de feature (getRoutes)
+    └── ui_kit/               # Design system (externo)
+```
+
+## Estrutura de uma Feature
+
+Cada feature em `modules/features/<name>/` segue:
+
+```
+<name>/
+├── lib/
+│   ├── <name>_feature.dart   # Export + getRoutes(GetIt getIt, {rootNavigatorKey})
+│   └── src/
+│       ├── <name>_feature.dart  # Classe que implementa getRoutes()
+│       ├── data/                # Repositories, datasources
+│       ├── presentation/
+│       │   ├── cubit/
+│       │   ├── pages/
+│       │   └── widgets/
+│       └── (domain/ se necessário)
+├── test/
+├── pubspec.yaml
+└── README.md
+```
+
+- **Rotas:** a feature expõe `List<RouteBase> getRoutes(GetIt getIt, {GlobalKey<NavigatorState>? rootNavigatorKey})` e é registrada no `app_router.dart` em um `StatefulShellBranch`.
+- **Cubit na rota:** cada `GoRoute` usa `BlocProvider.value(value: getIt<Cubit>(), child: const Page())`. Ver **bloc-provider-at-route.mdc** e **navigation.mdc**.
+
+## Estrutura de Foundation
+
+Módulos em `modules/foundation/` (auth, persistence, sync) expõem pacotes (auth_foundation, persistence_foundation, sync_foundation) com:
+
+- Interfaces (ex.: AuthRepository, MealEntryLocalDataSource)
+- Implementações (Firebase, Sembast)
+- Cubits e widgets de UI (AuthFlowCubit, SyncCubit, SyncIndicator)
+- Inicialização registrada no getIt (ex.: init_auth.dart, persistence_init, sync_init)
+
+## Convenções de Nomenclatura
+
+### Arquivos
+- Páginas: `*_page.dart`
+- Widgets: nome descritivo sem sufixo
+- Cubits: `*_cubit.dart`
+- States: `*_state.dart` (ou auth_state.dart com sealed class)
+- Repositories: `*_repository.dart`
+- Datasources: `*_local_datasource.dart`, `*_remote_*.dart`
+
+### Classes
+- Páginas: `*Page`
+- Cubits: `*Cubit`
+- States: subclasses de um sealed base ou `*State`
+- Repositories (interface): `*Repository`
+- Repositories (impl): em data layer da feature ou foundation
+
+## Internacionalização (l10n)
+
+Textos de UI via pacote **yummy_log_l10n** (pt, es, en). Ver **i18n-modules.mdc**.
+
+## Dependências Entre Camadas
+
+```
+presentation → domain (se houver) → data
+     ↓
+   cubit / BlocProvider na rota
+     ↓
+   state, getIt<Repository>
+```
+
+- `presentation` não recebe Repository no construtor da Page; Cubit é provido na rota e obtém o Repository via getIt.
+- Data implementa interfaces definidas na própria feature ou em foundation.

@@ -1,0 +1,133 @@
+---
+description: Flutter Modular Guidelines (referência — este projeto usa go_router + getIt)
+globs: ["**/*_module.dart"]
+---
+
+# Flutter Modular Guidelines (referência)
+
+**Este projeto (Yummy Log) não usa Flutter Modular;** usa **go_router** + **getIt**. Esta rule é mantida como referência caso outro projeto use Modular. Para navegação no Yummy Log, ver **navigation.mdc**.
+
+---
+
+## Conteúdo original (projetos com Modular)
+
+Este projeto usa flutter_modular para modularização, DI e navegação.
+
+## Estrutura do Módulo
+
+```dart
+import 'package:commons_dependencies/commons_dependencies.dart';
+
+class FeatureModule extends Module {
+  @override
+  void binds(Injector i) {
+    // Repositories
+    i
+      ..addLazySingleton<FeatureRepository>(SembastFeatureRepository.new)
+      
+      // Cubits
+      ..addLazySingleton<FeatureCubit>(
+        () => FeatureCubit(
+          featureRepository: i.get<FeatureRepository>(),
+        ),
+      );
+  }
+
+  @override
+  void routes(RouteManager r) {
+    r
+      ..child(
+        '/',
+        child: (context) => BlocProvider.value(
+          value: Modular.get<FeatureCubit>(),
+          child: const FeatureListPage(),
+        ),
+      )
+      ..child(
+        '/detail/:id',
+        child: (context) => BlocProvider.value(
+          value: Modular.get<FeatureCubit>(),
+          child: const FeatureDetailPage(),
+        ),
+      );
+  }
+}
+```
+
+## Registro no AppModule
+
+```dart
+class AppModule extends Module {
+  @override
+  List<Module> get imports => [
+    CoreModule(),
+  ];
+
+  @override
+  void routes(RouteManager r) {
+    r
+      ..module('/growth', module: GrowthStandardsModule())
+      ..module('/profile', module: ProfileModule());
+  }
+}
+```
+
+## Navegação
+
+**Nas páginas e widgets**: usar sempre o **helper de navegação do módulo** (ex: `GrowthNavigation`). Não usar rotas relativas (`./detail/...`) — geram path duplicado e "Route not found". Ver rule **navigation.mdc**.
+
+```dart
+// ✅ Nas telas do módulo — usar o helper
+GrowthNavigation.goToChildDetail(child.id);
+Modular.to.pushNamed(GrowthNavigation.charts(childId), forRoot: true);
+
+// Rotas absolutas (quando não houver helper)
+Modular.to.pushNamed('/growth/detail/123');
+Modular.to.pushNamed('/growth/detail/123', arguments: myData);
+
+// Obter parâmetros da rota
+final id = Modular.args.params['id'];
+
+// Voltar
+Modular.to.pop();
+
+// Substituir rota
+Modular.to.pushReplacementNamed('/home');
+```
+
+## Injeção de Dependência
+
+```dart
+// Obter instância
+final cubit = Modular.get<FeatureCubit>();
+
+// Tipos de registro
+i.addSingleton<T>(...)        // Instância única, criada imediatamente
+i.addLazySingleton<T>(...)    // Instância única, criada sob demanda
+i.add<T>(...)                 // Nova instância a cada get
+```
+
+## MultiBlocProvider em Rotas
+
+Quando uma página precisa de múltiplos Cubits:
+
+```dart
+..child(
+  '/detail/:id',
+  child: (context) => MultiBlocProvider(
+    providers: [
+      BlocProvider.value(value: Modular.get<ChildCubit>()),
+      BlocProvider.value(value: Modular.get<GrowthCubit>()),
+    ],
+    child: const ChildDetailPage(),
+  ),
+)
+```
+
+## Boas Práticas
+
+1. **Um módulo por feature**: Cada feature tem seu próprio módulo
+2. **Lazy singletons**: Preferir `addLazySingleton` para melhor performance
+3. **Imports explícitos**: Usar `imports` para compartilhar dependências entre módulos
+4. **Rotas tipadas**: Usar parâmetros nomeados nas rotas (`:id`, `:childId`)
+5. **Navegação via helper**: Em páginas/widgets, usar a classe de navegação do módulo (ex: `GrowthNavigation`); nunca `pushNamed` com rota relativa (`./...`)

@@ -1,0 +1,23 @@
+private_lane :push_notification do |options|
+    sh('pwd')
+    notification(
+        title: 'Fastlane',
+        subtitle: options[:subtitle],
+        message: options[:message],
+        content_image: ENV['CONTENT_IMAGE'],
+    )
+end
+
+lane :firebase_distribution_notification do
+    push_notification(
+        subtitle: 'Firebase Distribution',
+        message: "Successfully distributed #{ENV['APP_NAME']} #{platform_name}"
+    )
+end
+
+lane :upload_store_notification do
+    push_notification(
+        subtitle: platform_name=='ios'? 'App Store Connect': 'Google Play Store',
+        message: "Successfully uploaded #{ENV['APP_NAME']}"
+    )
+end

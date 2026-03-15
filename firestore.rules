@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Documento do usuário (para aparecer no console e guardar perfil)
+    match /users/{userId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+    // Paciente lê/escreve seus próprios dados (subcoleções)
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+    // Clínico lê refeições de pacientes vinculados
+    match /users/{patientId}/meals/{mealId} {
+      allow read: if request.auth != null
+                  && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
+    }
+
+    // Clínico lê conexões de pacientes vinculados
+    match /users/{patientId}/connections/{connectionId} {
+      allow read: if request.auth != null
+                  && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
+    }
+
+    // Paciente adiciona-se à lista do clínico (create) ou remove-se (delete).
+    // Precisa vir ANTES da regra genérica clinicians/{cid}/** para o paciente
+    // poder escrever em clinicians/{cid}/patients/{patientId}.
+    match /clinicians/{clinicianId}/patients/{patientId} {
+      allow read: if request.auth != null
+                  && request.auth.uid == clinicianId;
+      allow create, update: if request.auth != null
+                            && request.auth.uid == patientId;
+      allow delete: if request.auth != null
+                   && request.auth.uid == patientId;
+    }
+
+    // Clínico gerencia sua lista de pacientes (e demais subcoleções)
+    match /clinicians/{clinicianId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == clinicianId;
+    }
+
+    // Códigos de vínculo: id do doc = código que o paciente digita.
+    // Leitura: qualquer usuário autenticado (paciente resolve código).
+    // Escrita: apenas o clínico dono do código.
+    match /clinician_codes/{code} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+          && request.resource.data.clinicianUid == request.auth.uid;
+      allow update, delete: if request.auth != null
+          && resource.data.clinicianUid == request.auth.uid;
+    }
+
+  }
+}

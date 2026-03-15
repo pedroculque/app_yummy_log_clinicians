@@ -1,0 +1,51 @@
+name: app_yummy_log
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # SSH key para clonar dependência privada (flutter_ui_kit)
+      - name: Setup SSH for private repo
+        uses: webfactory/ssh-agent@v0.10.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Verify SSH key loaded
+        run: ssh-add -l
+
+      # pubspec usa URL HTTPS; redirecionar para SSH para usar a chave carregada
+      - name: Configure Git to use SSH for GitHub
+        run: |
+          git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.41.x"
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test

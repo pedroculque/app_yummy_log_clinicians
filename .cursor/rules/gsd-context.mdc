@@ -1,0 +1,30 @@
+---
+description: GSD-inspired context — use PROJECT, REQUIREMENTS, STATE and ROADMAP when planning or implementing
+globs: ["**/*.dart", "**/README.md", "**/docs/**"]
+alwaysApply: true
+---
+
+# Contexto GSD-inspired (Planejamento e Implementação)
+
+Este projeto usa uma estrutura inspirada no [Get Shit Done](https://github.com/gsd-build/get-shit-done) para manter contexto consistente e evitar degradação de qualidade em tarefas grandes.
+
+## Arquivos de contexto (sempre considerar)
+
+Ao **planejar** ou **implementar** uma feature, bugfix ou refatoração relevante ao produto:
+
+1. **PROJECT.md** — Visão do projeto, objetivos, stack, links para docs.
+2. **REQUIREMENTS.md** — Escopo v1 (entregue), v2 (próximo), fora de escopo. Rastreabilidade por requisito (R1, R2, … R13).
+3. **STATE.md** — Posição atual, decisões recentes, bloqueios, próximos passos.
+4. **docs/ROADMAP.md** — Fases, prioridades, status por feature.
+
+## Fluxo recomendado
+
+- **Antes de implementar:** Verificar se a tarefa está alinhada a REQUIREMENTS e ROADMAP; checar STATE.md para bloqueios e decisões.
+- **Ao concluir uma tarefa:** Atualizar STATE.md (posição atual, decisões se houver) e, se aplicável, SUMMARY em `.planning/phase-N/` ou `.planning/quick/`.
+- **Para fases maiores:** Usar `.planning/phase-N/` (CONTEXT.md, RESEARCH.md, N-PLAN.md, SUMMARY.md) conforme descrito em `.planning/README.md`.
+
+## Regras
+
+- Não inventar requisitos fora de REQUIREMENTS.md; se algo novo for necessário, sugerir atualização do documento.
+- Respeitar decisões registradas em STATE.md e em docs (MONETIZATION, AUTH, SYNC, etc.).
+- Commits atômicos por tarefa lógica; mensagens no padrão Conventional Commits (feat:, fix:, docs:, refactor:, etc.).
