@@ -139,7 +139,15 @@ Download provisioning profiles
 [bundle exec] fastlane certificates
 ```
 
-Get certificates and provisioning profiles from gtihub run: fastlane certificates
+Download certificates and profiles from repo (readonly). Run from ios/: fastlane certificates
+
+### match_init
+
+```sh
+[bundle exec] fastlane match_init
+```
+
+Create and push certs/profiles for clinicians app (first-time setup)
 
 ----
 

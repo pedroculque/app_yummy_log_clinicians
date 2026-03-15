@@ -1,4 +1,7 @@
-# The bundle identifier of your app
-app_identifier("com.yummylog.app")
-team_id("YGC8DVQ24H") # Developer Portal Team ID
-apple_id "gonzales4r@hotmail.com" # Your Apple email address
+# Appfile – iOS – YummyLog for Clinicians
+# Bundle ID de produção; flavors .dev e .stg em Matchfile.
+# Valores sensíveis podem ser sobrescritos por variáveis de ambiente.
+
+app_identifier(ENV['APP_IDENTIFIER'] || "com.yummylogdiaryforclinicians.app")
+team_id(ENV['FASTLANE_TEAM_ID'] || "YGC8DVQ24H")
+apple_id(ENV['FASTLANE_APPLE_ID'] || "gonzales4r@hotmail.com")

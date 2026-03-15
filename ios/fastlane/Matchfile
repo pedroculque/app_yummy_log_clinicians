@@ -1,11 +1,14 @@
+# Matchfile – iOS – YummyLog for Clinicians
+# Certificados e provisioning profiles (match). Bundle IDs: prod, .dev, .stg (PROJECT.md / STATE.md).
+
 git_url("git@github.com-pessoal:pedroculque/yummy_log_app_certificates_and_profiles.git")
-
 storage_mode("git")
+type("development") # appstore, adhoc, enterprise ou development
 
-type("development") # The default type, can be: appstore, adhoc, enterprise or development
-
-app_identifier(['com.yummylogdiary.app', 'com.yummylogdiary.app.dev', 'com.yummylogdiary.app.stg'])
-username("gonzales4r@hotmail.com") # Your Apple Developer Portal username
-team_id("YGC8DVQ24H")
-
-# The docs are available on https://docs.fastlane.tools/actions/match
+app_identifier([
+  "com.yummylogdiaryforclinicians.app",
+  "com.yummylogdiaryforclinicians.app.dev",
+  "com.yummylogdiaryforclinicians.app.stg"
+])
+username(ENV['MATCH_USERNAME'] || "gonzales4r@hotmail.com")
+team_id(ENV['FASTLANE_TEAM_ID'] || "YGC8DVQ24H")

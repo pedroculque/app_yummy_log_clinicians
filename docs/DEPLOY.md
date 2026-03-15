@@ -274,17 +274,103 @@ O projeto **reaproveita** o mesmo repositório de certificados para vários apps
 - **Repositório:** [yummy_log_app_certificates_and_profiles](https://github.com/pedroculque/yummy_log_app_certificates_and_profiles)
 - **Clone via SSH:** `git@github.com-pessoal:pedroculque/yummy_log_app_certificates_and_profiles.git`
 
-O Match guarda **certificados** (por tipo: development, distribution) e **provisioning profiles** (por bundle ID). Ao rodar `match` com os bundle IDs do Yummy Log (`com.yummylogdiary.app`, `.dev`, `.stg`), ele **só adiciona** os novos perfis; **não apaga** os que já existem para outros apps. Pode usar o mesmo repo sem risco para os outros projetos.
+O Match guarda **certificados** (por tipo: development, distribution) e **provisioning profiles** (por bundle ID). Ao rodar `match` com os bundle IDs do app, ele **só adiciona** os novos perfis; **não apaga** os que já existem para outros apps. Pode usar o mesmo repo para vários projetos (ex.: app paciente e app clínicos).
 
 **Importante:** não rode `fastlane match nuke` a menos que queira revogar **todos** os certificados do repositório (afeta outros apps que usam o mesmo repo). Para renovar só um certificado expirado, prefira as etapas da seção [Renovar Certificados Expirados](#renovar-certificados-expirados).
 
-### App Identifiers
+#### Estrutura atual do repo (análise)
 
-| Bundle ID | Ambiente | Tipo |
-|-----------|----------|------|
-| `com.yummylogdiary.app` | Produção | App Store |
-| `com.yummylogdiary.app.dev` | Desenvolvimento | Development |
-| `com.yummylogdiary.app.stg` | Staging | Ad Hoc |
+O repositório [yummy_log_app_certificates_and_profiles](https://github.com/pedroculque/yummy_log_app_certificates_and_profiles) hoje contém:
+
+| Pasta | Conteúdo |
+|-------|----------|
+| `certs/development/` | Um certificado de desenvolvimento (`.cer` + `.p12`) — **compartilhado** por todos os apps do time |
+| `certs/distribution/` | Um certificado de distribuição — **compartilhado** por todos os apps |
+| `profiles/development/` | Profiles do app paciente (ex.: `Development_com.yummylogdiary.app.dev.mobileprovision`) |
+| `profiles/adhoc/` | Profiles do app paciente (ex.: `AdHoc_com.yummylogdiary.app.stg.mobileprovision`) |
+| `profiles/appstore/` | Profiles do app paciente (ex.: `AppStore_com.yummylogdiary.app.mobileprovision`, etc.) |
+
+**Uso pelo app clínicos sem impacto nos outros apps:**
+
+- **Certificados:** O Match **reutiliza** o mesmo certificado de development e o mesmo de distribution. Não são criados certificados novos; os existentes continuam a ser usados por todos os projetos.
+- **Provisioning profiles:** O Match **só adiciona** novos arquivos `.mobileprovision` para os bundle IDs do app clínicos (`com.yummylogdiaryforclinicians.app`, `.dev`, `.stg`). Os profiles já existentes (app paciente) **não são alterados nem removidos**.
+- **Conclusão:** Usar este repo para o YummyLog for Clinicians é seguro: apenas novos profiles são criados e commitados; certificados e profiles dos outros apps permanecem intactos.
+
+### App Identifiers (YummyLog for Clinicians)
+
+| Bundle ID | Ambiente | Tipo Match |
+|-----------|----------|------------|
+| `com.yummylogdiaryforclinicians.app` | Produção | App Store |
+| `com.yummylogdiaryforclinicians.app.dev` | Desenvolvimento | Development |
+| `com.yummylogdiaryforclinicians.app.stg` | Staging | Ad Hoc |
+
+### Primeira vez: criar certificados e profiles do app clínicos
+
+Se o repositório de certificados ainda **não** tem perfis para os bundle IDs acima, faça uma vez:
+
+**1. Registrar os App IDs no Apple Developer Portal**
+
+1. Acesse [Apple Developer → Identifiers](https://developer.apple.com/account/resources/identifiers/list).
+2. Crie três **App IDs** (tipo “App”), um para cada bundle ID:
+   - `com.yummylogdiaryforclinicians.app`
+   - `com.yummylogdiaryforclinicians.app.dev`
+   - `com.yummylogdiaryforclinicians.app.stg`
+3. Em cada um, ative as capabilities que o app usa (ex.: **Sign in with Apple**, **Push Notifications** se for usar).
+
+**2. Variáveis de ambiente**
+
+Na raiz do projeto, confira (ou crie) `.env` com:
+
+- `MATCH_PASSWORD` – senha que criptografa os certificados no repositório Git (quem for rodar match precisa saber).
+- `KEYCHAIN_NAME` e `KEYCHAIN_PASSWORD` – keychain local (ex.: `Temp.keychain`).
+- Opcional: `MATCH_USERNAME` e `FASTLANE_TEAM_ID` (Apple ID e Team ID); senão, o Matchfile usa os valores padrão.
+
+**3. Rodar Match pela primeira vez (criar e enviar ao repo)**
+
+A partir da pasta **ios** do projeto (para usar o `Matchfile` do app clínicos).
+
+**Opção A – um comando (recomendado):**
+
+```bash
+cd ios
+bundle exec fastlane match_init
+```
+
+A lane `match_init` (em `fastlane/GeneralFastfile`) roda `match` para os três tipos (development, adhoc, appstore) e envia os certificados e profiles ao repositório.
+
+**Opção B – por tipo:**
+
+```bash
+cd ios
+
+# Gera certificado de desenvolvimento + 3 provisioning profiles (.app, .dev, .stg)
+bundle exec fastlane match development
+
+# Gera certificado de distribuição Ad Hoc + 3 profiles
+bundle exec fastlane match adhoc
+
+# Gera certificado de distribuição App Store + 3 profiles
+bundle exec fastlane match appstore
+```
+
+Em cada comando o Match pode pedir a **senha do repositório** (se não estiver em `MATCH_PASSWORD`) e **2FA da Apple**. No primeiro run ele **cria** os certificados e os profiles e **envia** ao repositório `yummy_log_app_certificates_and_profiles`.
+
+**4. Depois disso (uso normal)**
+
+Para só **baixar** certificados já existentes (por exemplo antes de buildar):
+
+```bash
+cd ios
+bundle exec fastlane certificates
+```
+
+Ou, por tipo:
+
+```bash
+bundle exec fastlane match development --readonly
+bundle exec fastlane match adhoc --readonly
+bundle exec fastlane match appstore --readonly
+```
 
 ### Comandos Match
 

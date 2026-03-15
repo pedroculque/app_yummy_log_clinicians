@@ -1,4 +1,4 @@
-# Appfile - Android - Yummy Log
+# Appfile – Android – YummyLog for Clinicians
 # Usado pelo supply (Google Play). Valores podem ser sobrescritos por .env
 
-package_name ENV['SUPPLY_PACKAGE_NAME'] || 'com.yummylogdiary.app'
+package_name(ENV['SUPPLY_PACKAGE_NAME'] || 'com.yummylogdiaryforclinicians.app')

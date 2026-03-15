@@ -150,7 +150,7 @@ lane :upload_store do
         project_root = File.expand_path(Dir.pwd.end_with?('fastlane') ? '../..' : '..', Dir.pwd)
         ipa_path = File.join(project_root, 'build/Runner.ipa')
         upload_to_testflight(
-            app_identifier: 'com.yummylogdiary.app',
+            app_identifier: 'com.yummylogdiaryforclinicians.app',
             notify_external_testers: true,
             ipa: ipa_path,
             skip_waiting_for_build_processing: true,
@@ -167,7 +167,7 @@ lane :upload_store do
         end
         supply_params = {
             aab: aab_path,
-            package_name: 'com.yummylogdiary.app',
+            package_name: 'com.yummylogdiaryforclinicians.app',
             track: ENV['SUPPLY_TRACK'] || 'internal',
             skip_upload_metadata: true,
             skip_upload_images: true,
@@ -188,7 +188,7 @@ end
 desc "Download provisioning profiles"
 lane :rematch do
     sync_code_signing(
-        app_identifier: flavor == 'prod' ? 'com.yummylogdiary.app' : 'com.yummylogdiary.app.stg',
+        app_identifier: flavor == 'prod' ? 'com.yummylogdiaryforclinicians.app' : 'com.yummylogdiaryforclinicians.app.stg',
         type: flavor == 'prod' ? 'appstore' : 'adhoc',
         force_for_new_devices: true,
         git_branch: 'master',
@@ -197,24 +197,54 @@ lane :rematch do
     )
 end
 
-desc "Get certificates and provisioning profiles from gtihub run: fastlane certificates"
+desc "Download certificates and profiles from repo (readonly). Run from ios/: fastlane certificates"
   lane :certificates do
     sync_code_signing(
         type: "development",
-        app_identifier: 'com.yummylogdiary.app.dev',
+        app_identifier: 'com.yummylogdiaryforclinicians.app.dev',
         force_for_new_devices: true,
         readonly: true
     )
     sync_code_signing(
         type: "adhoc",
-        app_identifier: 'com.yummylogdiary.app.stg',
+        app_identifier: 'com.yummylogdiaryforclinicians.app.stg',
         force_for_new_devices: true,
         readonly: true
     )
     sync_code_signing(
         type: "appstore",
-        app_identifier: 'com.yummylogdiary.app',
+        app_identifier: 'com.yummylogdiaryforclinicians.app',
         force_for_new_devices: true,
         readonly: true
     )
-end
+  end
+
+  # Primeira vez: criar e enviar certificados/profiles ao repo (Matchfile app_identifiers).
+  # Pré-requisito: registrar os 3 App IDs no Apple Developer Portal (ver docs/DEPLOY.md).
+  # Uso: cd ios && fastlane match_init
+  desc "Create and push certs/profiles for clinicians app (first-time setup)"
+  lane :match_init do
+    sync_code_signing(
+        type: "development",
+        force_for_new_devices: true,
+        readonly: false,
+        git_branch: "master",
+        keychain_name: ENV['KEYCHAIN_NAME'],
+        keychain_password: ENV['KEYCHAIN_PASSWORD']
+    )
+    sync_code_signing(
+        type: "adhoc",
+        force_for_new_devices: true,
+        readonly: false,
+        git_branch: "master",
+        keychain_name: ENV['KEYCHAIN_NAME'],
+        keychain_password: ENV['KEYCHAIN_PASSWORD']
+    )
+    sync_code_signing(
+        type: "appstore",
+        readonly: false,
+        git_branch: "master",
+        keychain_name: ENV['KEYCHAIN_NAME'],
+        keychain_password: ENV['KEYCHAIN_PASSWORD']
+    )
+  end
