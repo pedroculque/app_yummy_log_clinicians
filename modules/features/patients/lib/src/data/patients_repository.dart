@@ -6,6 +6,7 @@ abstract class PatientsRepository {
   Stream<List<Patient>> watchPatients(String clinicianId);
   Future<String?> getInviteCode(String clinicianId);
   Future<String> generateInviteCode(String clinicianId, String? displayName);
+  Future<void> removePatient(String clinicianId, String patientId);
 }
 
 class FirestorePatientsRepository implements PatientsRepository {
@@ -25,16 +26,21 @@ class FirestorePatientsRepository implements PatientsRepository {
     final patients = <Patient>[];
     for (final doc in snapshot.docs) {
       final patientId = doc.id;
+      final linkData = doc.data();
+
       final patientDoc =
           await _firestore.collection('users').doc(patientId).get();
-      if (patientDoc.exists) {
-        patients.add(
-          Patient.fromFirestore(
-            {...patientDoc.data()!, ...doc.data()},
-            patientId,
-          ),
-        );
-      }
+
+      final userData = patientDoc.exists
+          ? patientDoc.data()!
+          : <String, dynamic>{};
+
+      patients.add(
+        Patient.fromFirestore(
+          {...userData, ...linkData},
+          patientId,
+        ),
+      );
     }
     return patients;
   }
@@ -50,16 +56,21 @@ class FirestorePatientsRepository implements PatientsRepository {
       final patients = <Patient>[];
       for (final doc in snapshot.docs) {
         final patientId = doc.id;
+        final linkData = doc.data();
+
         final patientDoc =
             await _firestore.collection('users').doc(patientId).get();
-        if (patientDoc.exists) {
-          patients.add(
-            Patient.fromFirestore(
-              {...patientDoc.data()!, ...doc.data()},
-              patientId,
-            ),
-          );
-        }
+
+        final userData = patientDoc.exists
+          ? patientDoc.data()!
+          : <String, dynamic>{};
+
+        patients.add(
+          Patient.fromFirestore(
+            {...userData, ...linkData},
+            patientId,
+          ),
+        );
       }
       return patients;
     });
@@ -105,5 +116,15 @@ class FirestorePatientsRepository implements PatientsRepository {
       buffer.write(chars[(random + i * 7) % chars.length]);
     }
     return buffer.toString();
+  }
+
+  @override
+  Future<void> removePatient(String clinicianId, String patientId) async {
+    await _firestore
+        .collection('clinicians')
+        .doc(clinicianId)
+        .collection('patients')
+        .doc(patientId)
+        .delete();
   }
 }

@@ -23,7 +23,7 @@ class PatientsCubit extends Cubit<PatientsState> {
       emit(
         state.copyWith(
           status: PatientsStatus.error,
-          error: 'Not logged in',
+          error: 'not_logged_in',
         ),
       );
       return;
@@ -74,6 +74,17 @@ class PatientsCubit extends Cubit<PatientsState> {
         user.displayName,
       );
       emit(state.copyWith(inviteCode: code));
+    } on Object catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> removePatient(String patientId) async {
+    final user = _authRepository.currentUser;
+    if (user == null) return;
+
+    try {
+      await _repository.removePatient(user.uid, patientId);
     } on Object catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

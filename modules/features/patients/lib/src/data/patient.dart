@@ -11,10 +11,15 @@ class Patient extends Equatable {
   });
 
   factory Patient.fromFirestore(Map<String, dynamic> data, String id) {
+    final name = data['name'] as String? ??
+        data['displayName'] as String? ??
+        data['patientName'] as String? ??
+        '';
+
     return Patient(
       id: id,
-      name: data['name'] as String? ?? 'Paciente',
-      photoUrl: data['photoUrl'] as String?,
+      name: name,
+      photoUrl: data['photoUrl'] as String? ?? data['photoURL'] as String?,
       age: data['age'] as int?,
       linkedAt: data['linkedAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(

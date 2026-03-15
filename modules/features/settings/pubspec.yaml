@@ -10,6 +10,7 @@ dependencies:
   auth_foundation:
     path: ../../../modules/foundation/auth
   bloc: ^9.2.0
+  cloud_firestore: ^5.6.5
   feature_contract:
     path: ../../../packages/feature_contract
   flutter:

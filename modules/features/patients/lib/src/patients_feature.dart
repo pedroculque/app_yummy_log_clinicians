@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:patients_feature/src/cubit/patient_diary_cubit.dart';
 import 'package:patients_feature/src/cubit/patients_cubit.dart';
+import 'package:patients_feature/src/data/patient_meals_repository.dart';
 import 'package:patients_feature/src/data/patients_repository.dart';
+import 'package:patients_feature/src/pages/patient_diary_page.dart';
 import 'package:patients_feature/src/pages/patients_page.dart';
 
 class PatientsFeature implements YummyLogFeature {
@@ -18,10 +21,18 @@ class PatientsFeature implements YummyLogFeature {
       ..registerLazySingleton<PatientsRepository>(
         FirestorePatientsRepository.new,
       )
+      ..registerLazySingleton<PatientMealsRepository>(
+        FirestorePatientMealsRepository.new,
+      )
       ..registerFactory<PatientsCubit>(
         () => PatientsCubit(
           repository: getIt<PatientsRepository>(),
           authRepository: getIt<AuthRepository>(),
+        ),
+      )
+      ..registerFactory<PatientDiaryCubit>(
+        () => PatientDiaryCubit(
+          repository: getIt<PatientMealsRepository>(),
         ),
       );
   }
@@ -45,6 +56,29 @@ class PatientsFeature implements YummyLogFeature {
             child: const PatientsPage(),
           ),
         ),
+      ),
+    ];
+  }
+
+  List<RouteBase> getFullScreenRoutes(
+    GetIt getIt, {
+    GlobalKey<NavigatorState>? rootNavigatorKey,
+  }) {
+    return [
+      GoRoute(
+        path: '/patients/:patientId/diary',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final patientId = state.pathParameters['patientId']!;
+          final patientName = state.uri.queryParameters['name'];
+          return BlocProvider(
+            create: (_) => getIt<PatientDiaryCubit>(),
+            child: PatientDiaryPage(
+              patientId: patientId,
+              patientName: patientName,
+            ),
+          );
+        },
       ),
     ];
   }

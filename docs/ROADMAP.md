@@ -14,9 +14,9 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 ## Fases de Desenvolvimento
 
-### Fase 1: MVP (Pacientes + Convite) 🎯
+### Fase 1: MVP (Pacientes + Convite) ✅
 
-**Status:** Em desenvolvimento
+**Status:** Concluído
 
 **Objetivo:** App funcional com código de convite e lista de pacientes.
 
@@ -26,7 +26,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Login opcional | Firebase Auth (Google + Apple no iOS); login solicitado ao convidar | ✅ |
 | Código de convite | Gerar código de 6 caracteres, salvar em `clinician_codes/{code}` | ✅ |
 | Compartilhar código | Bottom sheet com opções: SMS, WhatsApp, E-mail, Copiar | ✅ |
-| Lista de pacientes | Cards com avatar, nome, idade, data de vínculo | ✅ |
+| Lista de pacientes | Cards com avatar/iniciais, nome, data de vínculo | ✅ |
 | Estado vazio | Empty state visual com ícone, descrição e feature chips | ✅ |
 | Alerta de login | Ao convidar sem login, mostra alerta e direciona para Configurações | ✅ |
 | Configurações | Idioma, aparência, sobre, suporte, login/logout | ✅ |
@@ -40,26 +40,59 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 - [x] Empty state visual na aba Pacientes
 - [x] Alerta de login ao convidar sem estar logado
 - [x] Configurar Firebase (novo app) → ver [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md)
-- [ ] Testar fluxo completo
+- [x] Testar fluxo completo
 
 ---
 
-### Fase 2: Visualizar Diário do Paciente 📖
+### Fase 2: Visualizar Diário do Paciente 📖 ✅
 
-**Status:** Planejado
+**Status:** Concluído
 
 **Objetivo:** Clínico pode visualizar (read-only) o diário alimentar de um paciente vinculado.
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Navegação | Botão "ACOMPANHAR" → tela de diário do paciente | Pendente |
-| Calendário | Visão mensal com dias que têm registros destacados | Pendente |
-| Day strip | Faixa horizontal de dias + lista de refeições | Pendente |
-| Cards de refeição | Tipo, horário, sentimento, foto (se houver) | Pendente |
-| Detalhe da refeição | Tela full screen com todos os dados | Pendente |
-| Header | Nome do paciente no topo | Pendente |
+| Navegação | Tap no card ou botão "ACOMPANHAR" → tela de diário do paciente | ✅ |
+| Timeline | Lista de refeições do dia com fotos, horários e sentimentos | ✅ |
+| Day strip | Faixa horizontal com últimos 14 dias | ✅ |
+| Calendário | Visão mensal com indicadores de dias com registros | ✅ |
+| Cards de refeição | Tipo, horário, sentimento, foto (se houver) | ✅ |
+| Conectores de tempo | Mostra intervalo entre refeições (alerta se > 4h) | ✅ |
+| Header | Nome do paciente + "Diário" no topo | ✅ |
+| Remover paciente | Swipe para esquerda no card para desvincular | ✅ |
 
-**Dependências:** Fase 1 concluída.
+**Entregáveis:**
+- [x] `PatientDiaryPage` com timeline e calendário
+- [x] `PatientMealsRepository` para buscar refeições do paciente
+- [x] `PatientDiaryCubit` para gerenciar estado
+- [x] Rota full-screen `/patients/:patientId/diary`
+- [x] Swipe-to-remove com confirmação
+- [x] UI melhorada para cards de pacientes
+
+---
+
+### Fase 2.1: Monetização 💰 ✅
+
+**Status:** Concluído
+
+**Objetivo:** Sistema de planos para limitar pacientes no plano gratuito.
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Limite de pacientes | Plano gratuito: máximo 2 pacientes | ✅ |
+| Bloqueio de convite | Ao atingir limite, mostra dialog de upgrade | ✅ |
+| Seção Assinatura | Card na tela de configurações com progresso | ✅ |
+| Tela de planos | UI com benefícios Pro, seletor Anual/Mensal | ✅ |
+| Preços | R$ 19,90/mês ou R$ 149,90/ano (economia de 37%) | ✅ |
+
+**Entregáveis:**
+- [x] `PlansPage` com UI de upgrade
+- [x] `_SubscriptionSection` na `SettingsPage`
+- [x] Lógica de limite em `_showInviteSheet`
+- [x] Rota full-screen `/plans`
+
+**Pendente:**
+- [ ] Integração com in-app purchases (RevenueCat ou nativo)
 
 ---
 
@@ -87,14 +120,15 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 │                         Tab Bar (3 abas)                                 │
 ├──────────────────────┬──────────────────────┬────────────────────────────┤
 │  Tab: Pacientes      │  Tab: Insights       │  Tab: Configurações        │
-│  • Empty state       │  • Dashboard         │  • Login/Logout            │
-│  • Código de convite │  • Estatísticas      │  • Idioma, Aparência       │
-│  • Lista pacientes   │  • Gráficos          │  • Sobre, Suporte          │
-│  • ACOMPANHAR →      │                      │                            │
+│  • Header saudação   │  • Dashboard         │  • Assinatura (Free/Pro)   │
+│  • Lista pacientes   │  • Estatísticas      │  • Login/Logout            │
+│  • Swipe → remover   │  • Gráficos          │  • Idioma, Aparência       │
+│  • Tap → diário      │                      │  • Sobre, Suporte          │
+│  • Convidar paciente │                      │                            │
 ├──────────────────────┴──────────────────────┴────────────────────────────┤
 │  Full screen (acima da tab bar):                                         │
-│  • Diário do paciente (/patients/:id/diary)                              │
-│  • Detalhe da refeição (/patients/:id/diary/entry/:entryId)              │
+│  • Diário do paciente (/patients/:id/diary) — Timeline + Calendário      │
+│  • Tela de planos (/plans) — Upgrade para Pro                            │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -117,17 +151,18 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para detalhes das regras de segur
 
 ### Alta (próximos passos)
 
-1. **Testar fluxo completo** – Login, gerar código, paciente vincular.
-2. **Fase 2** – Visualizar diário do paciente.
+1. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro.
+2. **Fase 3** – Insights e métricas.
 
 ### Média
 
-3. **Fase 3** – Insights e métricas.
+3. Notificações push (quando paciente registra refeição).
+4. Detalhe da refeição (tela full screen com todos os dados).
 
 ### Baixa
 
-4. Notificações push (quando paciente registra refeição).
 5. Chat com paciente.
+6. Exportar relatórios (PDF).
 
 ---
 

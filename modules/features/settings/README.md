@@ -1,23 +1,25 @@
 # settings_feature
 
-Feature Configurações do Yummy Log: tela de configurações com login (Google/Apple), estado de autenticação e acesso à conexão com nutricionista.
+Feature Configurações do YummyLog for Clinicians: tela de configurações com login (Google/Apple), estado de autenticação, gerenciamento de assinatura e preferências.
 
 ## Funcionalidades
 
-- **Tela Configurações:** opções de conta (login/logout), link para Conectar com nutricionista, tema e preferências.
+- **Tela Configurações:** opções de conta (login/logout), assinatura, tema e preferências.
+- **Seção Assinatura:** exibe plano atual (Gratuito/Pro), contagem de pacientes, barra de progresso e botão de upgrade.
+- **Tela de Planos:** UI para upgrade com benefícios Pro, seletor Anual/Mensal e preços.
 - **Login:** integração com `auth_foundation` (Google Sign-In, Sign in with Apple); exibição de nome e avatar quando logado.
-- **Estado deslogado:** CTA para entrar na conta; estado genérico no cabeçalho do Diário quando não logado (R14).
-- **Migração de dados:** ao fazer login, migração dos registros locais para a conta (via `AuthCubit` + `MealEntryRepository`).
+- **Estado deslogado:** CTA para entrar na conta.
 
 ## Quick Start
 
 ```dart
-// Requer auth_foundation e diary_feature (MealEntryRepository) registrados
+// Requer auth_foundation registrado
 final feature = SettingsFeature();
 feature.registerDependencies(getIt);
 final routes = feature.getRoutes(getIt);
+final fullScreenRoutes = feature.getFullScreenRoutes(getIt, rootNavigatorKey: key);
 
-// Rota: /settings
+// Rotas: /settings, /plans (full-screen)
 ```
 
 ## Documentação
@@ -25,7 +27,7 @@ final routes = feature.getRoutes(getIt);
 | Documento | Descrição |
 |-----------|-----------|
 | (a criar) | docs/architecture.md – AuthCubit, dependências |
-| (a criar) | docs/features.md – fluxo login, migração |
+| (a criar) | docs/features.md – fluxo login, assinatura |
 
 ## Estrutura
 
@@ -33,18 +35,27 @@ final routes = feature.getRoutes(getIt);
 lib/
 ├── settings_feature.dart       # Barrel
 └── src/
-    ├── settings_feature.dart   # YummyLogFeature: deps + rota /settings
-    ├── cubit/                  # AuthCubit (auth + migração)
-    └── pages/                  # SettingsPage
+    ├── settings_feature.dart   # YummyLogFeature: deps + rotas
+    ├── cubit/                  # AuthCubit
+    └── pages/
+        ├── settings_page.dart  # Tela principal + seção assinatura
+        └── plans_page.dart     # Tela de planos (upgrade)
 ```
+
+## Rotas
+
+| Rota | Descrição | Tipo |
+|------|-----------|------|
+| `/settings` | Tela de configurações | Tab (dentro do shell) |
+| `/plans` | Tela de planos Pro | Full-screen |
 
 ## Dependências
 
 - `auth_foundation` – `AuthRepository`
-- `diary_feature` – `MealEntryRepository` (para migração pós-login)
+- `cloud_firestore` – Para buscar contagem de pacientes
 - `feature_contract`, `ui_kit`, `yummy_log_l10n`, `go_router`, `flutter_bloc`
 
 ## Referências
 
-- [REQUIREMENTS.md](../../../REQUIREMENTS.md) – R1 (tab Configurações), R14, v3 (Auth)
+- [REQUIREMENTS.md](../../../REQUIREMENTS.md) – C9 (Configurações), C17-C20 (Monetização)
 - [docs/ROADMAP.md](../../../docs/ROADMAP.md) – fases do produto

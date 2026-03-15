@@ -2,10 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Documento do usuário (para aparecer no console e guardar perfil)
+    // Documento do usuário (para aparecer no console e guardar perfil).
+    // Clínico pode ler users/{patientId} se o paciente estiver em clinicians/{clinicianUid}/patients.
     match /users/{userId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
+      allow read: if request.auth != null
+                  && (request.auth.uid == userId
+                      || exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(userId)));
+      allow write: if request.auth != null
+                   && request.auth.uid == userId;
     }
 
     // Paciente lê/escreve seus próprios dados (subcoleções)

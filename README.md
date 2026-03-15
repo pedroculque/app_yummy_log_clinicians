@@ -12,12 +12,26 @@ App para **profissionais de saúde** acompanharem os diários alimentares de seu
 
 ## Funcionalidades
 
-- **Lista de pacientes** — Cards com avatar, nome, idade, data de vínculo
+### Gerenciamento de Pacientes
+- **Lista de pacientes** — Cards com avatar/iniciais, nome, data de vínculo
 - **Código de convite** — Gerar código de 6 caracteres para pacientes se vincularem
 - **Compartilhar código** — SMS, WhatsApp, E-mail ou copiar
-- **Visualizar diário** — Calendário, refeições e sentimentos do paciente (read-only)
-- **Insights** — Métricas e estatísticas dos pacientes (em desenvolvimento)
+- **Remover paciente** — Swipe para esquerda no card para remover vínculo
+
+### Visualização de Diário (Read-Only)
+- **Timeline de refeições** — Lista de refeições do dia com fotos, horários e sentimentos
+- **Modo calendário** — Visualização mensal com indicadores de dias com registros
+- **Day strip** — Navegação horizontal pelos últimos 14 dias
+- **Conectores de tempo** — Mostra intervalo entre refeições (alerta se > 4h)
+
+### Monetização
+- **Plano Gratuito** — Limite de 2 pacientes
+- **Plano Pro** — Pacientes ilimitados (R$ 19,90/mês ou R$ 149,90/ano)
+- **Tela de planos** — UI para upgrade com trial de 7 dias
+
+### Outros
 - **Login opcional** — Firebase Auth (Google + Apple no iOS); necessário para convidar
+- **Insights** — Métricas e estatísticas dos pacientes (em desenvolvimento)
 - **Internacionalização** — pt-BR, en, es
 - **Design system** — `ui_kit` (AppColors, AppTextStyles, UiCard, etc.)
 
@@ -81,14 +95,15 @@ app_yummy_log_clinicians/
 │                         Tab Bar (3 abas)                                 │
 ├──────────────────────┬──────────────────────┬────────────────────────────┤
 │  Tab: Pacientes      │  Tab: Insights       │  Tab: Configurações        │
-│  • Empty state       │  • Dashboard         │  • Login/Logout            │
-│  • Código de convite │  • Estatísticas      │  • Idioma, Aparência       │
-│  • Lista pacientes   │  • Gráficos          │  • Sobre, Suporte          │
-│  • ACOMPANHAR →      │                      │                            │
+│  • Header saudação   │  • Dashboard         │  • Assinatura (Free/Pro)   │
+│  • Lista pacientes   │  • Estatísticas      │  • Login/Logout            │
+│  • Swipe → remover   │  • Gráficos          │  • Idioma, Aparência       │
+│  • Tap → diário      │                      │  • Sobre, Suporte          │
+│  • Convidar paciente │                      │                            │
 ├──────────────────────┴──────────────────────┴────────────────────────────┤
 │  Full screen (acima da tab bar):                                         │
-│  • Diário do paciente (/patients/:id/diary)                              │
-│  • Detalhe da refeição (/patients/:id/diary/entry/:entryId)              │
+│  • Diário do paciente (/patients/:id/diary) — Timeline + Calendário      │
+│  • Tela de planos (/plans) — Upgrade para Pro                            │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -178,8 +193,9 @@ flutter gen-l10n --arb-dir="packages/yummy_log_l10n/lib/l10n/arb"
 
 | Fase | Descrição | Status |
 |------|-----------|--------|
-| **v1 – MVP** | Tab bar, código de convite, lista de pacientes, empty state | 🔄 Em desenvolvimento |
-| **v2 – Diário** | Visualizar diário do paciente (read-only) | ⬜ Planejado |
+| **v1 – MVP** | Tab bar, código de convite, lista de pacientes, empty state | ✅ Concluído |
+| **v2 – Diário** | Visualizar diário do paciente (read-only) | ✅ Concluído |
+| **v2.1 – Monetização** | Sistema de planos (Free: 2 pacientes / Pro: ilimitado) | ✅ Concluído |
 | **v3 – Insights** | Dashboard com métricas e estatísticas | ⬜ Planejado |
 
 ---

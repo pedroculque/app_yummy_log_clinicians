@@ -448,4 +448,256 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get validationAteWithOthersRequired => 'Informe se comeu acompanhado.';
+
+  @override
+  String get navPatients => 'Pacientes';
+
+  @override
+  String get navInsights => 'Insights';
+
+  @override
+  String get navSettings => 'Configurações';
+
+  @override
+  String get insightsTitle => 'Insights';
+
+  @override
+  String get insightsComingSoonSubtitle => 'Em breve você poderá visualizar métricas e dados dos seus pacientes aqui.';
+
+  @override
+  String get plansUnlockPro => 'Desbloqueie o YummyLog Pro';
+
+  @override
+  String get plansUnlockSubtitle => 'Aproveite todos os recursos sem limites';
+
+  @override
+  String get plansComingSoon => 'Em breve';
+
+  @override
+  String get plansComingSoonMessage => 'A assinatura Pro estará disponível em breve. Fique ligado nas atualizações!';
+
+  @override
+  String get plansGotIt => 'Entendi';
+
+  @override
+  String get plansFeatureUnlimitedPatients => 'Pacientes ilimitados';
+
+  @override
+  String get plansFeatureFullHistory => 'Histórico completo';
+
+  @override
+  String get plansFeatureExportReports => 'Exportar relatórios';
+
+  @override
+  String get plansFeaturePrioritySupport => 'Suporte prioritário';
+
+  @override
+  String get plansAnnual => 'Anual';
+
+  @override
+  String get plansSave37 => 'Economize 37%';
+
+  @override
+  String get plansMonthly => 'Mensal';
+
+  @override
+  String get plansMostPopular => 'MAIS POPULAR';
+
+  @override
+  String get plansPriceAnnual => 'R\$ 149,90';
+
+  @override
+  String get plansPriceMonthly => 'R\$ 19,90';
+
+  @override
+  String get plansPeriodYear => '/ano';
+
+  @override
+  String get plansPeriodMonth => '/mês';
+
+  @override
+  String get plansSubscribeAnnual => 'Assinar Anual';
+
+  @override
+  String get plansSubscribeMonthly => 'Assinar Mensal';
+
+  @override
+  String get plansTrialAnnual => '7 dias grátis, depois R\$ 149,90';
+
+  @override
+  String get plansTrialMonthly => '7 dias grátis, depois R\$ 19,90';
+
+  @override
+  String get plansCancelAnytime => 'Cancele quando quiser';
+
+  @override
+  String get errorNotLoggedIn => 'Não conectado';
+
+  @override
+  String get patientsLoadError => 'Erro ao carregar pacientes';
+
+  @override
+  String get removePatientTitle => 'Remover paciente?';
+
+  @override
+  String removePatientMessage(String name) {
+    return 'Você deixará de acompanhar o diário de $name. O paciente pode se reconectar usando um novo código.';
+  }
+
+  @override
+  String get removePatientButton => 'REMOVER';
+
+  @override
+  String get cancelButton => 'Cancelar';
+
+  @override
+  String patientRemoved(String name) {
+    return '$name foi removido';
+  }
+
+  @override
+  String get loginRequiredTitle => 'Login necessário';
+
+  @override
+  String get loginRequiredMessage => 'Para convidar pacientes, você precisa fazer login primeiro.';
+
+  @override
+  String get limitReachedTitle => 'Limite atingido';
+
+  @override
+  String get limitReachedMessage => 'Você atingiu o limite de 2 pacientes do plano gratuito. Faça upgrade para o Pro e tenha pacientes ilimitados!';
+
+  @override
+  String get viewPlansButton => 'Ver Planos';
+
+  @override
+  String get notNow => 'Agora não';
+
+  @override
+  String get noPatientsConnected => 'Nenhum paciente conectado';
+
+  @override
+  String get onePatientConnected => '1 paciente conectado';
+
+  @override
+  String patientsConnectedCount(int count) {
+    return '$count pacientes conectados';
+  }
+
+  @override
+  String get greetingMorning => 'Bom dia';
+
+  @override
+  String get greetingAfternoon => 'Boa tarde';
+
+  @override
+  String get greetingEvening => 'Boa noite';
+
+  @override
+  String get somethingWentWrong => 'Ops! Algo deu errado';
+
+  @override
+  String get tryAgain => 'Tentar novamente';
+
+  @override
+  String get startFollowingTitle => 'Comece a acompanhar';
+
+  @override
+  String get startFollowingSubtitleLoggedOut => 'Faça login e convide seus pacientes para acompanhar o diário alimentar deles em tempo real.';
+
+  @override
+  String get startFollowingSubtitleLoggedIn => 'Convide seus pacientes usando o botão abaixo e acompanhe a evolução alimentar deles.';
+
+  @override
+  String get featureViewMealsTitle => 'Visualize refeições';
+
+  @override
+  String get featureViewMealsSubtitle => 'Fotos e detalhes de cada refeição';
+
+  @override
+  String get featureFollowFeelingsTitle => 'Acompanhe sentimentos';
+
+  @override
+  String get featureFollowFeelingsSubtitle => 'Entenda a relação emocional com a comida';
+
+  @override
+  String get featureRealtimeTitle => 'Tempo real';
+
+  @override
+  String get featureRealtimeSubtitle => 'Dados sincronizados automaticamente';
+
+  @override
+  String get actionRemove => 'Remover';
+
+  @override
+  String linkedSinceDate(String date) {
+    return 'Desde $date';
+  }
+
+  @override
+  String get invitePatientButton => 'CONVIDAR PACIENTE';
+
+  @override
+  String get inviteCodeTitle => 'Código de convite';
+
+  @override
+  String get inviteCodeSubtitle => 'Compartilhe este código com seu paciente para que ele possa se conectar ao seu perfil.';
+
+  @override
+  String get codeCopied => 'Código copiado!';
+
+  @override
+  String get shareWhatsApp => 'WhatsApp';
+
+  @override
+  String get shareSms => 'SMS';
+
+  @override
+  String get shareEmail => 'E-mail';
+
+  @override
+  String shareInviteMessage(String code) {
+    return 'Use o código $code para se conectar comigo no YummyLog!';
+  }
+
+  @override
+  String get patientDefaultName => 'Paciente';
+
+  @override
+  String get diaryLoadError => 'Erro ao carregar dados';
+
+  @override
+  String get patientNoMealsThisDay => 'O paciente não registrou refeições neste dia.';
+
+  @override
+  String get rateAppStoreSoon => 'Avaliar na loja: em breve';
+
+  @override
+  String get sectionSubscription => 'Assinatura';
+
+  @override
+  String get restorePurchases => 'Restaurar compras';
+
+  @override
+  String get restorePurchasesSoon => 'Restaurar compras: em breve';
+
+  @override
+  String get planPro => 'Plano Pro';
+
+  @override
+  String get planFree => 'Plano Gratuito';
+
+  @override
+  String get loading => 'Carregando...';
+
+  @override
+  String get unlimitedPatients => 'Pacientes ilimitados';
+
+  @override
+  String patientsCountOfMax(int current, int max) {
+    return '$current de $max pacientes';
+  }
+
+  @override
+  String get upgradeToPro => 'Fazer Upgrade para Pro';
 }

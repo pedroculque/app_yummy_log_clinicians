@@ -33,16 +33,21 @@ GoRouter createAppRouter() {
           ),
         ),
       ),
+      ...patientsFeature.getFullScreenRoutes(
+        getIt,
+        rootNavigatorKey: _rootNavigatorKey,
+      ),
+      ...settingsFeature.getFullScreenRoutes(
+        getIt,
+        rootNavigatorKey: _rootNavigatorKey,
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(
           navigationShell: navigationShell,
         ),
         branches: [
           StatefulShellBranch(
-            routes: patientsFeature.getRoutes(
-              getIt,
-              rootNavigatorKey: _rootNavigatorKey,
-            ),
+            routes: patientsFeature.getRoutes(getIt),
           ),
           StatefulShellBranch(routes: insightsFeature.getRoutes(getIt)),
           StatefulShellBranch(routes: settingsFeature.getRoutes(getIt)),

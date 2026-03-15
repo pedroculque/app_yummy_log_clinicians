@@ -12,15 +12,18 @@ NC='\033[0m' # No Color
 printf "${BLUE}Iniciando flutter pub get em todos os módulos...${NC}\n"
 echo ""
 
-# Ordem: contrato e l10n primeiro, foundation, features, por fim o app.
+# Ordem: packages base, foundation (persistence > auth > sync), features, app.
 MODULES=(
   "packages/feature_contract"
   "packages/yummy_log_l10n"
   "modules/foundation/persistence"
   "modules/foundation/auth"
+  "modules/foundation/sync"
   "modules/features/conectar"
   "modules/features/diary"
   "modules/features/settings"
+  "modules/features/patients"
+  "modules/features/insights"
   "."
 )
 

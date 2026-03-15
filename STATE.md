@@ -6,34 +6,44 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 ## Posição atual
 
-- **Fase:** 1 (MVP) em desenvolvimento.
+- **Fase:** 2.1 (Monetização) concluída. Pronto para Fase 3 (Insights).
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
-- **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes (mostra alerta e direciona para Configurações).
+- **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.
 - **Pacientes:** Feature `patients_feature` implementada com:
-  - Empty state visual (ícone, título, descrição, feature chips)
-  - Bottom sheet de convite com código de 6 caracteres
-  - Compartilhamento via SMS, WhatsApp, E-mail
-  - Copiar código com feedback "Copiado com sucesso!"
-  - Lista de pacientes (cards com avatar, nome, idade, data, condição)
-  - Botão "ACOMPANHAR" (navegação para diário pendente)
-  - Alerta de login necessário ao tentar convidar sem estar logado
-- **Insights:** Feature `insights_feature` criada como placeholder ("Em breve").
-- **Configurações:** Adaptado do app paciente, removida seção "Conectar com nutricionista".
-- **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, UiAutoWidthButton, etc.).
+  - Header com saudação personalizada (nome do clínico)
+  - Lista de pacientes (cards com avatar/iniciais, nome destacado, data de vínculo)
+  - Swipe-to-remove com confirmação via bottom sheet
+  - Tap no card → abre diário do paciente
+  - Botão "CONVIDAR PACIENTE" (bloqueado se limite atingido)
+  - Limite de 2 pacientes no plano gratuito
+- **Diário do Paciente:** `PatientDiaryPage` com:
+  - Timeline de refeições (últimos 14 dias via day strip)
+  - Modo calendário (visão mensal com indicadores)
+  - Cards de refeição com foto, tipo, horário, sentimento
+  - Conectores de tempo entre refeições (alerta se > 4h)
+- **Monetização:** Sistema de planos implementado:
+  - Plano Gratuito: limite de 2 pacientes
+  - Plano Pro: pacientes ilimitados (R$ 19,90/mês ou R$ 149,90/ano)
+  - Seção "Assinatura" na tela de configurações
+  - `PlansPage` com UI de upgrade
+- **Insights:** Feature `insights_feature` como placeholder ("Em breve").
+- **Configurações:** Adaptado do app paciente + seção de Assinatura.
+- **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`.
-- **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**; `google-services.json` e `GoogleService-Info.plist` configurados para `com.yummylogdiaryforclinicians.app`.
+- **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**.
 
 ---
 
 ## Decisões recentes
 
+- **Limite de pacientes:** Plano gratuito permite até 2 pacientes; Pro é ilimitado.
+- **Preços Pro:** R$ 19,90/mês ou R$ 149,90/ano (economia de 37%).
+- **Rotas full-screen:** `/patients/:patientId/diary` e `/plans` ficam fora do `StatefulShellRoute` para não mostrar tab bar.
+- **Filtragem client-side:** Refeições deletadas (`deletedAt != null`) são filtradas no cliente para evitar índice composto no Firestore.
+- **Swipe-to-remove:** Confirmação via bottom sheet antes de remover paciente.
 - **Login NÃO obrigatório:** Usuário pode navegar pelo app sem login. Login é solicitado apenas ao tentar convidar pacientes.
-- **Fluxo de login:** Ao clicar em "CONVIDAR PACIENTE" sem estar logado, mostra alerta explicativo e direciona para aba de Configurações.
 - **Mesmo projeto Firebase:** Compartilha Firestore e Auth com o app paciente para acesso às mesmas coleções.
 - **Bundle ID:** `com.yummylogdiaryforclinicians.app` (produção), `.dev` e `.stg` para flavors.
-- **Código de convite:** Usa a mesma estrutura `clinician_codes/{code}` do backend existente.
-- **Sem sync local:** App do clínico não precisa de sync offline-first (dados vêm direto do Firestore).
-- **Empty state visual:** Tela de pacientes vazia mostra ícone, título, descrição e feature chips para explicar o valor do app.
 
 ---
 
@@ -45,10 +55,10 @@ Nenhum no momento.
 
 ## Próximos passos (prioridade)
 
-1. **Testar fluxo completo:** Login → gerar código → paciente vincular → ver na lista.
-2. **Implementar navegação para diário:** Botão "ACOMPANHAR" → tela de diário do paciente (Fase 2).
-3. **Adaptar diary_feature:** Criar versão read-only para visualizar diário do paciente.
-4. **Implementar Insights:** Dashboard com métricas dos pacientes (Fase 3).
+1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
+2. **Implementar Insights (Fase 3):** Dashboard com métricas dos pacientes.
+3. **Detalhe da refeição:** Tela full-screen com todos os dados da refeição.
+4. **Notificações push:** Alertar clínico quando paciente registra refeição.
 
 ---
 

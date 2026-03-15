@@ -144,6 +144,86 @@
   "validationMealTypeRequired": "Select the meal type.",
   "validationWhereAteRequired": "Select where you ate.",
   "validationAteWithOthersRequired": "Indicate whether you ate with others.",
+  "navPatients": "Patients",
+  "navInsights": "Insights",
+  "navSettings": "Settings",
+  "insightsTitle": "Insights",
+  "insightsComingSoonSubtitle": "Soon you will be able to view metrics and data from your patients here.",
+  "plansUnlockPro": "Unlock YummyLog Pro",
+  "plansUnlockSubtitle": "Enjoy all features with no limits",
+  "plansComingSoon": "Coming soon",
+  "plansComingSoonMessage": "Pro subscription will be available soon. Stay tuned for updates!",
+  "plansGotIt": "Got it",
+  "plansFeatureUnlimitedPatients": "Unlimited patients",
+  "plansFeatureFullHistory": "Full history",
+  "plansFeatureExportReports": "Export reports",
+  "plansFeaturePrioritySupport": "Priority support",
+  "plansAnnual": "Annual",
+  "plansSave37": "Save 37%",
+  "plansMonthly": "Monthly",
+  "plansMostPopular": "MOST POPULAR",
+  "plansPriceAnnual": "R$ 149.90",
+  "plansPriceMonthly": "R$ 19.90",
+  "plansPeriodYear": "/year",
+  "plansPeriodMonth": "/month",
+  "plansSubscribeAnnual": "Subscribe Annual",
+  "plansSubscribeMonthly": "Subscribe Monthly",
+  "plansTrialAnnual": "7-day free trial, then R$ 149.90",
+  "plansTrialMonthly": "7-day free trial, then R$ 19.90",
+  "plansCancelAnytime": "Cancel anytime",
+  "errorNotLoggedIn": "Not logged in",
+  "patientsLoadError": "Error loading patients",
+  "removePatientTitle": "Remove patient?",
+  "removePatientMessage": "You will no longer follow {name}'s diary. The patient can reconnect using a new code.",
+  "removePatientButton": "REMOVE",
+  "cancelButton": "Cancel",
+  "patientRemoved": "{name} was removed",
+  "loginRequiredTitle": "Login required",
+  "loginRequiredMessage": "To invite patients, you need to sign in first.",
+  "limitReachedTitle": "Limit reached",
+  "limitReachedMessage": "You have reached the limit of 2 patients on the free plan. Upgrade to Pro for unlimited patients!",
+  "viewPlansButton": "View plans",
+  "notNow": "Not now",
+  "noPatientsConnected": "No patients connected",
+  "onePatientConnected": "1 patient connected",
+  "patientsConnectedCount": "{count} patients connected",
+  "greetingMorning": "Good morning",
+  "greetingAfternoon": "Good afternoon",
+  "greetingEvening": "Good evening",
+  "somethingWentWrong": "Oops! Something went wrong",
+  "tryAgain": "Try again",
+  "startFollowingTitle": "Start following",
+  "startFollowingSubtitleLoggedOut": "Sign in and invite your patients to follow their food diary in real time.",
+  "startFollowingSubtitleLoggedIn": "Invite your patients using the button below and follow their food journey.",
+  "featureViewMealsTitle": "View meals",
+  "featureViewMealsSubtitle": "Photos and details of each meal",
+  "featureFollowFeelingsTitle": "Follow feelings",
+  "featureFollowFeelingsSubtitle": "Understand the emotional relationship with food",
+  "featureRealtimeTitle": "Real time",
+  "featureRealtimeSubtitle": "Data synced automatically",
+  "actionRemove": "Remove",
+  "linkedSinceDate": "Since {date}",
+  "invitePatientButton": "INVITE PATIENT",
+  "inviteCodeTitle": "Invite code",
+  "inviteCodeSubtitle": "Share this code with your patient so they can connect to your profile.",
+  "codeCopied": "Code copied!",
+  "shareWhatsApp": "WhatsApp",
+  "shareSms": "SMS",
+  "shareEmail": "Email",
+  "shareInviteMessage": "Use code {code} to connect with me on YummyLog!",
+  "patientDefaultName": "Patient",
+  "diaryLoadError": "Error loading data",
+  "patientNoMealsThisDay": "The patient did not log any meals on this day.",
+  "rateAppStoreSoon": "Rate in store: coming soon",
+  "sectionSubscription": "Subscription",
+  "restorePurchases": "Restore purchases",
+  "restorePurchasesSoon": "Restore purchases: coming soon",
+  "planPro": "Pro plan",
+  "planFree": "Free plan",
+  "loading": "Loading...",
+  "unlimitedPatients": "Unlimited patients",
+  "patientsCountOfMax": "{current} of {max} patients",
+  "upgradeToPro": "Upgrade to Pro",
   "@characterCount": {
     "placeholders": {
       "count": {"type": "int"},
@@ -158,6 +238,37 @@
   "@connectedSince": {
     "placeholders": {
       "date": {"type": "String"}
+    }
+  },
+  "@removePatientMessage": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "@patientRemoved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "@patientsConnectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@linkedSinceDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "@shareInviteMessage": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "@patientsCountOfMax": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "max": {"type": "int"}
     }
   }
 }

@@ -962,6 +962,486 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Indicate whether you ate with others.'**
   String get validationAteWithOthersRequired;
+
+  /// No description provided for @navPatients.
+  ///
+  /// In en, this message translates to:
+  /// **'Patients'**
+  String get navPatients;
+
+  /// No description provided for @navInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get navInsights;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get navSettings;
+
+  /// No description provided for @insightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insightsTitle;
+
+  /// No description provided for @insightsComingSoonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Soon you will be able to view metrics and data from your patients here.'**
+  String get insightsComingSoonSubtitle;
+
+  /// No description provided for @plansUnlockPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock YummyLog Pro'**
+  String get plansUnlockPro;
+
+  /// No description provided for @plansUnlockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoy all features with no limits'**
+  String get plansUnlockSubtitle;
+
+  /// No description provided for @plansComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get plansComingSoon;
+
+  /// No description provided for @plansComingSoonMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro subscription will be available soon. Stay tuned for updates!'**
+  String get plansComingSoonMessage;
+
+  /// No description provided for @plansGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get plansGotIt;
+
+  /// No description provided for @plansFeatureUnlimitedPatients.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited patients'**
+  String get plansFeatureUnlimitedPatients;
+
+  /// No description provided for @plansFeatureFullHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Full history'**
+  String get plansFeatureFullHistory;
+
+  /// No description provided for @plansFeatureExportReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Export reports'**
+  String get plansFeatureExportReports;
+
+  /// No description provided for @plansFeaturePrioritySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority support'**
+  String get plansFeaturePrioritySupport;
+
+  /// No description provided for @plansAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual'**
+  String get plansAnnual;
+
+  /// No description provided for @plansSave37.
+  ///
+  /// In en, this message translates to:
+  /// **'Save 37%'**
+  String get plansSave37;
+
+  /// No description provided for @plansMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get plansMonthly;
+
+  /// No description provided for @plansMostPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'MOST POPULAR'**
+  String get plansMostPopular;
+
+  /// No description provided for @plansPriceAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'R\$ 149.90'**
+  String get plansPriceAnnual;
+
+  /// No description provided for @plansPriceMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'R\$ 19.90'**
+  String get plansPriceMonthly;
+
+  /// No description provided for @plansPeriodYear.
+  ///
+  /// In en, this message translates to:
+  /// **'/year'**
+  String get plansPeriodYear;
+
+  /// No description provided for @plansPeriodMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/month'**
+  String get plansPeriodMonth;
+
+  /// No description provided for @plansSubscribeAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe Annual'**
+  String get plansSubscribeAnnual;
+
+  /// No description provided for @plansSubscribeMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe Monthly'**
+  String get plansSubscribeMonthly;
+
+  /// No description provided for @plansTrialAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'7-day free trial, then R\$ 149.90'**
+  String get plansTrialAnnual;
+
+  /// No description provided for @plansTrialMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'7-day free trial, then R\$ 19.90'**
+  String get plansTrialMonthly;
+
+  /// No description provided for @plansCancelAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel anytime'**
+  String get plansCancelAnytime;
+
+  /// No description provided for @errorNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not logged in'**
+  String get errorNotLoggedIn;
+
+  /// No description provided for @patientsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading patients'**
+  String get patientsLoadError;
+
+  /// No description provided for @removePatientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove patient?'**
+  String get removePatientTitle;
+
+  /// No description provided for @removePatientMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You will no longer follow {name}\'s diary. The patient can reconnect using a new code.'**
+  String removePatientMessage(String name);
+
+  /// No description provided for @removePatientButton.
+  ///
+  /// In en, this message translates to:
+  /// **'REMOVE'**
+  String get removePatientButton;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
+  /// No description provided for @patientRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was removed'**
+  String patientRemoved(String name);
+
+  /// No description provided for @loginRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Login required'**
+  String get loginRequiredTitle;
+
+  /// No description provided for @loginRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To invite patients, you need to sign in first.'**
+  String get loginRequiredMessage;
+
+  /// No description provided for @limitReachedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Limit reached'**
+  String get limitReachedTitle;
+
+  /// No description provided for @limitReachedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You have reached the limit of 2 patients on the free plan. Upgrade to Pro for unlimited patients!'**
+  String get limitReachedMessage;
+
+  /// No description provided for @viewPlansButton.
+  ///
+  /// In en, this message translates to:
+  /// **'View plans'**
+  String get viewPlansButton;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @noPatientsConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'No patients connected'**
+  String get noPatientsConnected;
+
+  /// No description provided for @onePatientConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'1 patient connected'**
+  String get onePatientConnected;
+
+  /// No description provided for @patientsConnectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} patients connected'**
+  String patientsConnectedCount(int count);
+
+  /// No description provided for @greetingMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get greetingMorning;
+
+  /// No description provided for @greetingAfternoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get greetingAfternoon;
+
+  /// No description provided for @greetingEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get greetingEvening;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops! Something went wrong'**
+  String get somethingWentWrong;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @startFollowingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start following'**
+  String get startFollowingTitle;
+
+  /// No description provided for @startFollowingSubtitleLoggedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in and invite your patients to follow their food diary in real time.'**
+  String get startFollowingSubtitleLoggedOut;
+
+  /// No description provided for @startFollowingSubtitleLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite your patients using the button below and follow their food journey.'**
+  String get startFollowingSubtitleLoggedIn;
+
+  /// No description provided for @featureViewMealsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View meals'**
+  String get featureViewMealsTitle;
+
+  /// No description provided for @featureViewMealsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos and details of each meal'**
+  String get featureViewMealsSubtitle;
+
+  /// No description provided for @featureFollowFeelingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow feelings'**
+  String get featureFollowFeelingsTitle;
+
+  /// No description provided for @featureFollowFeelingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Understand the emotional relationship with food'**
+  String get featureFollowFeelingsSubtitle;
+
+  /// No description provided for @featureRealtimeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Real time'**
+  String get featureRealtimeTitle;
+
+  /// No description provided for @featureRealtimeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data synced automatically'**
+  String get featureRealtimeSubtitle;
+
+  /// No description provided for @actionRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get actionRemove;
+
+  /// No description provided for @linkedSinceDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Since {date}'**
+  String linkedSinceDate(String date);
+
+  /// No description provided for @invitePatientButton.
+  ///
+  /// In en, this message translates to:
+  /// **'INVITE PATIENT'**
+  String get invitePatientButton;
+
+  /// No description provided for @inviteCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code'**
+  String get inviteCodeTitle;
+
+  /// No description provided for @inviteCodeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this code with your patient so they can connect to your profile.'**
+  String get inviteCodeSubtitle;
+
+  /// No description provided for @codeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied!'**
+  String get codeCopied;
+
+  /// No description provided for @shareWhatsApp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get shareWhatsApp;
+
+  /// No description provided for @shareSms.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get shareSms;
+
+  /// No description provided for @shareEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get shareEmail;
+
+  /// No description provided for @shareInviteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use code {code} to connect with me on YummyLog!'**
+  String shareInviteMessage(String code);
+
+  /// No description provided for @patientDefaultName.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient'**
+  String get patientDefaultName;
+
+  /// No description provided for @diaryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get diaryLoadError;
+
+  /// No description provided for @patientNoMealsThisDay.
+  ///
+  /// In en, this message translates to:
+  /// **'The patient did not log any meals on this day.'**
+  String get patientNoMealsThisDay;
+
+  /// No description provided for @rateAppStoreSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate in store: coming soon'**
+  String get rateAppStoreSoon;
+
+  /// No description provided for @sectionSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get sectionSubscription;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get restorePurchases;
+
+  /// No description provided for @restorePurchasesSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases: coming soon'**
+  String get restorePurchasesSoon;
+
+  /// No description provided for @planPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro plan'**
+  String get planPro;
+
+  /// No description provided for @planFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan'**
+  String get planFree;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @unlimitedPatients.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited patients'**
+  String get unlimitedPatients;
+
+  /// No description provided for @patientsCountOfMax.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {max} patients'**
+  String patientsCountOfMax(int current, int max);
+
+  /// No description provided for @upgradeToPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Pro'**
+  String get upgradeToPro;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

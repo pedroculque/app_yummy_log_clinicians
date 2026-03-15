@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 import 'package:settings_feature/src/cubit/auth_cubit.dart';
 import 'package:ui_kit/ui_kit.dart';
@@ -81,6 +83,14 @@ class SettingsPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 40),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
+                // --- ASSINATURA ---
+                _SubscriptionSection(
+                  maxFreePatients: 2,
+                  isPro: false,
+                  onUpgrade: () => context.push('/plans'),
+                ),
+                const SizedBox(height: 32),
+
                 // --- CONTA ---
                 BlocConsumer<AuthCubit, AuthState>(
                   listener: (context, state) {
@@ -202,7 +212,7 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {
                     uiSnackBar(
                       context: context,
-                      message: 'Avaliar na loja: em breve',
+                      message: l10n.rateAppStoreSoon,
                     );
                   },
                 ),
@@ -930,6 +940,272 @@ class _LanguageSectionState extends State<_LanguageSection> {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// SUBSCRIPTION SECTION
+// ---------------------------------------------------------------------------
+
+class _SubscriptionSection extends StatelessWidget {
+  const _SubscriptionSection({
+    required this.maxFreePatients,
+    required this.isPro,
+    required this.onUpgrade,
+  });
+
+  final int maxFreePatients;
+  final bool isPro;
+  final VoidCallback onUpgrade;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _SectionTitle(
+          title: context.l10n.sectionSubscription,
+          icon: Icons.workspace_premium_rounded,
+        ),
+        const SizedBox(height: 8),
+        _SubscriptionCard(
+          maxFreePatients: maxFreePatients,
+          isPro: isPro,
+          onUpgrade: onUpgrade,
+          appColors: appColors,
+        ),
+        if (!isPro) ...[
+          const SizedBox(height: 8),
+          Center(
+            child: TextButton.icon(
+              onPressed: () {
+                uiSnackBar(
+                  context: context,
+                  message: context.l10n.restorePurchasesSoon,
+                );
+              },
+              icon: Icon(
+                Icons.history_rounded,
+                size: 18,
+                color: appColors.primary,
+              ),
+              label: Text(
+                context.l10n.restorePurchases,
+                style: AppTextStyles.body2.copyWith(
+                  color: appColors.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _SubscriptionCard extends StatefulWidget {
+  const _SubscriptionCard({
+    required this.maxFreePatients,
+    required this.isPro,
+    required this.onUpgrade,
+    required this.appColors,
+  });
+
+  final int maxFreePatients;
+  final bool isPro;
+  final VoidCallback onUpgrade;
+  final AppColors appColors;
+
+  @override
+  State<_SubscriptionCard> createState() => _SubscriptionCardState();
+}
+
+class _SubscriptionCardState extends State<_SubscriptionCard> {
+  int _patientCount = 0;
+  bool _loading = true;
+  StreamSubscription<QuerySnapshot>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadPatientCount());
+  }
+
+  @override
+  void dispose() {
+    unawaited(_subscription?.cancel());
+    super.dispose();
+  }
+
+  Future<void> _loadPatientCount() async {
+    try {
+      final authCubit = context.read<AuthCubit>();
+      final user = authCubit.state.user;
+      if (user == null) {
+        setState(() {
+          _patientCount = 0;
+          _loading = false;
+        });
+        return;
+      }
+
+      final firestore = FirebaseFirestore.instance;
+      _subscription = firestore
+          .collection('clinicians')
+          .doc(user.uid)
+          .collection('patients')
+          .snapshots()
+          .listen((snapshot) {
+        if (mounted) {
+          setState(() {
+            _patientCount = snapshot.docs.length;
+            _loading = false;
+          });
+        }
+      });
+    } on Object catch (_) {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = widget.appColors;
+
+    return UiCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: widget.isPro
+                      ? appColors.primary.withValues(alpha: 0.1)
+                      : appColors.grayLight,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  widget.isPro
+                      ? Icons.star_rounded
+                      : Icons.inventory_2_outlined,
+                  color: widget.isPro ? appColors.primary : appColors.gray,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.isPro
+                          ? context.l10n.planPro
+                          : context.l10n.planFree,
+                      style: AppTextStyles.h4.copyWith(
+                        color: appColors.neutralBlack,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    if (_loading)
+                      Text(
+                        context.l10n.loading,
+                        style: AppTextStyles.body3.copyWith(
+                          color: appColors.gray,
+                        ),
+                      )
+                    else
+                      Text(
+                        widget.isPro
+                            ? context.l10n.unlimitedPatients
+                            : context.l10n.patientsCountOfMax(
+                                _patientCount,
+                                widget.maxFreePatients,
+                              ),
+                        style: AppTextStyles.body3.copyWith(
+                          color: appColors.gray,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (!widget.isPro && !_loading) ...[
+            const SizedBox(height: 16),
+            _ProgressBar(
+              value: _patientCount / widget.maxFreePatients,
+              appColors: appColors,
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: widget.onUpgrade,
+                style: FilledButton.styleFrom(
+                  backgroundColor: appColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  context.l10n.upgradeToPro,
+                  style: AppTextStyles.body1.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressBar extends StatelessWidget {
+  const _ProgressBar({
+    required this.value,
+    required this.appColors,
+  });
+
+  final double value;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    final clampedValue = value.clamp(0.0, 1.0);
+    final isOverLimit = value > 1.0;
+    final barColor = isOverLimit ? appColors.error : appColors.alert;
+
+    return Container(
+      height: 8,
+      decoration: BoxDecoration(
+        color: appColors.grayLight,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: isOverLimit ? 1.0 : clampedValue,
+        child: Container(
+          decoration: BoxDecoration(
+            color: barColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
       ),
     );
   }

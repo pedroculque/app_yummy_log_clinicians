@@ -11,7 +11,15 @@ O **YummyLog for Clinicians** permite que nutricionistas, psicólogos e outros p
 1. **Convidem pacientes** através de um código de 6 caracteres
 2. **Visualizem o diário alimentar** dos pacientes vinculados (read-only)
 3. **Acompanhem sentimentos** associados às refeições
-4. **Analisem métricas** de frequência e padrões alimentares
+4. **Analisem métricas** de frequência e padrões alimentares (em desenvolvimento)
+
+### Modelo de Negócio
+
+| Plano | Limite | Preço |
+|-------|--------|-------|
+| **Gratuito** | 2 pacientes | R$ 0 |
+| **Pro Mensal** | Ilimitado | R$ 19,90/mês |
+| **Pro Anual** | Ilimitado | R$ 149,90/ano (economia 37%) |
 
 O app funciona em conjunto com o **YummyLog** (app do paciente), compartilhando o mesmo backend Firebase.
 
@@ -44,13 +52,13 @@ app_yummy_log_clinicians/
 │   └── main_*.dart             # Entry points por flavor
 ├── modules/
 │   ├── features/
-│   │   ├── patients/           # Lista de pacientes, código de convite
+│   │   ├── patients/           # Lista de pacientes, diário, código de convite
 │   │   ├── insights/           # Métricas e dashboard (placeholder)
-│   │   └── settings/           # Configurações, login/logout
+│   │   └── settings/           # Configurações, planos, login/logout
 │   └── foundation/
 │       ├── auth/               # AuthRepository, LoginPage
 │       ├── persistence/        # Sembast (cache local)
-│       └── sync/               # Firestore connection (do app paciente)
+│       └── sync/               # Firestore connection
 ├── packages/
 │   ├── feature_contract/       # Interface YummyLogFeature
 │   └── yummy_log_l10n/         # Localizações
@@ -77,10 +85,12 @@ app_yummy_log_clinicians/
 2. **Aba Pacientes (sem login)** → mostra empty state visual
 3. **Clica em "CONVIDAR PACIENTE"** → alerta pede login, direciona para Configurações
 4. **Faz login nas Configurações** → volta para Pacientes
-5. **Clica em "CONVIDAR PACIENTE"** → bottom sheet com código
-6. **Compartilha código** → paciente insere no app dele
-7. **Paciente aparece na lista** → clica em "ACOMPANHAR"
-8. **Visualiza diário** → calendário, refeições, sentimentos (read-only)
+5. **Clica em "CONVIDAR PACIENTE"** → bottom sheet com código (se limite não atingido)
+6. **Limite atingido (2 pacientes)** → dialog de upgrade para Pro
+7. **Compartilha código** → paciente insere no app dele
+8. **Paciente aparece na lista** → tap no card ou "ACOMPANHAR"
+9. **Visualiza diário** → timeline ou calendário, refeições, sentimentos (read-only)
+10. **Remover paciente** → swipe para esquerda no card, confirma no bottom sheet
 
 ---
 
@@ -88,7 +98,7 @@ app_yummy_log_clinicians/
 
 | Documento | Descrição |
 |-----------|-----------|
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1-C14) |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1-C25) |
 | [STATE.md](STATE.md) | Posição atual, decisões, próximos passos |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica |

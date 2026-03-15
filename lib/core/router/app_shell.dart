@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
+import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 /// Shell do app: tab bar (Pacientes, Insights, Configurações)
 /// e área de conteúdo.
@@ -12,27 +13,29 @@ class AppShell extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
-  static const _tabs = <_TabItem>[
+  static List<_TabItem> _buildTabs(AppLocalizations l10n) => [
     _TabItem(
       icon: Icons.people_outline,
       activeIcon: Icons.people,
-      label: 'Pacientes',
+      label: l10n.navPatients,
     ),
     _TabItem(
       icon: Icons.insights_outlined,
       activeIcon: Icons.insights,
-      label: 'Insights',
+      label: l10n.navInsights,
     ),
     _TabItem(
       icon: Icons.settings_outlined,
       activeIcon: Icons.settings,
-      label: 'Configurações',
+      label: l10n.navSettings,
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final appColors = AppColors.fromContext(context);
+    final tabs = _buildTabs(l10n);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final barColor = isDark ? appColors.neutralBlack : appColors.neutralWhite;
 
@@ -59,11 +62,11 @@ class AppShell extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Row(
-              children: List.generate(_tabs.length, (i) {
+              children: List.generate(tabs.length, (i) {
                 final isSelected = navigationShell.currentIndex == i;
                 return Expanded(
                   child: _NavBarItem(
-                    tab: _tabs[i],
+                    tab: tabs[i],
                     isSelected: isSelected,
                     selectedColor: appColors.primary,
                     unselectedColor: appColors.gray,

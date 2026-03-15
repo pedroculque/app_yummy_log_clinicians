@@ -9,8 +9,9 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 | Versão | Escopo | Status |
 |--------|--------|--------|
-| **v1** | MVP: tab bar, código de convite, lista de pacientes, empty state visual | Em desenvolvimento |
-| **v2** | Visualizar diário do paciente (read-only) | Planejado |
+| **v1** | MVP: tab bar, código de convite, lista de pacientes, empty state visual | ✅ Concluído |
+| **v2** | Visualizar diário do paciente (read-only) | ✅ Concluído |
+| **v2.1** | Monetização: planos Free/Pro, limite de pacientes | ✅ Concluído |
 | **v3** | Insights e métricas dos pacientes | Planejado |
 
 ---
@@ -24,9 +25,9 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | C3 | **Alerta de login:** ao convidar sem login, mostra alerta e direciona para Configurações. | ✅ |
 | C4 | **Código de convite:** clínico pode gerar código de 6 caracteres para pacientes se vincularem. | ✅ |
 | C5 | **Compartilhar código:** opções de compartilhar via SMS, WhatsApp, E-mail ou copiar. | ✅ |
-| C6 | **Lista de pacientes:** exibir pacientes vinculados com nome, foto, idade, data de vínculo. | ✅ |
+| C6 | **Lista de pacientes:** exibir pacientes vinculados com avatar/iniciais, nome, data de vínculo. | ✅ |
 | C7 | **Empty state visual:** ícone, título, descrição e feature chips quando não há pacientes. | ✅ |
-| C8 | **Botão ACOMPANHAR:** ao tocar, navegar para o diário do paciente (v2). | Pendente |
+| C8 | **Navegação para diário:** tap no card ou botão "ACOMPANHAR" → diário do paciente. | ✅ |
 | C9 | **Configurações:** idioma, aparência (tema), sobre, suporte, login/logout. | ✅ |
 | C10 | **Insights placeholder:** tela "Em breve" na aba Insights. | ✅ |
 
@@ -34,11 +35,27 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 ## Requisitos funcionais (v2 – Diário do Paciente)
 
-| ID | Descrição | Prioridade |
-|----|-----------|------------|
-| C11 | **Visualizar diário:** tela read-only com calendário e cards de refeição do paciente. | Alta |
-| C12 | **Detalhe da refeição:** ver detalhes de uma refeição específica (foto, sentimento, etc). | Alta |
-| C13 | **Header com nome:** exibir nome do paciente no topo da tela de diário. | Média |
+| ID | Descrição | Status |
+|----|-----------|--------|
+| C11 | **Visualizar diário:** tela read-only com timeline e calendário de refeições. | ✅ |
+| C12 | **Day strip:** faixa horizontal com últimos 14 dias para navegação. | ✅ |
+| C13 | **Modo calendário:** visão mensal com indicadores de dias com registros. | ✅ |
+| C14 | **Cards de refeição:** tipo, horário, sentimento, foto (se houver). | ✅ |
+| C15 | **Conectores de tempo:** mostra intervalo entre refeições (alerta se > 4h). | ✅ |
+| C16 | **Header com nome:** nome do paciente + "Diário" no topo. | ✅ |
+| C17 | **Remover paciente:** swipe para esquerda no card com confirmação. | ✅ |
+
+---
+
+## Requisitos funcionais (v2.1 – Monetização)
+
+| ID | Descrição | Status |
+|----|-----------|--------|
+| C18 | **Limite de pacientes:** plano gratuito permite até 2 pacientes. | ✅ |
+| C19 | **Bloqueio de convite:** ao atingir limite, mostra dialog de upgrade. | ✅ |
+| C20 | **Seção Assinatura:** card em configurações com plano atual, contagem e progresso. | ✅ |
+| C21 | **Tela de planos:** UI com benefícios Pro, seletor Anual/Mensal, preços. | ✅ |
+| C22 | **Integração IAP:** RevenueCat ou nativo para compras. | Pendente |
 
 ---
 
@@ -46,18 +63,19 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 | ID | Descrição | Prioridade |
 |----|-----------|------------|
-| C14 | **Dashboard:** visão geral dos pacientes (quantidade, atividade recente). | Média |
-| C15 | **Estatísticas:** frequência de registros, distribuição de sentimentos. | Média |
-| C16 | **Gráficos:** visualizações de dados ao longo do tempo. | Baixa |
+| C23 | **Dashboard:** visão geral dos pacientes (quantidade, atividade recente). | Média |
+| C24 | **Estatísticas:** frequência de registros, distribuição de sentimentos. | Média |
+| C25 | **Gráficos:** visualizações de dados ao longo do tempo. | Baixa |
 
 ---
 
-## Fora de escopo (v1)
+## Fora de escopo (atual)
 
 - Edição de refeições do paciente (app é read-only para o clínico).
 - Perfil completo do clínico (nome, CRN, bio, etc).
 - Notificações push.
 - Chat com paciente.
+- Exportar relatórios (PDF).
 
 ---
 

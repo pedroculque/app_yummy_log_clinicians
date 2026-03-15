@@ -144,6 +144,117 @@
   "validationMealTypeRequired": "Selecione o tipo de refeição.",
   "validationWhereAteRequired": "Selecione onde você comeu.",
   "validationAteWithOthersRequired": "Informe se comeu acompanhado.",
+  "navPatients": "Pacientes",
+  "navInsights": "Insights",
+  "navSettings": "Configurações",
+  "insightsTitle": "Insights",
+  "insightsComingSoonSubtitle": "Em breve você poderá visualizar métricas e dados dos seus pacientes aqui.",
+  "plansUnlockPro": "Desbloqueie o YummyLog Pro",
+  "plansUnlockSubtitle": "Aproveite todos os recursos sem limites",
+  "plansComingSoon": "Em breve",
+  "plansComingSoonMessage": "A assinatura Pro estará disponível em breve. Fique ligado nas atualizações!",
+  "plansGotIt": "Entendi",
+  "plansFeatureUnlimitedPatients": "Pacientes ilimitados",
+  "plansFeatureFullHistory": "Histórico completo",
+  "plansFeatureExportReports": "Exportar relatórios",
+  "plansFeaturePrioritySupport": "Suporte prioritário",
+  "plansAnnual": "Anual",
+  "plansSave37": "Economize 37%",
+  "plansMonthly": "Mensal",
+  "plansMostPopular": "MAIS POPULAR",
+  "plansPriceAnnual": "R$ 149,90",
+  "plansPriceMonthly": "R$ 19,90",
+  "plansPeriodYear": "/ano",
+  "plansPeriodMonth": "/mês",
+  "plansSubscribeAnnual": "Assinar Anual",
+  "plansSubscribeMonthly": "Assinar Mensal",
+  "plansTrialAnnual": "7 dias grátis, depois R$ 149,90",
+  "plansTrialMonthly": "7 dias grátis, depois R$ 19,90",
+  "plansCancelAnytime": "Cancele quando quiser",
+  "errorNotLoggedIn": "Não conectado",
+  "patientsLoadError": "Erro ao carregar pacientes",
+  "removePatientTitle": "Remover paciente?",
+  "removePatientMessage": "Você deixará de acompanhar o diário de {name}. O paciente pode se reconectar usando um novo código.",
+  "removePatientButton": "REMOVER",
+  "cancelButton": "Cancelar",
+  "patientRemoved": "{name} foi removido",
+  "loginRequiredTitle": "Login necessário",
+  "loginRequiredMessage": "Para convidar pacientes, você precisa fazer login primeiro.",
+  "limitReachedTitle": "Limite atingido",
+  "limitReachedMessage": "Você atingiu o limite de 2 pacientes do plano gratuito. Faça upgrade para o Pro e tenha pacientes ilimitados!",
+  "viewPlansButton": "Ver Planos",
+  "notNow": "Agora não",
+  "noPatientsConnected": "Nenhum paciente conectado",
+  "onePatientConnected": "1 paciente conectado",
+  "patientsConnectedCount": "{count} pacientes conectados",
+  "greetingMorning": "Bom dia",
+  "greetingAfternoon": "Boa tarde",
+  "greetingEvening": "Boa noite",
+  "somethingWentWrong": "Ops! Algo deu errado",
+  "tryAgain": "Tentar novamente",
+  "startFollowingTitle": "Comece a acompanhar",
+  "startFollowingSubtitleLoggedOut": "Faça login e convide seus pacientes para acompanhar o diário alimentar deles em tempo real.",
+  "startFollowingSubtitleLoggedIn": "Convide seus pacientes usando o botão abaixo e acompanhe a evolução alimentar deles.",
+  "featureViewMealsTitle": "Visualize refeições",
+  "featureViewMealsSubtitle": "Fotos e detalhes de cada refeição",
+  "featureFollowFeelingsTitle": "Acompanhe sentimentos",
+  "featureFollowFeelingsSubtitle": "Entenda a relação emocional com a comida",
+  "featureRealtimeTitle": "Tempo real",
+  "featureRealtimeSubtitle": "Dados sincronizados automaticamente",
+  "actionRemove": "Remover",
+  "linkedSinceDate": "Desde {date}",
+  "invitePatientButton": "CONVIDAR PACIENTE",
+  "inviteCodeTitle": "Código de convite",
+  "inviteCodeSubtitle": "Compartilhe este código com seu paciente para que ele possa se conectar ao seu perfil.",
+  "codeCopied": "Código copiado!",
+  "shareWhatsApp": "WhatsApp",
+  "shareSms": "SMS",
+  "shareEmail": "E-mail",
+  "shareInviteMessage": "Use o código {code} para se conectar comigo no YummyLog!",
+  "patientDefaultName": "Paciente",
+  "diaryLoadError": "Erro ao carregar dados",
+  "patientNoMealsThisDay": "O paciente não registrou refeições neste dia.",
+  "rateAppStoreSoon": "Avaliar na loja: em breve",
+  "sectionSubscription": "Assinatura",
+  "restorePurchases": "Restaurar compras",
+  "restorePurchasesSoon": "Restaurar compras: em breve",
+  "planPro": "Plano Pro",
+  "planFree": "Plano Gratuito",
+  "loading": "Carregando...",
+  "unlimitedPatients": "Pacientes ilimitados",
+  "patientsCountOfMax": "{current} de {max} pacientes",
+  "upgradeToPro": "Fazer Upgrade para Pro",
+  "@removePatientMessage": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "@patientRemoved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "@patientsConnectedCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@linkedSinceDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "@shareInviteMessage": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "@patientsCountOfMax": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "max": {"type": "int"}
+    }
+  },
   "@loggedInAs": {
     "placeholders": {
       "email": {"type": "String"}
