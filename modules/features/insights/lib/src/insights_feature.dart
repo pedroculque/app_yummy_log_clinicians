@@ -38,9 +38,12 @@ class InsightsFeature implements YummyLogFeature {
     return [
       GoRoute(
         path: '/insights',
-        builder: (context, state) => BlocProvider(
-          create: (_) => getIt<InsightsCubit>(),
-          child: const InsightsPage(),
+        builder: (context, state) => RepositoryProvider<AuthRepository>.value(
+          value: getIt<AuthRepository>(),
+          child: BlocProvider(
+            create: (_) => getIt<InsightsCubit>(),
+            child: const InsightsPage(),
+          ),
         ),
       ),
     ];

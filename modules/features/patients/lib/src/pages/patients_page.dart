@@ -21,6 +21,10 @@ class PatientsPage extends StatefulWidget {
 }
 
 class _PatientsPageState extends State<PatientsPage> {
+  /// UID do último usuário para o qual carregamos pacientes.
+  /// Ao fazer login ou trocar conta, forçamos reload e zeramos estado antigo.
+  String? _lastLoadedUserId;
+
   @override
   void initState() {
     super.initState();
@@ -29,9 +33,24 @@ class _PatientsPageState extends State<PatientsPage> {
 
   void _loadIfLoggedIn() {
     final authRepo = context.read<AuthRepository>();
-    if (authRepo.currentUser != null) {
+    final current = authRepo.currentUser;
+    if (current != null) {
+      _lastLoadedUserId = current.uid;
       unawaited(context.read<PatientsCubit>().load());
     }
+  }
+
+  void _onAuthUserChanged(AuthUser? user) {
+    if (user == null) {
+      _lastLoadedUserId = null;
+      return;
+    }
+    if (user.uid == _lastLoadedUserId) return;
+    _lastLoadedUserId = user.uid;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(context.read<PatientsCubit>().load());
+    });
   }
 
   @override
@@ -43,6 +62,8 @@ class _PatientsPageState extends State<PatientsPage> {
       builder: (context, snapshot) {
         final user = snapshot.data;
         final isLoggedIn = user != null;
+
+        _onAuthUserChanged(user);
 
         return Scaffold(
           backgroundColor: appColors.backgroundDefault,
@@ -59,7 +80,11 @@ class _PatientsPageState extends State<PatientsPage> {
   Widget _buildLoggedOutContent() {
     return Column(
       children: [
-        _PageHeader(patientCount: 0, l10n: context.l10n),
+        _PageHeader(
+          patientCount: 0,
+          l10n: context.l10n,
+          showSyncIndicator: true,
+        ),
         Expanded(
           child: _EmptyStateNotLoggedIn(l10n: context.l10n),
         ),
@@ -97,6 +122,12 @@ class _PatientsPageState extends State<PatientsPage> {
               patientCount: state.patients.length,
               clinicianName: user.displayName,
               l10n: context.l10n,
+              user: user,
+              showSyncIndicator: true,
+              isSynced: state.status == PatientsStatus.loaded
+                  && !state.isRefreshing,
+              isSyncing: state.isRefreshing,
+              onSyncTap: () => context.read<PatientsCubit>().load(),
             ),
             Expanded(
               child: state.isEmpty
@@ -448,30 +479,42 @@ class _PageHeader extends StatelessWidget {
     required this.patientCount,
     required this.l10n,
     this.clinicianName,
+    this.user,
+    this.showSyncIndicator = false,
+    this.isSynced = false,
+    this.isSyncing = false,
+    this.onSyncTap,
   });
 
   final int patientCount;
   final AppLocalizations l10n;
   final String? clinicianName;
+  final AuthUser? user;
+  final bool showSyncIndicator;
+  final bool isSynced;
+  final bool isSyncing;
+  final VoidCallback? onSyncTap;
 
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
     final now = DateTime.now();
-    final greeting = _getGreeting(now.hour);
+    final hour = now.hour;
+    final greeting = _getGreeting(hour);
+    final emoji = _getGreetingEmoji(hour);
     final firstName = _getFirstName(clinicianName);
-    final title = firstName != null ? '$greeting, $firstName' : greeting;
+    final title = firstName != null
+        ? '$greeting $emoji, $firstName'
+        : '$greeting $emoji';
     final subtitle = patientCount == 0
         ? l10n.noPatientsConnected
         : patientCount == 1
             ? l10n.onePatientConnected
             : l10n.patientsConnectedCount(patientCount);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-      child: Row(
-        children: [
-          Container(
+    final leading = user != null
+        ? UserAvatar(user: user!, size: 48)
+        : Container(
             width: 48,
             height: 48,
             decoration: BoxDecoration(
@@ -497,7 +540,13 @@ class _PageHeader extends StatelessWidget {
               color: Colors.white,
               size: 24,
             ),
-          ),
+          );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+      child: Row(
+        children: [
+          leading,
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -520,6 +569,35 @@ class _PageHeader extends StatelessWidget {
               ],
             ),
           ),
+          if (showSyncIndicator) ...[
+            const SizedBox(width: 8),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: isSyncing ? null : onSyncTap,
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: isSyncing
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: appColors.primary,
+                          ),
+                        )
+                      : Icon(
+                          isSynced
+                              ? Icons.cloud_done_outlined
+                              : Icons.cloud_off_outlined,
+                          size: 20,
+                          color: isSynced ? appColors.success : appColors.gray,
+                        ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -529,6 +607,12 @@ class _PageHeader extends StatelessWidget {
     if (hour < 12) return l10n.greetingMorning;
     if (hour < 18) return l10n.greetingAfternoon;
     return l10n.greetingEvening;
+  }
+
+  String _getGreetingEmoji(int hour) {
+    if (hour < 12) return '☀️';
+    if (hour < 18) return '🌤️';
+    return '🌙';
   }
 
   String? _getFirstName(String? fullName) {

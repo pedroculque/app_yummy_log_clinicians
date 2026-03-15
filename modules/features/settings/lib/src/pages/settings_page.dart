@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -111,6 +112,7 @@ class SettingsPage extends StatelessWidget {
                     }
                     if (state.isLoggedIn) {
                       return _LoggedInSection(
+                        userId: state.user!.uid,
                         email: state.user!.email ?? state.user!.uid,
                         photoUrl: state.user!.photoUrl,
                         displayName: state.user!.displayName,
@@ -406,11 +408,87 @@ class _LoggedOutSection extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// AVATAR COM FALLBACK FIRESTORE (Auth às vezes não persiste photoURL)
+// ---------------------------------------------------------------------------
+
+class _AccountAvatar extends StatefulWidget {
+  const _AccountAvatar({
+    required this.userId,
+    required this.email,
+    this.authPhotoUrl,
+    this.displayName,
+  });
+
+  final String userId;
+  final String email;
+  final String? authPhotoUrl;
+  final String? displayName;
+
+  @override
+  State<_AccountAvatar> createState() => _AccountAvatarState();
+}
+
+class _AccountAvatarState extends State<_AccountAvatar> {
+  String? _photoUrlFromFirestore;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_needsFirestoreFallback) {
+      unawaited(_fetchPhotoFromFirestore());
+    }
+  }
+
+  bool get _needsFirestoreFallback =>
+      widget.authPhotoUrl == null || widget.authPhotoUrl!.isEmpty;
+
+  Future<void> _fetchPhotoFromFirestore() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .get();
+      final url = doc.data()?['photoUrl'] as String?;
+      if (url != null && url.isNotEmpty && mounted) {
+        setState(() => _photoUrlFromFirestore = url);
+      }
+    } on Object catch (_) {
+      // Ignora; avatar fica com placeholder
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _AccountAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId ||
+        oldWidget.authPhotoUrl != widget.authPhotoUrl) {
+      _photoUrlFromFirestore = null;
+      if (_needsFirestoreFallback) {
+        unawaited(_fetchPhotoFromFirestore());
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final url = widget.authPhotoUrl ?? _photoUrlFromFirestore;
+    final user = AuthUser(
+      uid: widget.userId,
+      email: widget.email,
+      displayName: widget.displayName,
+      photoUrl: url,
+    );
+    return UserAvatar(user: user, size: 48);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // LOGGED IN SECTION
 // ---------------------------------------------------------------------------
 
 class _LoggedInSection extends StatelessWidget {
   const _LoggedInSection({
+    required this.userId,
     required this.email,
     required this.onLogout,
     this.photoUrl,
@@ -418,6 +496,7 @@ class _LoggedInSection extends StatelessWidget {
     this.onSetDisplayName,
   });
 
+  final String userId;
   final String email;
   final String? photoUrl;
   final String? displayName;
@@ -441,7 +520,12 @@ class _LoggedInSection extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              UiAvatar(imageUrl: photoUrl, size: UiAvatarSize.medium),
+              _AccountAvatar(
+                userId: userId,
+                email: email,
+                authPhotoUrl: photoUrl,
+                displayName: displayName,
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

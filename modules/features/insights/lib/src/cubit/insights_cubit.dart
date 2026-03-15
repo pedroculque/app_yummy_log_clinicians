@@ -4,6 +4,7 @@ import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:insights_feature/src/cubit/insights_state.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
+import 'package:insights_feature/src/domain/insights_summary.dart';
 
 class InsightsCubit extends Cubit<InsightsState> {
   InsightsCubit({
@@ -11,11 +12,23 @@ class InsightsCubit extends Cubit<InsightsState> {
     required AuthRepository authRepository,
   })  : _repository = repository,
         _authRepository = authRepository,
-        super(const InsightsState());
+        super(const InsightsState()) {
+    _authSubscription = authRepository.authStateChanges.listen(_onAuthChanged);
+  }
 
   final InsightsRepository _repository;
   final AuthRepository _authRepository;
   StreamSubscription<dynamic>? _subscription;
+  late final StreamSubscription<AuthUser?> _authSubscription;
+
+  void _onAuthChanged(AuthUser? user) {
+    final uid = user?.uid;
+    if (uid == _lastLoadedUid) return;
+    _lastLoadedUid = uid;
+    unawaited(load());
+  }
+
+  String? _lastLoadedUid;
 
   Future<void> load() async {
     final user = _authRepository.currentUser;
@@ -23,11 +36,13 @@ class InsightsCubit extends Cubit<InsightsState> {
       emit(
         state.copyWith(
           status: InsightsStatus.loaded,
+          summary: const InsightsSummary.empty(),
         ),
       );
       return;
     }
 
+    _lastLoadedUid = user.uid;
     emit(state.copyWith(status: InsightsStatus.loading));
 
     try {
@@ -65,6 +80,7 @@ class InsightsCubit extends Cubit<InsightsState> {
   @override
   Future<void> close() async {
     await _subscription?.cancel();
+    await _authSubscription.cancel();
     return super.close();
   }
 }

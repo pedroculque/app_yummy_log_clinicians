@@ -150,13 +150,15 @@ class SyncService {
     final user = _auth.currentUser;
     debugPrint(
       '[SyncService] Current user: '
-      'email=${user?.email}, displayName=${user?.displayName}',
+      'email=${user?.email}, displayName=${user?.displayName}, '
+      'photoUrl=${user?.photoUrl != null}',
     );
     unawaited(
       _userDocumentWriter.ensureExists(
         userId,
         email: user?.email,
         displayName: user?.displayName,
+        photoUrl: user?.photoUrl,
       ),
     );
     _startWatchers(userId);

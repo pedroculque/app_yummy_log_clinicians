@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:patients_feature/src/data/patient.dart';
 
 abstract class PatientsRepository {
@@ -47,24 +48,38 @@ class FirestorePatientsRepository implements PatientsRepository {
 
   @override
   Stream<List<Patient>> watchPatients(String clinicianId) {
-    return _firestore
+    debugPrint(
+      '[PatientsRepo] watchPatients: clinicianId=$clinicianId '
+      '(path: clinicians/$clinicianId/patients)',
+    );
+    final stream = _firestore
         .collection('clinicians')
         .doc(clinicianId)
         .collection('patients')
         .snapshots()
         .asyncMap((snapshot) async {
+      debugPrint(
+        '[PatientsRepo] snapshot received: ${snapshot.docs.length} docs, '
+        'metadata.fromCache=${snapshot.metadata.isFromCache}',
+      );
       final patients = <Patient>[];
       for (final doc in snapshot.docs) {
         final patientId = doc.id;
         final linkData = doc.data();
-
-        final patientDoc =
-            await _firestore.collection('users').doc(patientId).get();
-
-        final userData = patientDoc.exists
-          ? patientDoc.data()!
-          : <String, dynamic>{};
-
+        Map<String, dynamic> userData;
+        try {
+          final patientDoc =
+              await _firestore.collection('users').doc(patientId).get();
+          userData = patientDoc.exists
+              ? patientDoc.data()!
+              : <String, dynamic>{};
+        } catch (e, st) {
+          debugPrint(
+            '[PatientsRepo] permission-denied ou erro ao ler users/$patientId: $e',
+          );
+          debugPrint('[PatientsRepo] stack: $st');
+          rethrow;
+        }
         patients.add(
           Patient.fromFirestore(
             {...userData, ...linkData},
@@ -73,6 +88,14 @@ class FirestorePatientsRepository implements PatientsRepository {
         );
       }
       return patients;
+    });
+    // Evita que permission-denied (ex.: revalidação ao trocar de aba)
+    // propague como Unhandled Exception; o cubit mantém a lista em tela.
+    return stream.handleError((Object e, StackTrace st) {
+      if (e.toString().contains('permission-denied')) return;
+      if (e is Exception) throw e;
+      if (e is Error) throw e;
+      throw Exception(e.toString());
     });
   }
 

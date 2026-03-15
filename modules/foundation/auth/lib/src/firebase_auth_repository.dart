@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auth_foundation/src/auth_exceptions.dart';
 import 'package:auth_foundation/src/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -12,7 +13,10 @@ class FirebaseAuthRepository implements AuthRepository {
     firebase_auth.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
   })  : _auth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+        _googleSignIn = googleSignIn ??
+            GoogleSignIn(
+              scopes: ['email', 'profile'],
+            );
 
   final firebase_auth.FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
@@ -31,6 +35,22 @@ class FirebaseAuthRepository implements AuthRepository {
       email: u.email,
       displayName: u.displayName,
       photoUrl: u.photoURL,
+    );
+  }
+
+  /// Igual a _userFromFirebase, mas usa [photoUrlFallback] se [u?.photoURL]
+  /// for null.
+  AuthUser? _userFromFirebaseWithPhotoFallback(
+    firebase_auth.User? u, {
+    String? photoUrlFallback,
+  }) {
+    if (u == null) return null;
+    final photoUrl = u.photoURL ?? photoUrlFallback;
+    return AuthUser(
+      uid: u.uid,
+      email: u.email,
+      displayName: u.displayName,
+      photoUrl: photoUrl,
     );
   }
 
@@ -63,6 +83,12 @@ class FirebaseAuthRepository implements AuthRepository {
       if (googleUser == null) {
         throw const AuthCancelledException();
       }
+      // Debug: o que o Google retorna
+      debugPrint(
+        '[Auth] Google account: email=${googleUser.email}, '
+        'displayName=${googleUser.displayName}, '
+        'photoUrl=${googleUser.photoUrl}',
+      );
       final googleAuth = await googleUser.authentication;
       final accessToken = googleAuth.accessToken;
       final idToken = googleAuth.idToken;
@@ -76,7 +102,38 @@ class FirebaseAuthRepository implements AuthRepository {
         idToken: idToken,
       );
       final userCredential = await _auth.signInWithCredential(credential);
-      final user = _userFromFirebase(userCredential.user);
+      final firebaseUser = userCredential.user;
+      // Debug: o que o Firebase Auth retorna após credential
+      debugPrint(
+        '[Auth] Firebase user: uid=${firebaseUser?.uid}, '
+        'email=${firebaseUser?.email}, '
+        'displayName=${firebaseUser?.displayName}, '
+        'photoURL=${firebaseUser?.photoURL}',
+      );
+      // Se o Google tem foto mas o Firebase não, persiste no perfil do Auth
+      final googlePhotoUrl = googleUser.photoUrl;
+      if (firebaseUser != null &&
+          googlePhotoUrl != null &&
+          googlePhotoUrl.isNotEmpty &&
+          (firebaseUser.photoURL == null || firebaseUser.photoURL!.isEmpty)) {
+        debugPrint(
+          '[Auth] Firebase sem photoURL; atualizando com Google: '
+          '$googlePhotoUrl',
+        );
+        try {
+          await firebaseUser.updatePhotoURL(googlePhotoUrl);
+        } on Object catch (e, st) {
+          debugPrint(
+            '[Auth] updatePhotoURL falhou: $e $st',
+          );
+        }
+      }
+      // Retornar com foto do Google se o Firebase ainda não tiver
+      // no objeto local
+      final user = _userFromFirebaseWithPhotoFallback(
+        firebaseUser,
+        photoUrlFallback: googleUser.photoUrl,
+      );
       if (user == null) {
         throw const AuthUnknownException('No user after sign in');
       }

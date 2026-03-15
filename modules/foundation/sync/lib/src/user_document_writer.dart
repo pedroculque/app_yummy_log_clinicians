@@ -10,5 +10,6 @@ abstract class UserDocumentWriter {
     String userId, {
     String? email,
     String? displayName,
+    String? photoUrl,
   });
 }

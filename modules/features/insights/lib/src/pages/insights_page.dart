@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auth_foundation/auth_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,16 +21,36 @@ class InsightsPage extends StatefulWidget {
 }
 
 class _InsightsPageState extends State<InsightsPage> {
+  /// Recarrega métricas quando o usuário fizer login ou trocar de conta.
+  String? _lastLoadedUserId;
+
   @override
   void initState() {
     super.initState();
+    final current = context.read<AuthRepository>().currentUser;
+    _lastLoadedUserId = current?.uid;
     unawaited(context.read<InsightsCubit>().load());
+  }
+
+  void _onAuthUserChanged(AuthUser? user) {
+    if (user == null) {
+      _lastLoadedUserId = null;
+      return;
+    }
+    if (user.uid == _lastLoadedUserId) return;
+    _lastLoadedUserId = user.uid;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(context.read<InsightsCubit>().load());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
     final l10n = context.l10n;
+    final user = context.read<AuthRepository>().currentUser;
+    _onAuthUserChanged(user);
 
     return Scaffold(
       body: SafeArea(

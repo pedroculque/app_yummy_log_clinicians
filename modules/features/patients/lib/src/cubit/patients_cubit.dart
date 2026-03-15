@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:patients_feature/src/cubit/patients_state.dart';
 import 'package:patients_feature/src/data/patients_repository.dart';
 
@@ -29,7 +30,12 @@ class PatientsCubit extends Cubit<PatientsState> {
       return;
     }
 
-    emit(state.copyWith(status: PatientsStatus.loading));
+    final wasAlreadyLoaded = state.status == PatientsStatus.loaded;
+    if (wasAlreadyLoaded) {
+      emit(state.copyWith(isRefreshing: true));
+    } else {
+      emit(state.copyWith(status: PatientsStatus.loading));
+    }
 
     try {
       final inviteCode = await _repository.getInviteCode(user.uid);
@@ -42,14 +48,31 @@ class PatientsCubit extends Cubit<PatientsState> {
               status: PatientsStatus.loaded,
               patients: patients,
               inviteCode: inviteCode,
+              isRefreshing: false,
             ),
           );
         },
         onError: (Object error) {
+          final message = error.toString();
+          debugPrint(
+            '[PatientsCubit] watchPatients stream error (pode ser Firestore '
+            'snapshots em clinicians/uid/patients ou get em users/patientId): $message',
+          );
+          // Se já temos lista e o erro é permission-denied (ex.: revalidação ao
+          // trocar de aba), mantemos os dados e não bloqueamos a UI.
+          final isPermissionDenied = message.contains('permission-denied');
+          final hasLoadedPatients =
+              state.status == PatientsStatus.loaded &&
+              state.patients.isNotEmpty;
+          if (isPermissionDenied && hasLoadedPatients) {
+            emit(state.copyWith(isRefreshing: false));
+            return;
+          }
           emit(
             state.copyWith(
               status: PatientsStatus.error,
-              error: error.toString(),
+              error: message,
+              isRefreshing: false,
             ),
           );
         },
@@ -59,6 +82,7 @@ class PatientsCubit extends Cubit<PatientsState> {
         state.copyWith(
           status: PatientsStatus.error,
           error: e.toString(),
+          isRefreshing: false,
         ),
       );
     }

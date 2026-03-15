@@ -15,6 +15,7 @@ class FirestoreUserDocumentWriter implements UserDocumentWriter {
     String userId, {
     String? email,
     String? displayName,
+    String? photoUrl,
   }) async {
     final now = DateTime.now().toIso8601String();
     final data = <String, dynamic>{
@@ -22,6 +23,7 @@ class FirestoreUserDocumentWriter implements UserDocumentWriter {
       if (email != null && email.isNotEmpty) 'email': email,
       if (displayName != null && displayName.isNotEmpty)
         'displayName': displayName,
+      if (photoUrl != null && photoUrl.isNotEmpty) 'photoUrl': photoUrl,
     };
     final docRef = _firestore.collection(_collection).doc(userId);
     final snapshot = await docRef.get();
