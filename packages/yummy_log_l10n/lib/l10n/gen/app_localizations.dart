@@ -1053,11 +1053,11 @@ abstract class AppLocalizations {
   /// **'Annual'**
   String get plansAnnual;
 
-  /// No description provided for @plansSave37.
+  /// No description provided for @plansSave40.
   ///
   /// In en, this message translates to:
-  /// **'Save 37%'**
-  String get plansSave37;
+  /// **'Save 40%'**
+  String get plansSave40;
 
   /// No description provided for @plansMonthly.
   ///
@@ -1074,13 +1074,13 @@ abstract class AppLocalizations {
   /// No description provided for @plansPriceAnnual.
   ///
   /// In en, this message translates to:
-  /// **'R\$ 149.90'**
+  /// **'R\$ 179.90'**
   String get plansPriceAnnual;
 
   /// No description provided for @plansPriceMonthly.
   ///
   /// In en, this message translates to:
-  /// **'R\$ 19.90'**
+  /// **'R\$ 24.90'**
   String get plansPriceMonthly;
 
   /// No description provided for @plansPeriodYear.
@@ -1110,13 +1110,13 @@ abstract class AppLocalizations {
   /// No description provided for @plansTrialAnnual.
   ///
   /// In en, this message translates to:
-  /// **'7-day free trial, then R\$ 149.90'**
+  /// **'7-day free trial, then R\$ 179.90/year'**
   String get plansTrialAnnual;
 
   /// No description provided for @plansTrialMonthly.
   ///
   /// In en, this message translates to:
-  /// **'7-day free trial, then R\$ 19.90'**
+  /// **'7-day free trial, then R\$ 24.90/month'**
   String get plansTrialMonthly;
 
   /// No description provided for @plansCancelAnytime.

@@ -23,7 +23,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Conectores de tempo entre refeições (alerta se > 4h)
 - **Monetização:** Sistema de planos implementado:
   - Plano Gratuito: limite de 2 pacientes
-  - Plano Pro: pacientes ilimitados (R$ 19,90/mês ou R$ 149,90/ano)
+  - Plano Pro: pacientes ilimitados (R$ 24,90/mês ou R$ 179,90/ano)
   - Seção "Assinatura" na tela de configurações
   - `PlansPage` com UI de upgrade
 - **Insights:** Feature `insights_feature` como placeholder ("Em breve").
@@ -37,7 +37,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 ## Decisões recentes
 
 - **Limite de pacientes:** Plano gratuito permite até 2 pacientes; Pro é ilimitado.
-- **Preços Pro:** R$ 19,90/mês ou R$ 149,90/ano (economia de 37%).
+- **Preços Pro:** R$ 24,90/mês ou R$ 179,90/ano (economia de 40%).
 - **Rotas full-screen:** `/patients/:patientId/diary` e `/plans` ficam fora do `StatefulShellRoute` para não mostrar tab bar.
 - **Filtragem client-side:** Refeições deletadas (`deletedAt != null`) são filtradas no cliente para evitar índice composto no Firestore.
 - **Swipe-to-remove:** Confirmação via bottom sheet antes de remover paciente.

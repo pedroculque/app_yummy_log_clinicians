@@ -247,7 +247,7 @@ class _PlanSelector extends StatelessWidget {
           onTap: () => onChanged(true),
           appColors: appColors,
           title: l10n.plansAnnual,
-          subtitle: l10n.plansSave37,
+          subtitle: l10n.plansSave40,
           price: l10n.plansPriceAnnual,
           period: l10n.plansPeriodYear,
           badge: l10n.plansMostPopular,

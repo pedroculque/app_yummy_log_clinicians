@@ -495,7 +495,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansAnnual => 'Annual';
 
   @override
-  String get plansSave37 => 'Save 37%';
+  String get plansSave40 => 'Save 40%';
 
   @override
   String get plansMonthly => 'Monthly';
@@ -504,10 +504,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansMostPopular => 'MOST POPULAR';
 
   @override
-  String get plansPriceAnnual => 'R\$ 149.90';
+  String get plansPriceAnnual => 'R\$ 179.90';
 
   @override
-  String get plansPriceMonthly => 'R\$ 19.90';
+  String get plansPriceMonthly => 'R\$ 24.90';
 
   @override
   String get plansPeriodYear => '/year';
@@ -522,10 +522,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansSubscribeMonthly => 'Subscribe Monthly';
 
   @override
-  String get plansTrialAnnual => '7-day free trial, then R\$ 149.90';
+  String get plansTrialAnnual => '7-day free trial, then R\$ 179.90/year';
 
   @override
-  String get plansTrialMonthly => '7-day free trial, then R\$ 19.90';
+  String get plansTrialMonthly => '7-day free trial, then R\$ 24.90/month';
 
   @override
   String get plansCancelAnytime => 'Cancel anytime';
