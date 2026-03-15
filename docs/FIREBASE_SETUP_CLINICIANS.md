@@ -2,21 +2,18 @@
 
 Este guia descreve como **registrar o app do clínico** no Firebase, usando o **mesmo projeto** do app do paciente (`app-yummy-log-diary`) para compartilhar Firestore e Auth.
 
+**Status:** O app do clínico já está registrado no projeto **app-yummy-log-diary**. Os arquivos `android/app/google-services.json` e `ios/Runner/GoogleService-Info.plist` no repositório estão configurados para `com.yummylogdiaryforclinicians.app`. Use os passos abaixo se precisar refazer o registro (ex.: novo ambiente) ou adicionar flavors (.dev, .stg).
+
 ---
 
-## Situação atual
+## Bundle IDs do app do clínico
 
-- O projeto já usa o **mesmo projeto Firebase** que o app do paciente.
-- Os arquivos `android/app/google-services.json` e `ios/Runner/GoogleService-Info.plist` que estão no repositório são do **app do paciente** (`com.yummylogdiary.app`).
-- O app do clínico usa os bundle IDs:
-  - **Android (produção):** `com.yummylogdiaryforclinicians.app`
-  - **Android (staging):** `com.yummylogdiaryforclinicians.app.stg`
-  - **Android (development):** `com.yummylogdiaryforclinicians.app.dev`
-  - **iOS (produção):** `com.yummylogdiaryforclinicians.app`
-  - **iOS (development):** `com.yummylogdiaryforclinicians.app.dev`
-  - **iOS (staging):** `com.yummylogdiaryforclinicians.app.stg`
-
-Para o app do clínico funcionar (Auth, Firestore), é preciso **adicionar um novo app** (Android e iOS) no mesmo projeto Firebase e usar os arquivos de config gerados.
+- **Android (produção):** `com.yummylogdiaryforclinicians.app`
+- **Android (staging):** `com.yummylogdiaryforclinicians.app.stg`
+- **Android (development):** `com.yummylogdiaryforclinicians.app.dev`
+- **iOS (produção):** `com.yummylogdiaryforclinicians.app`
+- **iOS (development):** `com.yummylogdiaryforclinicians.app.dev`
+- **iOS (staging):** `com.yummylogdiaryforclinicians.app.stg`
 
 ---
 

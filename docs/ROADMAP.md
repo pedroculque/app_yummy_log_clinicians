@@ -39,7 +39,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 - [x] Configurações adaptadas do app paciente
 - [x] Empty state visual na aba Pacientes
 - [x] Alerta de login ao convidar sem estar logado
-- [ ] Configurar Firebase (novo app) → ver [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md)
+- [x] Configurar Firebase (novo app) → ver [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md)
 - [ ] Testar fluxo completo
 
 ---
@@ -117,18 +117,17 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para detalhes das regras de segur
 
 ### Alta (próximos passos)
 
-1. **Configurar Firebase** – Adicionar novo app no Firebase Console.
-2. **Testar fluxo completo** – Login, gerar código, paciente vincular.
-3. **Fase 2** – Visualizar diário do paciente.
+1. **Testar fluxo completo** – Login, gerar código, paciente vincular.
+2. **Fase 2** – Visualizar diário do paciente.
 
 ### Média
 
-4. **Fase 3** – Insights e métricas.
+3. **Fase 3** – Insights e métricas.
 
 ### Baixa
 
-5. Notificações push (quando paciente registra refeição).
-6. Chat com paciente.
+4. Notificações push (quando paciente registra refeição).
+5. Chat com paciente.
 
 ---
 
@@ -136,5 +135,6 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para detalhes das regras de segur
 
 - [REQUIREMENTS.md](../REQUIREMENTS.md) – Requisitos por versão
 - [STATE.md](../STATE.md) – Posição atual
+- [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md) – Config Firebase (app do clínico)
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura Firestore e regras
 - App do paciente: `/Users/pedroculque/dev-mobile/app_yummy_log`

@@ -64,6 +64,7 @@ app_yummy_log_clinicians/
 ├── docs/                         # Documentação detalhada
 │   ├── ARCHITECTURE.md
 │   ├── BACKEND_CONECTAR.md
+│   ├── FIREBASE_SETUP_CLINICIANS.md  # Config Firebase (app do clínico)
 │   ├── ROADMAP.md
 │   └── THEMING.md
 ├── PROJECT.md                    # Visão do produto

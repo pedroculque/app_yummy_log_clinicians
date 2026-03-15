@@ -21,6 +21,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Configurações:** Adaptado do app paciente, removida seção "Conectar com nutricionista".
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, UiAutoWidthButton, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`.
+- **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**; `google-services.json` e `GoogleService-Info.plist` configurados para `com.yummylogdiaryforclinicians.app`.
 
 ---
 
@@ -44,11 +45,10 @@ Nenhum no momento.
 
 ## Próximos passos (prioridade)
 
-1. **Configurar Firebase:** Seguir o guia [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md): registrar app Android e iOS no projeto **app-yummy-log-diary**, baixar `google-services.json` e `GoogleService-Info.plist` e substituir em `android/app/` e `ios/Runner/` (os arquivos atuais são do app do paciente).
-2. **Testar fluxo completo:** Login → gerar código → paciente vincular → ver na lista.
-3. **Implementar navegação para diário:** Botão "ACOMPANHAR" → tela de diário do paciente.
-4. **Adaptar diary_feature:** Criar versão read-only para visualizar diário do paciente.
-5. **Implementar Insights:** Dashboard com métricas dos pacientes.
+1. **Testar fluxo completo:** Login → gerar código → paciente vincular → ver na lista.
+2. **Implementar navegação para diário:** Botão "ACOMPANHAR" → tela de diário do paciente (Fase 2).
+3. **Adaptar diary_feature:** Criar versão read-only para visualizar diário do paciente.
+4. **Implementar Insights:** Dashboard com métricas dos pacientes (Fase 3).
 
 ---
 
