@@ -6,7 +6,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 ## Posição atual
 
-- **Fase:** 2.1 (Monetização) concluída. Pronto para Fase 3 (Insights).
+- **Fase:** 3.1 (Insights MVP) em desenvolvimento.
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
 - **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.
 - **Pacientes:** Feature `patients_feature` implementada com:
@@ -26,7 +26,11 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Plano Pro: pacientes ilimitados (R$ 24,90/mês ou R$ 179,90/ano)
   - Seção "Assinatura" na tela de configurações
   - `PlansPage` com UI de upgrade
-- **Insights:** Feature `insights_feature` como placeholder ("Em breve").
+- **Insights:** Feature `insights_feature` implementada com:
+  - Dashboard resumo (pacientes ativos, registros da semana, alertas)
+  - Alertas de comportamentos de risco (vômito forçado, laxantes, regurgitação, etc.)
+  - Ranking de pacientes por necessidade de atenção (score baseado em comportamentos)
+  - Navegação direta para o diário do paciente
 - **Configurações:** Adaptado do app paciente + seção de Assinatura.
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`.
@@ -56,9 +60,9 @@ Nenhum no momento.
 ## Próximos passos (prioridade)
 
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
-2. **Implementar Insights (Fase 3):** Dashboard com métricas dos pacientes.
+2. **Insights Fase 3.2:** Análise de sentimentos, frequência de registros, quantidade consumida por paciente.
 3. **Detalhe da refeição:** Tela full-screen com todos os dados da refeição.
-4. **Notificações push:** Alertar clínico quando paciente registra refeição.
+4. **Notificações push:** Alertar clínico quando paciente registra refeição ou comportamento de risco.
 
 ---
 

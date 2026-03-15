@@ -98,18 +98,39 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 ### Fase 3: Insights e Métricas 📊
 
-**Status:** Planejado
+**Status:** Em desenvolvimento
 
-**Objetivo:** Dashboard com métricas e visualizações dos dados dos pacientes.
+**Objetivo:** Dashboard com métricas e visualizações dos dados dos pacientes para apoio à decisão clínica.
+
+#### Fase 3.1 - MVP Insights (Alta prioridade)
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Dashboard | Visão geral: quantidade de pacientes, atividade recente | Pendente |
-| Estatísticas por paciente | Frequência de registros, sentimentos mais comuns | Pendente |
-| Gráficos | Visualizações ao longo do tempo | Pendente |
-| Filtros | Por período, por paciente | Pendente |
+| Dashboard resumo | Cards: pacientes ativos, registros da semana, alertas ativos | Pendente |
+| Alertas de risco | Lista de comportamentos de risco detectados (vômito, laxantes, etc.) | Pendente |
+| Ranking de atenção | Pacientes ordenados por necessidade de atenção | Pendente |
+
+#### Fase 3.2 - Análises por Paciente (Média prioridade)
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Análise de sentimentos | Distribuição de sentimentos (7/30 dias) | Pendente |
+| Frequência de registros | Calendário de calor, média refeições/dia | Pendente |
+| Quantidade consumida | Distribuição de `amountEaten` | Pendente |
+
+#### Fase 3.3 - Análises Avançadas (Baixa prioridade)
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Análise por refeição | Refeições puladas, correlação com sentimentos | Pendente |
+| Tendências agregadas | Comparativo temporal (semana atual vs anterior) | Pendente |
+| Exportar relatório | PDF com resumo do paciente | Pendente |
 
 **Dependências:** Fase 2 concluída.
+
+**Dados utilizados:**
+- `Patient`: id, name, photoUrl, linkedAt
+- `MealEntry`: mealType, dateTime, feelingLabel, amountEaten, hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives
 
 ---
 

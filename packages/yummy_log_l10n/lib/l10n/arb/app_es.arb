@@ -264,5 +264,83 @@
     "placeholders": {
       "date": {"type": "String"}
     }
-  }
+  },
+  "insightsDashboard": "Dashboard",
+  "insightsActivePatients": "Pacientes activos",
+  "insightsActivePatientsSubtitle": "con registros en los últimos 7 días",
+  "insightsMealsThisWeek": "Registros esta semana",
+  "insightsMealsThisWeekSubtitle": "comidas de todos los pacientes",
+  "insightsAlerts": "Alertas",
+  "insightsAlertsSubtitle": "comportamientos de riesgo",
+  "insightsRecentAlerts": "Alertas recientes",
+  "insightsNoAlerts": "Sin alertas de riesgo en los últimos 7 días",
+  "insightsNeedsAttention": "Necesitan atención",
+  "insightsNoAttentionNeeded": "Todos los pacientes están bien",
+  "insightsViewDiary": "Ver diario",
+  "insightsEmptyTitle": "Sin datos aún",
+  "insightsEmptySubtitle": "Invita pacientes y espera algunos días de registros para ver insights aquí.",
+  "insightsNotLoggedIn": "Inicia sesión para ver insights de tus pacientes.",
+  "insightsAlertForcedVomit": "Vómito forzado",
+  "insightsAlertUsedLaxatives": "Uso de laxantes",
+  "insightsAlertRegurgitated": "Regurgitación",
+  "insightsAlertHiddenFood": "Escondió comida",
+  "insightsAlertAteInSecret": "Comió a escondidas",
+  "insightsHighPriority": "Alta prioridad",
+  "insightsMediumPriority": "Media prioridad",
+  "insightsLowPriority": "Monitorear",
+  "insightsAttentionScore": "Puntuación: {score}",
+  "insightsMealsCount": "{count} comidas (7d)",
+  "insightsAlertsCount": "{count} alertas",
+  "insightsInactive": "Inactivo hace {days} días",
+  "insightsLastMeal": "Última comida: {date}",
+  "insightsNoMeals": "Sin registros",
+  "@insightsAttentionScore": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "@insightsMealsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsAlertsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsInactive": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "@insightsLastMeal": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "insightsPeriod7Days": "7 días",
+  "insightsPeriod30Days": "30 días",
+  "insightsPeriod90Days": "90 días",
+  "insightsUpdatedAt": "Actualizado a las {time}",
+  "insightsMealsPeriod": "Registros en el período",
+  "@insightsUpdatedAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "mealDetailTitle": "Detalles de la comida",
+  "mealDetailWhere": "Dónde comió",
+  "mealDetailWithOthers": "Comió acompañado",
+  "mealDetailAmount": "Cantidad",
+  "mealDetailFeeling": "Sentimiento",
+  "mealDetailDescription": "Descripción",
+  "mealDetailFeelingText": "Sobre el sentimiento",
+  "mealDetailBehaviors": "Comportamientos",
+  "mealDetailClose": "Cerrar",
+  "behaviorForcedVomit": "Vómito forzado",
+  "behaviorUsedLaxatives": "Laxantes/diuréticos",
+  "behaviorRegurgitated": "Regurgitación",
+  "behaviorHiddenFood": "Escondió comida",
+  "behaviorAteInSecret": "Comió a escondidas"
 }

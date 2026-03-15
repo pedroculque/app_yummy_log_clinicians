@@ -270,5 +270,83 @@
       "current": {"type": "int"},
       "max": {"type": "int"}
     }
-  }
+  },
+  "insightsDashboard": "Dashboard",
+  "insightsActivePatients": "Active patients",
+  "insightsActivePatientsSubtitle": "with records in the last 7 days",
+  "insightsMealsThisWeek": "Records this week",
+  "insightsMealsThisWeekSubtitle": "meals from all patients",
+  "insightsAlerts": "Alerts",
+  "insightsAlertsSubtitle": "risk behaviors",
+  "insightsRecentAlerts": "Recent alerts",
+  "insightsNoAlerts": "No risk alerts in the last 7 days",
+  "insightsNeedsAttention": "Need attention",
+  "insightsNoAttentionNeeded": "All patients are doing well",
+  "insightsViewDiary": "View diary",
+  "insightsEmptyTitle": "No data yet",
+  "insightsEmptySubtitle": "Invite patients and wait a few days of records to see insights here.",
+  "insightsNotLoggedIn": "Sign in to see insights from your patients.",
+  "insightsAlertForcedVomit": "Forced vomiting",
+  "insightsAlertUsedLaxatives": "Laxative use",
+  "insightsAlertRegurgitated": "Regurgitation",
+  "insightsAlertHiddenFood": "Hidden food",
+  "insightsAlertAteInSecret": "Ate in secret",
+  "insightsHighPriority": "High priority",
+  "insightsMediumPriority": "Medium priority",
+  "insightsLowPriority": "Monitor",
+  "insightsAttentionScore": "Score: {score}",
+  "insightsMealsCount": "{count} meals (7d)",
+  "insightsAlertsCount": "{count} alerts",
+  "insightsInactive": "Inactive for {days} days",
+  "insightsLastMeal": "Last meal: {date}",
+  "insightsNoMeals": "No records",
+  "@insightsAttentionScore": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "@insightsMealsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsAlertsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsInactive": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "@insightsLastMeal": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "insightsPeriod7Days": "7 days",
+  "insightsPeriod30Days": "30 days",
+  "insightsPeriod90Days": "90 days",
+  "insightsUpdatedAt": "Updated at {time}",
+  "insightsMealsPeriod": "Records in period",
+  "@insightsUpdatedAt": {
+    "placeholders": {
+      "time": {"type": "String"}
+    }
+  },
+  "mealDetailTitle": "Meal details",
+  "mealDetailWhere": "Where ate",
+  "mealDetailWithOthers": "Ate with others",
+  "mealDetailAmount": "Amount",
+  "mealDetailFeeling": "Feeling",
+  "mealDetailDescription": "Description",
+  "mealDetailFeelingText": "About the feeling",
+  "mealDetailBehaviors": "Behaviors",
+  "mealDetailClose": "Close",
+  "behaviorForcedVomit": "Forced vomiting",
+  "behaviorUsedLaxatives": "Laxatives/diuretics",
+  "behaviorRegurgitated": "Regurgitation",
+  "behaviorHiddenFood": "Hidden food",
+  "behaviorAteInSecret": "Ate in secret"
 }

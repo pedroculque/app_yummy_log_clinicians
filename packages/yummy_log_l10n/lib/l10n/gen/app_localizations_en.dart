@@ -700,4 +700,160 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get upgradeToPro => 'Upgrade to Pro';
+
+  @override
+  String get insightsDashboard => 'Dashboard';
+
+  @override
+  String get insightsActivePatients => 'Active patients';
+
+  @override
+  String get insightsActivePatientsSubtitle => 'with records in the last 7 days';
+
+  @override
+  String get insightsMealsThisWeek => 'Records this week';
+
+  @override
+  String get insightsMealsThisWeekSubtitle => 'meals from all patients';
+
+  @override
+  String get insightsAlerts => 'Alerts';
+
+  @override
+  String get insightsAlertsSubtitle => 'risk behaviors';
+
+  @override
+  String get insightsRecentAlerts => 'Recent alerts';
+
+  @override
+  String get insightsNoAlerts => 'No risk alerts in the last 7 days';
+
+  @override
+  String get insightsNeedsAttention => 'Need attention';
+
+  @override
+  String get insightsNoAttentionNeeded => 'All patients are doing well';
+
+  @override
+  String get insightsViewDiary => 'View diary';
+
+  @override
+  String get insightsEmptyTitle => 'No data yet';
+
+  @override
+  String get insightsEmptySubtitle => 'Invite patients and wait a few days of records to see insights here.';
+
+  @override
+  String get insightsNotLoggedIn => 'Sign in to see insights from your patients.';
+
+  @override
+  String get insightsAlertForcedVomit => 'Forced vomiting';
+
+  @override
+  String get insightsAlertUsedLaxatives => 'Laxative use';
+
+  @override
+  String get insightsAlertRegurgitated => 'Regurgitation';
+
+  @override
+  String get insightsAlertHiddenFood => 'Hidden food';
+
+  @override
+  String get insightsAlertAteInSecret => 'Ate in secret';
+
+  @override
+  String get insightsHighPriority => 'High priority';
+
+  @override
+  String get insightsMediumPriority => 'Medium priority';
+
+  @override
+  String get insightsLowPriority => 'Monitor';
+
+  @override
+  String insightsAttentionScore(int score) {
+    return 'Score: $score';
+  }
+
+  @override
+  String insightsMealsCount(int count) {
+    return '$count meals (7d)';
+  }
+
+  @override
+  String insightsAlertsCount(int count) {
+    return '$count alerts';
+  }
+
+  @override
+  String insightsInactive(int days) {
+    return 'Inactive for $days days';
+  }
+
+  @override
+  String insightsLastMeal(String date) {
+    return 'Last meal: $date';
+  }
+
+  @override
+  String get insightsNoMeals => 'No records';
+
+  @override
+  String get insightsPeriod7Days => '7 days';
+
+  @override
+  String get insightsPeriod30Days => '30 days';
+
+  @override
+  String get insightsPeriod90Days => '90 days';
+
+  @override
+  String insightsUpdatedAt(String time) {
+    return 'Updated at $time';
+  }
+
+  @override
+  String get insightsMealsPeriod => 'Records in period';
+
+  @override
+  String get mealDetailTitle => 'Meal details';
+
+  @override
+  String get mealDetailWhere => 'Where ate';
+
+  @override
+  String get mealDetailWithOthers => 'Ate with others';
+
+  @override
+  String get mealDetailAmount => 'Amount';
+
+  @override
+  String get mealDetailFeeling => 'Feeling';
+
+  @override
+  String get mealDetailDescription => 'Description';
+
+  @override
+  String get mealDetailFeelingText => 'About the feeling';
+
+  @override
+  String get mealDetailBehaviors => 'Behaviors';
+
+  @override
+  String get mealDetailClose => 'Close';
+
+  @override
+  String get behaviorForcedVomit => 'Forced vomiting';
+
+  @override
+  String get behaviorUsedLaxatives => 'Laxatives/diuretics';
+
+  @override
+  String get behaviorRegurgitated => 'Regurgitation';
+
+  @override
+  String get behaviorHiddenFood => 'Hidden food';
+
+  @override
+  String get behaviorAteInSecret => 'Ate in secret';
 }

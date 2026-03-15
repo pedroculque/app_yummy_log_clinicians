@@ -61,11 +61,16 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 ## Requisitos funcionais (v3 – Insights)
 
-| ID | Descrição | Prioridade |
-|----|-----------|------------|
-| C23 | **Dashboard:** visão geral dos pacientes (quantidade, atividade recente). | Média |
-| C24 | **Estatísticas:** frequência de registros, distribuição de sentimentos. | Média |
-| C25 | **Gráficos:** visualizações de dados ao longo do tempo. | Baixa |
+| ID | Descrição | Prioridade | Status |
+|----|-----------|------------|--------|
+| C23 | **Dashboard resumo:** cards com total de pacientes, registros da semana, alertas ativos. | Alta | Pendente |
+| C24 | **Alertas de risco:** lista de comportamentos de risco (vômito forçado, laxantes, regurgitação, esconder comida, comer em segredo). | Alta | Pendente |
+| C25 | **Ranking de atenção:** lista de pacientes ordenada por necessidade de atenção (score baseado em comportamentos de risco, sentimentos negativos, baixa frequência). | Alta | Pendente |
+| C26 | **Análise de sentimentos:** distribuição de sentimentos por paciente (últimos 7/30 dias). | Média | Pendente |
+| C27 | **Frequência de registros:** calendário de calor e média de refeições/dia por paciente. | Média | Pendente |
+| C28 | **Quantidade consumida:** distribuição de `amountEaten` por paciente para identificar restrição. | Média | Pendente |
+| C29 | **Análise por refeição:** quais refeições são mais puladas, correlação com sentimentos. | Baixa | Pendente |
+| C30 | **Filtros de período:** 7 dias, 30 dias, 90 dias. | Média | Pendente |
 
 ---
 

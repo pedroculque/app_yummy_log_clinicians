@@ -1132,6 +1132,13 @@ class _EntryCard extends StatelessWidget {
 
   static const double _leadingSize = 56;
 
+  bool get _hasRiskBehaviors =>
+      entry.forcedVomit == true ||
+      entry.usedLaxatives == true ||
+      entry.regurgitated == true ||
+      entry.hiddenFood == true ||
+      entry.ateInSecret == true;
+
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
@@ -1139,72 +1146,105 @@ class _EntryCard extends StatelessWidget {
     final description = entry.description ?? entry.feelingText;
     final timeStr = DateFormat.Hm().format(entry.dateTime);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: appColors.neutralSilver,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: appColors.grayLight.withValues(alpha: 0.6),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: appColors.neutralBlack.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () => _showMealDetail(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: appColors.neutralSilver,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _hasRiskBehaviors
+                ? appColors.error.withValues(alpha: 0.4)
+                : appColors.grayLight.withValues(alpha: 0.6),
+            width: _hasRiskBehaviors ? 1.5 : 1,
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildLeading(appColors),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _mealTypeLabel(entry.mealType, l10n),
-                          style: AppTextStyles.body1.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: appColors.neutralBlack,
-                          ),
-                        ),
-                      ),
-                      if (entry.feelingLabel != null)
-                        _buildFeelingBadge(entry.feelingLabel!, appColors),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    timeStr,
-                    style: AppTextStyles.body3.copyWith(
-                      color: appColors.gray,
-                    ),
-                  ),
-                  if (description != null && description.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      description,
-                      style: AppTextStyles.body2.copyWith(
-                        color: appColors.grayDark,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
-              ),
+          boxShadow: [
+            BoxShadow(
+              color: appColors.neutralBlack.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLeading(appColors),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _mealTypeLabel(entry.mealType, l10n),
+                                style: AppTextStyles.body1.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: appColors.neutralBlack,
+                                ),
+                              ),
+                            ),
+                            if (entry.feelingLabel != null)
+                            _buildFeelingBadge(
+                              entry.feelingLabel!,
+                              appColors,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          timeStr,
+                          style: AppTextStyles.body3.copyWith(
+                            color: appColors.gray,
+                          ),
+                        ),
+                        if (description != null && description.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            description,
+                            style: AppTextStyles.body2.copyWith(
+                              color: appColors.grayDark,
+                              height: 1.3,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              if (_hasRiskBehaviors) ...[
+                const SizedBox(height: 10),
+                _BehaviorTags(entry: entry, l10n: l10n, appColors: appColors),
+              ],
+              if (entry.amountEaten != null || entry.whereAte != null) ...[
+                const SizedBox(height: 8),
+                _DetailChips(entry: entry, l10n: l10n, appColors: appColors),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showMealDetail(BuildContext context) {
+    unawaited(
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => _MealDetailSheet(entry: entry),
       ),
     );
   }
@@ -1278,6 +1318,505 @@ class _EntryCard extends StatelessWidget {
       MealType.afternoonSnack => l10n.mealTypeAfternoonSnack,
       MealType.eveningSnack => l10n.mealTypeEveningSnack,
     };
+  }
+}
+
+class _BehaviorTags extends StatelessWidget {
+  const _BehaviorTags({
+    required this.entry,
+    required this.l10n,
+    required this.appColors,
+  });
+
+  final MealEntry entry;
+  final AppLocalizations l10n;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    final behaviors = <Widget>[];
+
+    if (entry.forcedVomit == true) {
+      behaviors.add(_buildTag(l10n.behaviorForcedVomit, appColors.error));
+    }
+    if (entry.usedLaxatives == true) {
+      behaviors.add(_buildTag(l10n.behaviorUsedLaxatives, appColors.error));
+    }
+    if (entry.regurgitated == true) {
+      behaviors.add(_buildTag(l10n.behaviorRegurgitated, Colors.orange));
+    }
+    if (entry.hiddenFood == true) {
+      behaviors.add(_buildTag(l10n.behaviorHiddenFood, Colors.orange));
+    }
+    if (entry.ateInSecret == true) {
+      behaviors.add(_buildTag(l10n.behaviorAteInSecret, Colors.amber.shade700));
+    }
+
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: behaviors,
+    );
+  }
+
+  Widget _buildTag(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.warning_amber_rounded, size: 12, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: AppTextStyles.body3.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailChips extends StatelessWidget {
+  const _DetailChips({
+    required this.entry,
+    required this.l10n,
+    required this.appColors,
+  });
+
+  final MealEntry entry;
+  final AppLocalizations l10n;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      children: [
+        if (entry.amountEaten != null)
+          _buildChip(
+            Icons.pie_chart_outline,
+            _amountLabel(entry.amountEaten!, l10n),
+          ),
+        if (entry.whereAte != null && entry.whereAte!.isNotEmpty)
+          _buildChip(Icons.place_outlined, entry.whereAte!),
+        if (entry.ateWithOthers == true)
+          _buildChip(Icons.people_outline, l10n.yes),
+        if (entry.ateWithOthers == false)
+          _buildChip(Icons.person_outline, l10n.no),
+      ],
+    );
+  }
+
+  Widget _buildChip(IconData icon, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: appColors.gray.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: appColors.gray),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: AppTextStyles.body3.copyWith(
+              color: appColors.grayDark,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _amountLabel(AmountEaten amount, AppLocalizations l10n) {
+    return switch (amount) {
+      AmountEaten.nothing => l10n.amountNothing,
+      AmountEaten.aLittle => l10n.amountLittle,
+      AmountEaten.half => l10n.amountHalf,
+      AmountEaten.most => l10n.amountMost,
+      AmountEaten.all => l10n.amountAll,
+    };
+  }
+}
+
+class _MealDetailSheet extends StatelessWidget {
+  const _MealDetailSheet({required this.entry});
+
+  final MealEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    final l10n = context.l10n;
+    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      decoration: BoxDecoration(
+        color: appColors.backgroundDefault,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: appColors.gray.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.mealDetailTitle,
+                    style: AppTextStyles.h3.copyWith(
+                      color: appColors.neutralBlack,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(Icons.close, color: appColors.gray),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (entry.photoUrl != null) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        entry.photoUrl!,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  _DetailRow(
+                    icon: Icons.restaurant,
+                    label: l10n.labelMeal,
+                    value: _mealTypeLabel(entry.mealType, l10n),
+                    appColors: appColors,
+                  ),
+                  _DetailRow(
+                    icon: Icons.schedule,
+                    label: l10n.labelDate,
+                    value: dateFormat.format(entry.dateTime),
+                    appColors: appColors,
+                  ),
+                  if (entry.whereAte != null && entry.whereAte!.isNotEmpty)
+                    _DetailRow(
+                      icon: Icons.place_outlined,
+                      label: l10n.mealDetailWhere,
+                      value: entry.whereAte!,
+                      appColors: appColors,
+                    ),
+                  if (entry.ateWithOthers != null)
+                    _DetailRow(
+                      icon: Icons.people_outline,
+                      label: l10n.mealDetailWithOthers,
+                      value: entry.ateWithOthers! ? l10n.yes : l10n.no,
+                      appColors: appColors,
+                    ),
+                  if (entry.amountEaten != null)
+                    _DetailRow(
+                      icon: Icons.pie_chart_outline,
+                      label: l10n.mealDetailAmount,
+                      value: _amountLabel(entry.amountEaten!, l10n),
+                      appColors: appColors,
+                      valueColor: _amountColor(entry.amountEaten!, appColors),
+                    ),
+                  if (entry.feelingLabel != null)
+                    _DetailRow(
+                      icon: Icons.mood,
+                      label: l10n.mealDetailFeeling,
+                      value: _feelingLabel(entry.feelingLabel!, l10n),
+                      appColors: appColors,
+                      valueColor: _feelingColor(entry.feelingLabel!, appColors),
+                    ),
+                  if (entry.description != null &&
+                      entry.description!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.mealDetailDescription,
+                      style: AppTextStyles.body2.copyWith(
+                        color: appColors.gray,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: appColors.gray.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        entry.description!,
+                        style: AppTextStyles.body2.copyWith(
+                          color: appColors.neutralBlack,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (entry.feelingText != null &&
+                      entry.feelingText!.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.mealDetailFeelingText,
+                      style: AppTextStyles.body2.copyWith(
+                        color: appColors.gray,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: appColors.gray.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        entry.feelingText!,
+                        style: AppTextStyles.body2.copyWith(
+                          color: appColors.neutralBlack,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (_hasRiskBehaviors) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      l10n.mealDetailBehaviors,
+                      style: AppTextStyles.body2.copyWith(
+                        color: appColors.error,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _BehaviorsList(
+                      entry: entry,
+                      l10n: l10n,
+                      appColors: appColors,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool get _hasRiskBehaviors =>
+      entry.forcedVomit == true ||
+      entry.usedLaxatives == true ||
+      entry.regurgitated == true ||
+      entry.hiddenFood == true ||
+      entry.ateInSecret == true;
+
+  String _mealTypeLabel(MealType type, AppLocalizations l10n) {
+    return switch (type) {
+      MealType.breakfast => l10n.mealTypeBreakfast,
+      MealType.lunch => l10n.mealTypeLunch,
+      MealType.dinner => l10n.mealTypeDinner,
+      MealType.supper => l10n.mealTypeSupper,
+      MealType.morningSnack => l10n.mealTypeMorningSnack,
+      MealType.afternoonSnack => l10n.mealTypeAfternoonSnack,
+      MealType.eveningSnack => l10n.mealTypeEveningSnack,
+    };
+  }
+
+  String _amountLabel(AmountEaten amount, AppLocalizations l10n) {
+    return switch (amount) {
+      AmountEaten.nothing => l10n.amountNothing,
+      AmountEaten.aLittle => l10n.amountLittle,
+      AmountEaten.half => l10n.amountHalf,
+      AmountEaten.most => l10n.amountMost,
+      AmountEaten.all => l10n.amountAll,
+    };
+  }
+
+  Color? _amountColor(AmountEaten amount, AppColors appColors) {
+    return switch (amount) {
+      AmountEaten.nothing => appColors.error,
+      AmountEaten.aLittle => Colors.orange,
+      AmountEaten.half => Colors.amber.shade700,
+      AmountEaten.most => appColors.success,
+      AmountEaten.all => appColors.success,
+    };
+  }
+
+  String _feelingLabel(FeelingLabel feeling, AppLocalizations l10n) {
+    return switch (feeling) {
+      FeelingLabel.sad => l10n.feelingSad,
+      FeelingLabel.nothing => l10n.feelingNothing,
+      FeelingLabel.happy => l10n.feelingHappy,
+      FeelingLabel.proud => l10n.feelingProud,
+      FeelingLabel.angry => l10n.feelingAngry,
+    };
+  }
+
+  Color? _feelingColor(FeelingLabel feeling, AppColors appColors) {
+    return switch (feeling) {
+      FeelingLabel.sad => appColors.error,
+      FeelingLabel.angry => appColors.error,
+      FeelingLabel.nothing => appColors.alert,
+      FeelingLabel.happy => appColors.success,
+      FeelingLabel.proud => appColors.success,
+    };
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.appColors,
+    this.valueColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final AppColors appColors;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: appColors.gray),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyles.body2.copyWith(color: appColors.gray),
+            ),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.body2.copyWith(
+              color: valueColor ?? appColors.neutralBlack,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BehaviorsList extends StatelessWidget {
+  const _BehaviorsList({
+    required this.entry,
+    required this.l10n,
+    required this.appColors,
+  });
+
+  final MealEntry entry;
+  final AppLocalizations l10n;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (entry.forcedVomit == true)
+          _buildBehaviorItem(
+            l10n.behaviorForcedVomit,
+            appColors.error,
+            Icons.warning_rounded,
+          ),
+        if (entry.usedLaxatives == true)
+          _buildBehaviorItem(
+            l10n.behaviorUsedLaxatives,
+            appColors.error,
+            Icons.warning_rounded,
+          ),
+        if (entry.regurgitated == true)
+          _buildBehaviorItem(
+            l10n.behaviorRegurgitated,
+            Colors.orange,
+            Icons.warning_amber_rounded,
+          ),
+        if (entry.hiddenFood == true)
+          _buildBehaviorItem(
+            l10n.behaviorHiddenFood,
+            Colors.orange,
+            Icons.warning_amber_rounded,
+          ),
+        if (entry.ateInSecret == true)
+          _buildBehaviorItem(
+            l10n.behaviorAteInSecret,
+            Colors.amber.shade700,
+            Icons.visibility_off_outlined,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildBehaviorItem(String label, Color color, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: color),
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: AppTextStyles.body1.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

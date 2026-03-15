@@ -1442,6 +1442,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upgrade to Pro'**
   String get upgradeToPro;
+
+  /// No description provided for @insightsDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get insightsDashboard;
+
+  /// No description provided for @insightsActivePatients.
+  ///
+  /// In en, this message translates to:
+  /// **'Active patients'**
+  String get insightsActivePatients;
+
+  /// No description provided for @insightsActivePatientsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'with records in the last 7 days'**
+  String get insightsActivePatientsSubtitle;
+
+  /// No description provided for @insightsMealsThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Records this week'**
+  String get insightsMealsThisWeek;
+
+  /// No description provided for @insightsMealsThisWeekSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'meals from all patients'**
+  String get insightsMealsThisWeekSubtitle;
+
+  /// No description provided for @insightsAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get insightsAlerts;
+
+  /// No description provided for @insightsAlertsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'risk behaviors'**
+  String get insightsAlertsSubtitle;
+
+  /// No description provided for @insightsRecentAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent alerts'**
+  String get insightsRecentAlerts;
+
+  /// No description provided for @insightsNoAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'No risk alerts in the last 7 days'**
+  String get insightsNoAlerts;
+
+  /// No description provided for @insightsNeedsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Need attention'**
+  String get insightsNeedsAttention;
+
+  /// No description provided for @insightsNoAttentionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'All patients are doing well'**
+  String get insightsNoAttentionNeeded;
+
+  /// No description provided for @insightsViewDiary.
+  ///
+  /// In en, this message translates to:
+  /// **'View diary'**
+  String get insightsViewDiary;
+
+  /// No description provided for @insightsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No data yet'**
+  String get insightsEmptyTitle;
+
+  /// No description provided for @insightsEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite patients and wait a few days of records to see insights here.'**
+  String get insightsEmptySubtitle;
+
+  /// No description provided for @insightsNotLoggedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to see insights from your patients.'**
+  String get insightsNotLoggedIn;
+
+  /// No description provided for @insightsAlertForcedVomit.
+  ///
+  /// In en, this message translates to:
+  /// **'Forced vomiting'**
+  String get insightsAlertForcedVomit;
+
+  /// No description provided for @insightsAlertUsedLaxatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Laxative use'**
+  String get insightsAlertUsedLaxatives;
+
+  /// No description provided for @insightsAlertRegurgitated.
+  ///
+  /// In en, this message translates to:
+  /// **'Regurgitation'**
+  String get insightsAlertRegurgitated;
+
+  /// No description provided for @insightsAlertHiddenFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden food'**
+  String get insightsAlertHiddenFood;
+
+  /// No description provided for @insightsAlertAteInSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Ate in secret'**
+  String get insightsAlertAteInSecret;
+
+  /// No description provided for @insightsHighPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'High priority'**
+  String get insightsHighPriority;
+
+  /// No description provided for @insightsMediumPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium priority'**
+  String get insightsMediumPriority;
+
+  /// No description provided for @insightsLowPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor'**
+  String get insightsLowPriority;
+
+  /// No description provided for @insightsAttentionScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Score: {score}'**
+  String insightsAttentionScore(int score);
+
+  /// No description provided for @insightsMealsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} meals (7d)'**
+  String insightsMealsCount(int count);
+
+  /// No description provided for @insightsAlertsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} alerts'**
+  String insightsAlertsCount(int count);
+
+  /// No description provided for @insightsInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive for {days} days'**
+  String insightsInactive(int days);
+
+  /// No description provided for @insightsLastMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Last meal: {date}'**
+  String insightsLastMeal(String date);
+
+  /// No description provided for @insightsNoMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'No records'**
+  String get insightsNoMeals;
+
+  /// No description provided for @insightsPeriod7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get insightsPeriod7Days;
+
+  /// No description provided for @insightsPeriod30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get insightsPeriod30Days;
+
+  /// No description provided for @insightsPeriod90Days.
+  ///
+  /// In en, this message translates to:
+  /// **'90 days'**
+  String get insightsPeriod90Days;
+
+  /// No description provided for @insightsUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated at {time}'**
+  String insightsUpdatedAt(String time);
+
+  /// No description provided for @insightsMealsPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Records in period'**
+  String get insightsMealsPeriod;
+
+  /// No description provided for @mealDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal details'**
+  String get mealDetailTitle;
+
+  /// No description provided for @mealDetailWhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Where ate'**
+  String get mealDetailWhere;
+
+  /// No description provided for @mealDetailWithOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Ate with others'**
+  String get mealDetailWithOthers;
+
+  /// No description provided for @mealDetailAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get mealDetailAmount;
+
+  /// No description provided for @mealDetailFeeling.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeling'**
+  String get mealDetailFeeling;
+
+  /// No description provided for @mealDetailDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get mealDetailDescription;
+
+  /// No description provided for @mealDetailFeelingText.
+  ///
+  /// In en, this message translates to:
+  /// **'About the feeling'**
+  String get mealDetailFeelingText;
+
+  /// No description provided for @mealDetailBehaviors.
+  ///
+  /// In en, this message translates to:
+  /// **'Behaviors'**
+  String get mealDetailBehaviors;
+
+  /// No description provided for @mealDetailClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get mealDetailClose;
+
+  /// No description provided for @behaviorForcedVomit.
+  ///
+  /// In en, this message translates to:
+  /// **'Forced vomiting'**
+  String get behaviorForcedVomit;
+
+  /// No description provided for @behaviorUsedLaxatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Laxatives/diuretics'**
+  String get behaviorUsedLaxatives;
+
+  /// No description provided for @behaviorRegurgitated.
+  ///
+  /// In en, this message translates to:
+  /// **'Regurgitation'**
+  String get behaviorRegurgitated;
+
+  /// No description provided for @behaviorHiddenFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden food'**
+  String get behaviorHiddenFood;
+
+  /// No description provided for @behaviorAteInSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Ate in secret'**
+  String get behaviorAteInSecret;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

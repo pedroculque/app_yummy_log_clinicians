@@ -1,2 +1,9 @@
+export 'src/cubit/insights_cubit.dart';
+export 'src/cubit/insights_state.dart';
+export 'src/data/insights_repository.dart';
+export 'src/domain/insights_calculator.dart';
+export 'src/domain/insights_summary.dart';
+export 'src/domain/patient_insight.dart';
+export 'src/domain/risk_alert.dart';
 export 'src/insights_feature.dart';
 export 'src/pages/insights_page.dart';
