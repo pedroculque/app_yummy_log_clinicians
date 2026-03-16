@@ -268,7 +268,7 @@ class _LastUpdatedSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = config.updatedByDisplayName ?? l10n.patientDefaultName;
     final date = config.updatedAt != null
-        ? DateFormat('dd/MM/yyyy HH:mm').format(config.updatedAt!)
+        ? DateFormat('dd/MM/yyyy HH:mm').format(config.updatedAt!.toLocal())
         : '';
 
     if (config.updatedAt == null) {
@@ -373,7 +373,7 @@ class _ChangeLogSectionState extends State<_ChangeLogSection> {
                         ),
                       ),
                       Text(
-                        DateFormat('dd/MM/yyyy HH:mm').format(e.at),
+                        DateFormat('dd/MM/yyyy HH:mm').format(e.at.toLocal()),
                         style: AppTextStyles.body3.copyWith(
                           color: widget.appColors.gray,
                         ),

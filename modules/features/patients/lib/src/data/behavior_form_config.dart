@@ -1,14 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// IDs dos comportamentos do formulário (MVP: 5 existentes no MealEntry).
-/// Ordem de exibição na tela de configuração.
-const List<String> kFormConfigBehaviorIds = [
-  'hiddenFood',
-  'regurgitated',
-  'forcedVomit',
-  'ateInSecret',
-  'usedLaxatives',
-];
+import 'package:patients_feature/src/data/behavior_catalog.dart';
 
 /// Entrada do log de alterações da config (quem alterou e quando).
 class FormConfigChangeLogEntry {
@@ -124,13 +116,19 @@ class BehaviorFormConfig {
     );
   }
 
+  /// Persiste no Firestore. Garante que [behaviors] inclua todas as chaves do
+  /// [BehaviorCatalog], para o app do paciente receber a config completa.
   Map<String, dynamic> toFirestore() {
+    final fullBehaviors = Map<String, bool>.from(behaviors);
+    for (final id in BehaviorCatalog.ids) {
+      fullBehaviors.putIfAbsent(id, () => true);
+    }
     return {
       'sectionEnabled': sectionEnabled,
       'updatedAt': updatedAt?.toUtc().toIso8601String(),
       'updatedBy': updatedBy,
       'updatedByDisplayName': updatedByDisplayName,
-      'behaviors': behaviors,
+      'behaviors': fullBehaviors,
       'changeLog': changeLog.map((e) => e.toMap()).toList(),
     };
   }
