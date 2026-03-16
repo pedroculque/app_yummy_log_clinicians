@@ -60,6 +60,7 @@ class _AddMealPageState extends State<AddMealPage> {
   bool? _forcedVomit;
   bool? _ateInSecret;
   bool? _usedLaxatives;
+  bool? _diuretics;
 
   @override
   void initState() {
@@ -79,6 +80,7 @@ class _AddMealPageState extends State<AddMealPage> {
       _forcedVomit = e.forcedVomit;
       _ateInSecret = e.ateInSecret;
       _usedLaxatives = e.usedLaxatives;
+      _diuretics = e.diuretics;
       if (e.photoPath != null && e.photoPath!.isNotEmpty) {
         unawaited(_resolveExistingPhoto(e.photoPath!));
       }
@@ -308,6 +310,7 @@ class _AddMealPageState extends State<AddMealPage> {
         forcedVomit: _forcedVomit,
         ateInSecret: _ateInSecret,
         usedLaxatives: _usedLaxatives,
+        diuretics: _diuretics,
       );
       await context.read<DiaryCubit>().save(entry);
       if (!mounted) return;
@@ -932,6 +935,11 @@ class _AddMealPageState extends State<AddMealPage> {
         l10n.questionUsedLaxatives,
         _usedLaxatives,
         ({bool? value}) => setState(() => _usedLaxatives = value),
+      ),
+      (
+        l10n.questionDiuretics,
+        _diuretics,
+        ({bool? value}) => setState(() => _diuretics = value),
       ),
     ];
 

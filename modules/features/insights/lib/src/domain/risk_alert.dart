@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 enum RiskType {
   forcedVomit,
   usedLaxatives,
+  diuretics,
   regurgitated,
   hiddenFood,
   ateInSecret,
@@ -45,6 +46,7 @@ class RiskAlert extends Equatable {
     switch (type) {
       case RiskType.forcedVomit:
       case RiskType.usedLaxatives:
+      case RiskType.diuretics:
         return RiskPriority.high;
       case RiskType.regurgitated:
       case RiskType.hiddenFood:

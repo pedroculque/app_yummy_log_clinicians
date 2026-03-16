@@ -59,6 +59,7 @@ class MealEntry {
     this.forcedVomit,
     this.ateInSecret,
     this.usedLaxatives,
+    this.diuretics,
     this.updatedAt,
     this.deletedAt,
     this.syncStatus = SyncStatus.pending,
@@ -92,6 +93,7 @@ class MealEntry {
       forcedVomit: json['forcedVomit'] as bool?,
       ateInSecret: json['ateInSecret'] as bool?,
       usedLaxatives: json['usedLaxatives'] as bool?,
+      diuretics: json['diuretics'] as bool?,
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
@@ -126,6 +128,7 @@ class MealEntry {
   final bool? forcedVomit;
   final bool? ateInSecret;
   final bool? usedLaxatives;
+  final bool? diuretics;
   /// Timestamp da última modificação (resolução de conflitos no sync).
   final DateTime? updatedAt;
   /// Soft delete: quando não-nulo, a entrada foi excluída logicamente.
@@ -151,6 +154,7 @@ class MealEntry {
     bool? forcedVomit,
     bool? ateInSecret,
     bool? usedLaxatives,
+    bool? diuretics,
     DateTime? updatedAt,
     DateTime? deletedAt,
     SyncStatus? syncStatus,
@@ -173,6 +177,7 @@ class MealEntry {
       forcedVomit: forcedVomit ?? this.forcedVomit,
       ateInSecret: ateInSecret ?? this.ateInSecret,
       usedLaxatives: usedLaxatives ?? this.usedLaxatives,
+      diuretics: diuretics ?? this.diuretics,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       syncStatus: syncStatus ?? this.syncStatus,
@@ -201,6 +206,7 @@ class MealEntry {
       'forcedVomit': forcedVomit,
       'ateInSecret': ateInSecret,
       'usedLaxatives': usedLaxatives,
+      'diuretics': diuretics,
       'updatedAt': updatedAt?.toIso8601String(),
       'deletedAt': deletedAt?.toIso8601String(),
       'syncStatus': syncStatus.name,
@@ -227,6 +233,7 @@ class MealEntry {
       'forcedVomit': forcedVomit,
       'ateInSecret': ateInSecret,
       'usedLaxatives': usedLaxatives,
+      'diuretics': diuretics,
       'updatedAt': (updatedAt ?? DateTime.now()).toIso8601String(),
       'deletedAt': deletedAt?.toIso8601String(),
     };

@@ -1212,6 +1212,7 @@ class _EntryCard extends StatelessWidget {
   bool get _hasRiskBehaviors =>
       entry.forcedVomit == true ||
       entry.usedLaxatives == true ||
+      entry.diuretics == true ||
       entry.regurgitated == true ||
       entry.hiddenFood == true ||
       entry.ateInSecret == true;
@@ -1418,6 +1419,9 @@ class _BehaviorTags extends StatelessWidget {
     }
     if (entry.usedLaxatives == true) {
       behaviors.add(_buildTag(l10n.behaviorUsedLaxatives, appColors.error));
+    }
+    if (entry.diuretics == true) {
+      behaviors.add(_buildTag(l10n.behaviorDiuretics, appColors.error));
     }
     if (entry.regurgitated == true) {
       behaviors.add(_buildTag(l10n.behaviorRegurgitated, Colors.orange));
@@ -1723,6 +1727,7 @@ class _MealDetailSheet extends StatelessWidget {
   bool get _hasRiskBehaviors =>
       entry.forcedVomit == true ||
       entry.usedLaxatives == true ||
+      entry.diuretics == true ||
       entry.regurgitated == true ||
       entry.hiddenFood == true ||
       entry.ateInSecret == true;
@@ -1846,6 +1851,12 @@ class _BehaviorsList extends StatelessWidget {
         if (entry.usedLaxatives == true)
           _buildBehaviorItem(
             l10n.behaviorUsedLaxatives,
+            appColors.error,
+            Icons.warning_rounded,
+          ),
+        if (entry.diuretics == true)
+          _buildBehaviorItem(
+            l10n.behaviorDiuretics,
             appColors.error,
             Icons.warning_rounded,
           ),

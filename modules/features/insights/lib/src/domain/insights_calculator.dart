@@ -114,6 +114,19 @@ class InsightsCalculator {
         );
       }
 
+      if (meal.diuretics == true) {
+        alerts.add(
+          RiskAlert(
+            patientId: patient.id,
+            patientName: patient.name,
+            type: RiskType.diuretics,
+            dateTime: meal.dateTime,
+            priority: RiskPriority.high,
+            mealId: meal.id,
+          ),
+        );
+      }
+
       if (meal.regurgitated == true) {
         alerts.add(
           RiskAlert(

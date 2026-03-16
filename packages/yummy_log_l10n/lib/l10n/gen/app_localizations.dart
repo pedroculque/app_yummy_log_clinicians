@@ -534,8 +534,14 @@ abstract class AppLocalizations {
   /// No description provided for @questionUsedLaxatives.
   ///
   /// In en, this message translates to:
-  /// **'Did you use laxatives or diuretics since your last entry?'**
+  /// **'Did you use laxatives since your last entry?'**
   String get questionUsedLaxatives;
+
+  /// No description provided for @questionDiuretics.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you use diuretics since your last entry?'**
+  String get questionDiuretics;
 
   /// No description provided for @viewDayList.
   ///
@@ -1544,6 +1550,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Laxative use'**
   String get insightsAlertUsedLaxatives;
+
+  /// No description provided for @insightsAlertDiuretics.
+  ///
+  /// In en, this message translates to:
+  /// **'Diuretic use'**
+  String get insightsAlertDiuretics;
 
   /// No description provided for @insightsAlertRegurgitated.
   ///

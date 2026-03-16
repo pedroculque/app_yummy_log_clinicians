@@ -485,6 +485,8 @@ class _AlertCard extends StatelessWidget {
         return l10n.insightsAlertForcedVomit;
       case RiskType.usedLaxatives:
         return l10n.insightsAlertUsedLaxatives;
+      case RiskType.diuretics:
+        return l10n.insightsAlertDiuretics;
       case RiskType.regurgitated:
         return l10n.insightsAlertRegurgitated;
       case RiskType.hiddenFood:

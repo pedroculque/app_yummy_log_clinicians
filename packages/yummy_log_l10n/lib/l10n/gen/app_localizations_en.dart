@@ -230,7 +230,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get questionAteInSecret => 'Did you eat in secret?';
 
   @override
-  String get questionUsedLaxatives => 'Did you use laxatives or diuretics since your last entry?';
+  String get questionUsedLaxatives => 'Did you use laxatives since your last entry?';
+
+  @override
+  String get questionDiuretics => 'Did you use diuretics since your last entry?';
 
   @override
   String get viewDayList => 'View day list';
@@ -751,6 +754,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get insightsAlertUsedLaxatives => 'Laxative use';
+
+  @override
+  String get insightsAlertDiuretics => 'Diuretic use';
 
   @override
   String get insightsAlertRegurgitated => 'Regurgitation';
