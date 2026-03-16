@@ -563,6 +563,7 @@ class _AttentionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -572,7 +573,7 @@ class _AttentionSection extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               l10n.insightsNeedsAttention,
-              style: AppTextStyles.h3.copyWith(color: appColors.neutralBlack),
+              style: AppTextStyles.h3.copyWith(color: colorScheme.onSurface),
             ),
           ],
         ),
@@ -585,6 +586,7 @@ class _AttentionSection extends StatelessWidget {
               insight: patient,
               appColors: appColors,
               l10n: l10n,
+              colorScheme: colorScheme,
             ),
           ),
       ],
@@ -631,15 +633,18 @@ class _PatientAttentionCard extends StatelessWidget {
     required this.insight,
     required this.appColors,
     required this.l10n,
+    required this.colorScheme,
   });
 
   final PatientInsight insight;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd/MM');
+    final isDark = colorScheme.brightness == Brightness.dark;
 
     return GestureDetector(
       onTap: () => _navigateToDiary(context),
@@ -647,12 +652,16 @@ class _PatientAttentionCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: appColors.neutralWhite,
+          color: colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: appColors.gray.withValues(alpha: 0.2)),
+          border: Border.all(
+            color: colorScheme.outline.withValues(alpha: isDark ? 0.3 : 0.2),
+          ),
           boxShadow: [
             BoxShadow(
-              color: appColors.neutralBlack.withValues(alpha: 0.05),
+              color: colorScheme.shadow.withValues(
+                alpha: isDark ? 0.2 : 0.05,
+              ),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -674,7 +683,7 @@ class _PatientAttentionCard extends StatelessWidget {
                     insight.patient.name,
                     style: AppTextStyles.body1.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: appColors.neutralBlack,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -709,7 +718,7 @@ class _PatientAttentionCard extends StatelessWidget {
                         dateFormat.format(insight.lastMealDate!),
                       ),
                       style: AppTextStyles.body3.copyWith(
-                        color: appColors.gray,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -725,7 +734,7 @@ class _PatientAttentionCard extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: _getScoreColor(insight.attentionScore, appColors)
-                        .withValues(alpha: 0.1),
+                        .withValues(alpha: isDark ? 0.25 : 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -739,7 +748,7 @@ class _PatientAttentionCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Icon(
                   Icons.chevron_right,
-                  color: appColors.gray,
+                  color: colorScheme.onSurfaceVariant,
                   size: 20,
                 ),
               ],
