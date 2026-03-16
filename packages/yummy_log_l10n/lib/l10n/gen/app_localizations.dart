@@ -1704,13 +1704,13 @@ abstract class AppLocalizations {
   /// No description provided for @behaviorForcedVomit.
   ///
   /// In en, this message translates to:
-  /// **'Forced vomiting'**
+  /// **'Self-induced vomiting'**
   String get behaviorForcedVomit;
 
   /// No description provided for @behaviorUsedLaxatives.
   ///
   /// In en, this message translates to:
-  /// **'Laxatives/diuretics'**
+  /// **'Laxative use'**
   String get behaviorUsedLaxatives;
 
   /// No description provided for @behaviorRegurgitated.
@@ -1730,6 +1730,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ate in secret'**
   String get behaviorAteInSecret;
+
+  /// No description provided for @behaviorDiuretics.
+  ///
+  /// In en, this message translates to:
+  /// **'Diuretic use'**
+  String get behaviorDiuretics;
+
+  /// No description provided for @behaviorOtherMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Other medications'**
+  String get behaviorOtherMedication;
+
+  /// No description provided for @behaviorCompensatoryExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Compensatory exercise'**
+  String get behaviorCompensatoryExercise;
+
+  /// No description provided for @behaviorChewAndSpit.
+  ///
+  /// In en, this message translates to:
+  /// **'Chew and spit'**
+  String get behaviorChewAndSpit;
+
+  /// No description provided for @behaviorIntermittentFast.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermittent fasting'**
+  String get behaviorIntermittentFast;
+
+  /// No description provided for @behaviorSkipMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped meal'**
+  String get behaviorSkipMeal;
+
+  /// No description provided for @behaviorBingeEating.
+  ///
+  /// In en, this message translates to:
+  /// **'Binge eating'**
+  String get behaviorBingeEating;
+
+  /// No description provided for @behaviorGuiltAfterEating.
+  ///
+  /// In en, this message translates to:
+  /// **'Guilt after eating'**
+  String get behaviorGuiltAfterEating;
+
+  /// No description provided for @behaviorCalorieCounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Calorie counting'**
+  String get behaviorCalorieCounting;
+
+  /// No description provided for @behaviorBodyChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Body checking'**
+  String get behaviorBodyChecking;
+
+  /// No description provided for @behaviorBodyWeighing.
+  ///
+  /// In en, this message translates to:
+  /// **'Body weighing'**
+  String get behaviorBodyWeighing;
+
+  /// No description provided for @formConfigCategoryCompensatory.
+  ///
+  /// In en, this message translates to:
+  /// **'Compensatory methods'**
+  String get formConfigCategoryCompensatory;
+
+  /// No description provided for @formConfigCategoryRestriction.
+  ///
+  /// In en, this message translates to:
+  /// **'Dietary restriction'**
+  String get formConfigCategoryRestriction;
+
+  /// No description provided for @formConfigCategoryBinge.
+  ///
+  /// In en, this message translates to:
+  /// **'Binge eating'**
+  String get formConfigCategoryBinge;
+
+  /// No description provided for @formConfigCategoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get formConfigCategoryOther;
 
   /// No description provided for @formConfigTitle.
   ///

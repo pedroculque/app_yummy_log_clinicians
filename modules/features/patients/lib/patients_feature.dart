@@ -1,5 +1,6 @@
 export 'src/cubit/patients_cubit.dart';
 export 'src/cubit/patients_state.dart';
+export 'src/data/behavior_catalog.dart';
 export 'src/data/patient.dart';
 export 'src/data/patient_meals_repository.dart';
 export 'src/data/patients_repository.dart';

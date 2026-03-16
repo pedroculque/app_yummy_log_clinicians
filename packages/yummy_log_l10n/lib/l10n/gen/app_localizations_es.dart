@@ -843,10 +843,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mealDetailClose => 'Cerrar';
 
   @override
-  String get behaviorForcedVomit => 'Vómito forzado';
+  String get behaviorForcedVomit => 'Vómito auto inducido';
 
   @override
-  String get behaviorUsedLaxatives => 'Laxantes/diuréticos';
+  String get behaviorUsedLaxatives => 'Uso de laxante';
 
   @override
   String get behaviorRegurgitated => 'Regurgitación';
@@ -855,7 +855,52 @@ class AppLocalizationsEs extends AppLocalizations {
   String get behaviorHiddenFood => 'Escondió comida';
 
   @override
-  String get behaviorAteInSecret => 'Comió a escondidas';
+  String get behaviorAteInSecret => 'Comer escondido';
+
+  @override
+  String get behaviorDiuretics => 'Uso de diurético';
+
+  @override
+  String get behaviorOtherMedication => 'Otras medicaciones';
+
+  @override
+  String get behaviorCompensatoryExercise => 'Ejercicio físico compensatorio';
+
+  @override
+  String get behaviorChewAndSpit => 'Masticar y escupir';
+
+  @override
+  String get behaviorIntermittentFast => 'Ayuno intermitente';
+
+  @override
+  String get behaviorSkipMeal => 'Saltar comida';
+
+  @override
+  String get behaviorBingeEating => 'Atracones';
+
+  @override
+  String get behaviorGuiltAfterEating => 'Culpa después de comer';
+
+  @override
+  String get behaviorCalorieCounting => 'Conteo de calorías';
+
+  @override
+  String get behaviorBodyChecking => 'Comprobación corporal';
+
+  @override
+  String get behaviorBodyWeighing => 'Pesaje corporal';
+
+  @override
+  String get formConfigCategoryCompensatory => 'Métodos compensatorios';
+
+  @override
+  String get formConfigCategoryRestriction => 'Restricción alimentaria';
+
+  @override
+  String get formConfigCategoryBinge => 'Atracones';
+
+  @override
+  String get formConfigCategoryOther => 'Otros';
 
   @override
   String get formConfigTitle => 'Comportamientos para el formulario';

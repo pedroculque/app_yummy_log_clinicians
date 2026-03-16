@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:patients_feature/src/cubit/form_config_cubit.dart';
 import 'package:patients_feature/src/cubit/form_config_state.dart';
+import 'package:patients_feature/src/data/behavior_catalog.dart';
 import 'package:patients_feature/src/data/behavior_form_config.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
@@ -149,42 +150,51 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Lista de comportamentos (MVP: 5)
-                UiCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                        child: Text(
-                          l10n.mealDetailBehaviors,
-                          style: AppTextStyles.body1.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: appColors.neutralBlack,
-                          ),
+                // Lista de comportamentos por categoria
+                ...BehaviorCatalog.entriesByCategory.entries.map(
+                  (categoryEntry) {
+                    final categoryKey = categoryEntry.key;
+                    final categoryLabel = _categoryLabel(categoryKey, l10n);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: UiCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                              child: Text(
+                                categoryLabel,
+                                style: AppTextStyles.body1.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: appColors.neutralBlack,
+                                ),
+                              ),
+                            ),
+                            for (final entry in categoryEntry.value) ...[
+                              Divider(
+                                height: 1,
+                                color: appColors.grayLight,
+                              ),
+                              SwitchListTile(
+                                value: config.isBehaviorEnabled(entry.id),
+                                onChanged: (v) => context
+                                    .read<FormConfigCubit>()
+                                    .setBehaviorEnabled(entry.id, value: v),
+                                title: Text(
+                                  _behaviorLabel(entry.id, l10n),
+                                  style: AppTextStyles.body2.copyWith(
+                                    color: appColors.neutralBlack,
+                                  ),
+                                ),
+                                activeThumbColor: appColors.primary,
+                              ),
+                            ],
+                          ],
                         ),
                       ),
-                      for (final behaviorId in kFormConfigBehaviorIds) ...[
-                        Divider(
-                          height: 1,
-                          color: appColors.grayLight,
-                        ),
-                        SwitchListTile(
-                          value: config.isBehaviorEnabled(behaviorId),
-                          onChanged: (v) => context
-                              .read<FormConfigCubit>()
-                              .setBehaviorEnabled(behaviorId, value: v),
-                          title: Text(
-                            _behaviorLabel(behaviorId, l10n),
-                            style: AppTextStyles.body2.copyWith(
-                              color: appColors.neutralBlack,
-                            ),
-                          ),
-                          activeThumbColor: appColors.primary,
-                        ),
-                      ],
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
 
@@ -241,6 +251,16 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
     );
   }
 
+  static String _categoryLabel(String? key, AppLocalizations l10n) {
+    return switch (key) {
+      'formConfigCategoryCompensatory' => l10n.formConfigCategoryCompensatory,
+      'formConfigCategoryRestriction' => l10n.formConfigCategoryRestriction,
+      'formConfigCategoryBinge' => l10n.formConfigCategoryBinge,
+      'formConfigCategoryOther' => l10n.formConfigCategoryOther,
+      _ => l10n.mealDetailBehaviors,
+    };
+  }
+
   static String _behaviorLabel(String behaviorId, AppLocalizations l10n) {
     return switch (behaviorId) {
       'hiddenFood' => l10n.behaviorHiddenFood,
@@ -248,6 +268,17 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
       'forcedVomit' => l10n.behaviorForcedVomit,
       'ateInSecret' => l10n.behaviorAteInSecret,
       'usedLaxatives' => l10n.behaviorUsedLaxatives,
+      'diuretics' => l10n.behaviorDiuretics,
+      'otherMedication' => l10n.behaviorOtherMedication,
+      'compensatoryExercise' => l10n.behaviorCompensatoryExercise,
+      'chewAndSpit' => l10n.behaviorChewAndSpit,
+      'intermittentFast' => l10n.behaviorIntermittentFast,
+      'skipMeal' => l10n.behaviorSkipMeal,
+      'bingeEating' => l10n.behaviorBingeEating,
+      'guiltAfterEating' => l10n.behaviorGuiltAfterEating,
+      'calorieCounting' => l10n.behaviorCalorieCounting,
+      'bodyChecking' => l10n.behaviorBodyChecking,
+      'bodyWeighing' => l10n.behaviorBodyWeighing,
       _ => behaviorId,
     };
   }

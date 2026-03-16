@@ -843,10 +843,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mealDetailClose => 'Close';
 
   @override
-  String get behaviorForcedVomit => 'Forced vomiting';
+  String get behaviorForcedVomit => 'Self-induced vomiting';
 
   @override
-  String get behaviorUsedLaxatives => 'Laxatives/diuretics';
+  String get behaviorUsedLaxatives => 'Laxative use';
 
   @override
   String get behaviorRegurgitated => 'Regurgitation';
@@ -856,6 +856,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get behaviorAteInSecret => 'Ate in secret';
+
+  @override
+  String get behaviorDiuretics => 'Diuretic use';
+
+  @override
+  String get behaviorOtherMedication => 'Other medications';
+
+  @override
+  String get behaviorCompensatoryExercise => 'Compensatory exercise';
+
+  @override
+  String get behaviorChewAndSpit => 'Chew and spit';
+
+  @override
+  String get behaviorIntermittentFast => 'Intermittent fasting';
+
+  @override
+  String get behaviorSkipMeal => 'Skipped meal';
+
+  @override
+  String get behaviorBingeEating => 'Binge eating';
+
+  @override
+  String get behaviorGuiltAfterEating => 'Guilt after eating';
+
+  @override
+  String get behaviorCalorieCounting => 'Calorie counting';
+
+  @override
+  String get behaviorBodyChecking => 'Body checking';
+
+  @override
+  String get behaviorBodyWeighing => 'Body weighing';
+
+  @override
+  String get formConfigCategoryCompensatory => 'Compensatory methods';
+
+  @override
+  String get formConfigCategoryRestriction => 'Dietary restriction';
+
+  @override
+  String get formConfigCategoryBinge => 'Binge eating';
+
+  @override
+  String get formConfigCategoryOther => 'Other';
 
   @override
   String get formConfigTitle => 'Behaviors for the form';
