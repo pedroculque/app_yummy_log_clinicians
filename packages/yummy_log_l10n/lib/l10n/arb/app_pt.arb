@@ -342,5 +342,26 @@
   "behaviorUsedLaxatives": "Laxantes/diuréticos",
   "behaviorRegurgitated": "Regurgitação",
   "behaviorHiddenFood": "Escondeu comida",
-  "behaviorAteInSecret": "Comeu em segredo"
+  "behaviorAteInSecret": "Comeu em segredo",
+  "formConfigTitle": "Comportamentos para o formulário",
+  "formConfigPatientSubtitle": "Paciente: {name}",
+  "formConfigSectionEnabled": "Habilitar seção de comportamento no formulário do paciente",
+  "formConfigLastUpdated": "Última alteração: por {name} em {date}",
+  "formConfigChangeLogTitle": "Histórico de alterações",
+  "formConfigButton": "Configurar formulário",
+  "formConfigSave": "Salvar",
+  "formConfigSaving": "Salvando...",
+  "formConfigSaved": "Configuração salva!",
+  "formConfigNoChangesYet": "Nenhuma alteração registrada ainda.",
+  "@formConfigPatientSubtitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "@formConfigLastUpdated": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  }
 }

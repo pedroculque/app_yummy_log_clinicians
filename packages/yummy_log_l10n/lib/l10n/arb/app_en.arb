@@ -348,5 +348,26 @@
   "behaviorUsedLaxatives": "Laxatives/diuretics",
   "behaviorRegurgitated": "Regurgitation",
   "behaviorHiddenFood": "Hidden food",
-  "behaviorAteInSecret": "Ate in secret"
+  "behaviorAteInSecret": "Ate in secret",
+  "formConfigTitle": "Behaviors for the form",
+  "formConfigPatientSubtitle": "Patient: {name}",
+  "formConfigSectionEnabled": "Enable behavior section in patient form",
+  "formConfigLastUpdated": "Last updated: by {name} on {date}",
+  "formConfigChangeLogTitle": "Change history",
+  "formConfigButton": "Configure form",
+  "formConfigSave": "Save",
+  "formConfigSaving": "Saving...",
+  "formConfigSaved": "Configuration saved!",
+  "formConfigNoChangesYet": "No changes recorded yet.",
+  "@formConfigPatientSubtitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "@formConfigLastUpdated": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  }
 }

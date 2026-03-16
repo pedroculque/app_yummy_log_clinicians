@@ -138,6 +138,7 @@ class _PatientsPageState extends State<PatientsPage> {
                   : _PatientsList(
                       patients: state.patients,
                       onPatientTap: _onPatientTap,
+                      onConfigFormTap: _onConfigFormTap,
                       onRemovePatient: _confirmRemovePatient,
                     ),
             ),
@@ -155,6 +156,18 @@ class _PatientsPageState extends State<PatientsPage> {
     final encodedName = Uri.encodeComponent(displayName);
     unawaited(
       context.push('/patients/${patient.id}/diary?name=$encodedName'),
+    );
+  }
+
+  void _onConfigFormTap(Patient patient) {
+    final displayName = patient.name.isEmpty
+        ? context.l10n.patientDefaultName
+        : patient.name;
+    final encodedName = Uri.encodeComponent(displayName);
+    unawaited(
+      context.push(
+        '/patients/${patient.id}/form-config?name=$encodedName',
+      ),
     );
   }
 
@@ -864,11 +877,13 @@ class _PatientsList extends StatelessWidget {
   const _PatientsList({
     required this.patients,
     required this.onPatientTap,
+    required this.onConfigFormTap,
     required this.onRemovePatient,
   });
 
   final List<Patient> patients;
   final void Function(Patient) onPatientTap;
+  final void Function(Patient) onConfigFormTap;
   final void Function(Patient) onRemovePatient;
 
   @override
@@ -920,6 +935,7 @@ class _PatientsList extends StatelessWidget {
             child: _PatientCard(
               patient: patient,
               onTap: () => onPatientTap(patient),
+              onConfigFormTap: () => onConfigFormTap(patient),
             ),
           ),
         );
@@ -932,10 +948,12 @@ class _PatientCard extends StatelessWidget {
   const _PatientCard({
     required this.patient,
     required this.onTap,
+    required this.onConfigFormTap,
   });
 
   final Patient patient;
   final VoidCallback onTap;
+  final VoidCallback onConfigFormTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1000,6 +1018,22 @@ class _PatientCard extends StatelessWidget {
                         ),
                       ],
                     ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: onConfigFormTap,
+                  icon: Icon(
+                    Icons.tune_rounded,
+                    color: appColors.grayDark,
+                    size: 22,
+                  ),
+                  tooltip: context.l10n.formConfigButton,
+                  style: IconButton.styleFrom(
+                    backgroundColor: appColors.grayLight,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),

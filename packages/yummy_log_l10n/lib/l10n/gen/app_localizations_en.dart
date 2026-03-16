@@ -856,4 +856,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get behaviorAteInSecret => 'Ate in secret';
+
+  @override
+  String get formConfigTitle => 'Behaviors for the form';
+
+  @override
+  String formConfigPatientSubtitle(String name) {
+    return 'Patient: $name';
+  }
+
+  @override
+  String get formConfigSectionEnabled => 'Enable behavior section in patient form';
+
+  @override
+  String formConfigLastUpdated(String name, String date) {
+    return 'Last updated: by $name on $date';
+  }
+
+  @override
+  String get formConfigChangeLogTitle => 'Change history';
+
+  @override
+  String get formConfigButton => 'Configure form';
+
+  @override
+  String get formConfigSave => 'Save';
+
+  @override
+  String get formConfigSaving => 'Saving...';
+
+  @override
+  String get formConfigSaved => 'Configuration saved!';
+
+  @override
+  String get formConfigNoChangesYet => 'No changes recorded yet.';
 }

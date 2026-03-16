@@ -4,6 +4,7 @@ import 'package:diary_feature/diary_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:patients_feature/src/cubit/patient_diary_cubit.dart';
 import 'package:patients_feature/src/cubit/patient_diary_state.dart';
@@ -36,6 +37,10 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
     _selectedDate = DateTime(now.year, now.month, now.day);
     _displayedMonth = DateTime(now.year, now.month);
 
+    debugPrint(
+      '[PatientDiaryPage] initState load(patientId=${widget.patientId}, '
+      'patientName=${widget.patientName})',
+    );
     unawaited(
       context.read<PatientDiaryCubit>().load(
         patientId: widget.patientId,
@@ -124,6 +129,12 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
               ),
               centerTitle: false,
               actions: [
+                _AppBarFormConfigButton(
+                  patientId: widget.patientId,
+                  patientName: displayName,
+                  l10n: l10n,
+                  appColors: appColors,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 16),
                   child: IconButton(
@@ -173,6 +184,14 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
                 ],
               ),
               centerTitle: false,
+              actions: [
+                _AppBarFormConfigButton(
+                  patientId: widget.patientId,
+                  patientName: displayName,
+                  l10n: l10n,
+                  appColors: appColors,
+                ),
+              ],
             ),
       body: BlocBuilder<PatientDiaryCubit, PatientDiaryState>(
         builder: (context, state) {
@@ -196,6 +215,13 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
           final byDay = _groupByDay(state.entries);
           final daysWithEntries = byDay.keys.toSet();
           final entriesForSelected = byDay[_selectedDate] ?? [];
+
+          debugPrint(
+            '[PatientDiaryPage] build loaded: '
+            'state.entries=${state.entries.length} byDay.days=${byDay.length} '
+            'selectedDate=$_selectedDate '
+            'entriesForSelected=${entriesForSelected.length}',
+          );
 
           if (_showCalendarView) {
             return _CalendarMonthView(
@@ -239,6 +265,9 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
                     : _EntriesList(
                         entries: entriesForSelected,
                         locale: locale,
+                        onRefresh: () => context
+                            .read<PatientDiaryCubit>()
+                            .refresh(),
                       ),
               ),
             ],
@@ -258,6 +287,45 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
       list.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     }
     return map;
+  }
+}
+
+class _AppBarFormConfigButton extends StatelessWidget {
+  const _AppBarFormConfigButton({
+    required this.patientId,
+    required this.patientName,
+    required this.l10n,
+    required this.appColors,
+  });
+
+  final String patientId;
+  final String patientName;
+  final AppLocalizations l10n;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: IconButton(
+        icon: Icon(Icons.tune_rounded, color: appColors.grayDark, size: 22),
+        onPressed: () {
+          final encodedName = Uri.encodeComponent(patientName);
+          unawaited(
+            context.push(
+              '/patients/$patientId/form-config?name=$encodedName',
+            ),
+          );
+        },
+        tooltip: l10n.formConfigButton,
+        style: IconButton.styleFrom(
+          backgroundColor: appColors.grayLight,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -1073,14 +1141,16 @@ class _EntriesList extends StatelessWidget {
   const _EntriesList({
     required this.entries,
     required this.locale,
+    this.onRefresh,
   });
 
   final List<MealEntry> entries;
   final String locale;
+  final Future<void> Function()? onRefresh;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    final listView = ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       itemCount: entries.length,
       itemBuilder: (context, i) {
@@ -1100,6 +1170,13 @@ class _EntriesList extends StatelessWidget {
         );
       },
     );
+    if (onRefresh != null) {
+      return RefreshIndicator(
+        onRefresh: onRefresh!,
+        child: listView,
+      );
+    }
+    return listView;
   }
 }
 

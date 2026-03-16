@@ -96,6 +96,33 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 ---
 
+### Fase 2.2: Configuração do formulário de comportamento 📋
+
+**Status:** Planejado
+
+**Objetivo:** O clínico pode configurar, por paciente, quais perguntas de **comportamento** aparecem no formulário "Adicionar comida" do paciente. A seção de comportamento no app do paciente só é exibida (e apenas os itens habilitados) quando o clínico configurou o formulário para esse paciente.
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Entrada na config | Botão "Configurar formulário" no card do paciente ou no header do diário | Pendente |
+| Tela de comportamentos | Lista de cards por categoria (Métodos compensatórios, Restrição, etc.) com toggle mostrar/ocultar | Pendente |
+| Toggle global | Habilitar/desabilitar toda a seção de comportamento no form do paciente | Pendente |
+| Persistência | Salvar config em `users/{patientId}/form_config` (clínico escreve; paciente lê) | Pendente |
+| Regras Firestore | Clínico pode escrever em `form_config` apenas para pacientes vinculados | Pendente |
+
+**MVP (Fase 2.2.1):** Apenas os 5 comportamentos atuais do `MealEntry` (hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives) com toggle cada um.
+
+**Fase 2.2.2 (futuro):** Catálogo completo (vômito, laxante, diurético, exercício compensatório, mastigar e cuspir, jejum, pular refeição, compulsão, comer escondido, culpa, contagem de calorias, checagem/pesagem corporal, etc.) e extensão do modelo no app do paciente.
+
+**Entregáveis:**
+- [ ] Rota full-screen `/patients/:patientId/form-config` (ou equivalente)
+- [ ] Tela "Comportamentos para o formulário" com categorias e toggles
+- [ ] Repositório/serviço para ler e gravar `users/{patientId}/form_config`
+- [ ] Documento de especificação: [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md)
+- [ ] App do paciente: ler config e exibir seção/comportamentos conforme config (escopo em outro repo)
+
+---
+
 ### Fase 3: Insights e Métricas 📊
 
 **Status:** Fase 3.1 concluída ✅
@@ -128,7 +155,6 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 |---------|-----------|--------|
 | Análise por refeição | Refeições puladas, correlação com sentimentos | Pendente |
 | Tendências agregadas | Comparativo temporal (semana atual vs anterior) | Pendente |
-| Exportar relatório | PDF com resumo do paciente | Pendente |
 
 **Dependências:** Fase 2 concluída.
 
@@ -153,6 +179,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 ├──────────────────────┴──────────────────────┴────────────────────────────┤
 │  Full screen (acima da tab bar):                                         │
 │  • Diário do paciente (/patients/:id/diary) — Timeline + Calendário      │
+│  • Configurar formulário (/patients/:id/form-config) — Comportamentos     │
 │  • Tela de planos (/plans) — Upgrade para Pro                            │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -167,8 +194,9 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | `clinicians/{clinicianId}/patients/{patientId}` | Lista de pacientes vinculados | Leitura |
 | `users/{patientId}/meals/{mealId}` | Refeições do paciente | Leitura (se vinculado) |
 | `users/{patientId}/connections/{connectionId}` | Conexões do paciente | Leitura (se vinculado) |
+| `users/{patientId}/form_config` | Config do formulário de comportamento (clínico grava; paciente lê) | Escrita (clínico vinculado); leitura (paciente) |
 
-Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para detalhes das regras de segurança.
+Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) para detalhes.
 
 ---
 
@@ -176,18 +204,13 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para detalhes das regras de segur
 
 ### Alta (próximos passos)
 
-1. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro.
-2. **Fase 3** – Insights e métricas.
+1. **Configuração do formulário de comportamento** – Clínico configura, por paciente, quais comportamentos aparecem no form "Adicionar comida". Ver [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md).
+2. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro.
+3. **Fase 3** – Insights e métricas (3.2, 3.3).
 
 ### Média
 
-3. Notificações push (quando paciente registra refeição).
-4. Detalhe da refeição (tela full screen com todos os dados).
-
-### Baixa
-
-5. Chat com paciente.
-6. Exportar relatórios (PDF).
+4. Notificações push (quando paciente registra refeição).
 
 ---
 
@@ -195,6 +218,7 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para detalhes das regras de segur
 
 - [REQUIREMENTS.md](../REQUIREMENTS.md) – Requisitos por versão
 - [STATE.md](../STATE.md) – Posição atual
+- [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) – Configuração do formulário de comportamento (clínico)
 - [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md) – Config Firebase (app do clínico)
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura Firestore e regras
 - App do paciente: `/Users/pedroculque/dev-mobile/app_yummy_log`

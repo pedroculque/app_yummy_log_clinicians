@@ -12,20 +12,34 @@ service cloud.firestore {
                    && request.auth.uid == userId;
     }
 
-    // Paciente lê/escreve seus próprios dados (subcoleções)
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == userId;
+    // Config do formulário de comportamento: clínico (vinculado) escreve; paciente lê.
+    match /users/{patientId}/form_config/{docId} {
+      allow read: if request.auth != null
+                 && (request.auth.uid == patientId
+                     || exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId)));
+      allow write: if request.auth != null
+                  && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
     }
 
-    // Clínico lê refeições de pacientes vinculados
+    // Paciente lê/escreve seus próprios dados (subcoleções), exceto form_config (só clínico escreve).
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId
+                         && !request.path.matches('.*/form_config/.*');
+    }
+
+    // Refeições: paciente lê/escreve as próprias; clínico vinculado só lê.
     match /users/{patientId}/meals/{mealId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == patientId;
       allow read: if request.auth != null
                   && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
     }
 
-    // Clínico lê conexões de pacientes vinculados
+    // Conexões: paciente lê/escreve as próprias; clínico vinculado só lê.
     match /users/{patientId}/connections/{connectionId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == patientId;
       allow read: if request.auth != null
                   && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
     }

@@ -69,6 +69,8 @@ class SyncService {
   StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
   Timer? _syncTimer;
   Timer? _connectivityDebounceTimer;
+  Timer? _deferredPushTimer;
+  static const Duration _deferredPushDelay = Duration(seconds: 2);
 
   String? _currentUserId;
   bool _isPaused = false;
@@ -161,14 +163,20 @@ class SyncService {
         photoUrl: user?.photoUrl,
       ),
     );
-    _startWatchers(userId);
+    if (_config.watchersEnabled) {
+      _startWatchers(userId);
+    } else {
+      debugPrint('[SyncService] watchers disabled (watchersEnabled=false)');
+    }
   }
 
   void _deactivate() {
     unawaited(_mealWatchSub?.cancel());
     unawaited(_connWatchSub?.cancel());
+    _deferredPushTimer?.cancel();
     _mealWatchSub = null;
     _connWatchSub = null;
+    _deferredPushTimer = null;
     _currentUserId = null;
   }
 
@@ -401,34 +409,38 @@ class SyncService {
         debugPrint('[SyncService] _executeMealOperation: id=${op.entityId}, '
             'photoPath=$photoPath, photoUrl=$photoUrl');
 
-        if (photoPath != null && photoUrl == null) {
-          final absolutePath = await resolvePhotoPath(photoPath);
-          debugPrint('[SyncService] Uploading photo: $absolutePath');
-          final fileExists = File(absolutePath).existsSync();
-          debugPrint('[SyncService] File exists: $fileExists');
-          
-          final url = await _photoUpload.uploadPhoto(
-            userId: userId,
-            mealId: op.entityId,
-            localPath: absolutePath,
-          );
-          debugPrint('[SyncService] Upload result: $url');
-          if (url != null) {
-            data['photoUrl'] = url;
-            final localJson = Map<String, dynamic>.from(data)
-              ..['syncStatus'] = 'synced';
-            await _mealLocal.save(op.entityId, localJson);
-          }
-        }
-
+        // Upsert primeiro no Firestore (sem foto) para o clínico ver a entrada
+        // mesmo se o upload da foto falhar (ex.: storage unauthorized).
         data
           ..remove('syncStatus')
           ..remove('photoPath');
         await _mealRemote.upsert(userId, data);
 
+        var finalPhotoUrl = photoUrl;
+        if (photoPath != null && photoUrl == null) {
+          try {
+            final absolutePath = await resolvePhotoPath(photoPath);
+            debugPrint('[SyncService] Uploading photo: $absolutePath');
+            final url = await _photoUpload.uploadPhoto(
+              userId: userId,
+              mealId: op.entityId,
+              localPath: absolutePath,
+            );
+            debugPrint('[SyncService] Upload result: $url');
+            if (url != null) {
+              finalPhotoUrl = url;
+              await _mealRemote.upsert(userId, {...data, 'photoUrl': url});
+            }
+          } on Object catch (e, st) {
+            debugPrint(
+              '[SyncService] Photo upload failed (meal still synced): $e\n$st',
+            );
+          }
+        }
+
         final synced = Map<String, dynamic>.from(op.data)
           ..['syncStatus'] = 'synced'
-          ..['photoUrl'] = data['photoUrl'];
+          ..['photoUrl'] = finalPhotoUrl;
         await _mealLocal.save(op.entityId, synced);
 
       case SyncOperationType.delete:
@@ -480,6 +492,7 @@ class SyncService {
       createdAt: DateTime.now(),
     );
     await _syncQueue.enqueue(op);
+    _scheduleDeferredPush();
   }
 
   /// Enfileira um soft delete de refeição.
@@ -494,6 +507,18 @@ class SyncService {
       createdAt: DateTime.now(),
     );
     await _syncQueue.enqueue(op);
+    _scheduleDeferredPush();
+  }
+
+  /// Agenda um push em breve após enfileirar (para não depender só do timer).
+  void _scheduleDeferredPush() {
+    _deferredPushTimer?.cancel();
+    _deferredPushTimer = Timer(_deferredPushDelay, () {
+      _deferredPushTimer = null;
+      if (isEnabled && !_isPaused && _status != SyncServiceStatus.syncing) {
+        unawaited(push());
+      }
+    });
   }
 
   /// Enfileira uma conexão para push.
@@ -585,6 +610,7 @@ class SyncService {
 
   void dispose() {
     unawaited(_authSub?.cancel());
+    _deferredPushTimer?.cancel();
     _deactivate();
     _syncTimer?.cancel();
     _connectivityDebounceTimer?.cancel();

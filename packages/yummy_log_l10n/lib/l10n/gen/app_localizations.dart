@@ -1730,6 +1730,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ate in secret'**
   String get behaviorAteInSecret;
+
+  /// No description provided for @formConfigTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Behaviors for the form'**
+  String get formConfigTitle;
+
+  /// No description provided for @formConfigPatientSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient: {name}'**
+  String formConfigPatientSubtitle(String name);
+
+  /// No description provided for @formConfigSectionEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable behavior section in patient form'**
+  String get formConfigSectionEnabled;
+
+  /// No description provided for @formConfigLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: by {name} on {date}'**
+  String formConfigLastUpdated(String name, String date);
+
+  /// No description provided for @formConfigChangeLogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change history'**
+  String get formConfigChangeLogTitle;
+
+  /// No description provided for @formConfigButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure form'**
+  String get formConfigButton;
+
+  /// No description provided for @formConfigSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get formConfigSave;
+
+  /// No description provided for @formConfigSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get formConfigSaving;
+
+  /// No description provided for @formConfigSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration saved!'**
+  String get formConfigSaved;
+
+  /// No description provided for @formConfigNoChangesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes recorded yet.'**
+  String get formConfigNoChangesYet;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

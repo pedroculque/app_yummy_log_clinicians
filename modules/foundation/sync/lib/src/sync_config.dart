@@ -11,6 +11,9 @@ class SyncConfig {
     this.conflictStrategy = ConflictStrategy.lastWriteWins,
     this.syncOnConnectivity = true,
     this.syncOnAppResume = true,
+    /// Quando false, não inscreve em users/{uid}/meals e
+    /// users/{uid}/connections. Use no app do clínico (só lê diário).
+    this.watchersEnabled = true,
   });
 
   final bool autoSyncEnabled;
@@ -21,6 +24,7 @@ class SyncConfig {
   final ConflictStrategy conflictStrategy;
   final bool syncOnConnectivity;
   final bool syncOnAppResume;
+  final bool watchersEnabled;
 
   SyncConfig copyWith({
     bool? autoSyncEnabled,
@@ -31,6 +35,7 @@ class SyncConfig {
     ConflictStrategy? conflictStrategy,
     bool? syncOnConnectivity,
     bool? syncOnAppResume,
+    bool? watchersEnabled,
   }) {
     return SyncConfig(
       autoSyncEnabled: autoSyncEnabled ?? this.autoSyncEnabled,
@@ -45,6 +50,7 @@ class SyncConfig {
       syncOnConnectivity:
           syncOnConnectivity ?? this.syncOnConnectivity,
       syncOnAppResume: syncOnAppResume ?? this.syncOnAppResume,
+      watchersEnabled: watchersEnabled ?? this.watchersEnabled,
     );
   }
 }
