@@ -14,7 +14,9 @@ class FirestorePatientMealsRepository implements PatientMealsRepository {
   final FirebaseFirestore _firestore;
 
   /// Converte Timestamp do Firestore para string ISO
-  /// (MealEntry.fromJson espera string).
+  /// (MealEntry.fromJson espera string). Preserva todos os demais campos do
+  /// documento (ex.: hiddenFood, usedLaxatives, diuretics, etc.) para que a
+  /// timeline do clínico reflita corretamente os dados salvos pelo paciente.
   Map<String, dynamic> _normalizeDocData(
     Map<String, dynamic> data,
     String docId,

@@ -71,7 +71,7 @@ Categorias e itens para exibir na tela de configuração (textos podem ser ajust
 | `hiddenFood`     | Escondeu comida   |
 | `regurgitated`   | Regurgitação      |
 
-**Nota:** Os 5 comportamentos já existentes no `MealEntry` são: `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`. Na **Fase 1 (MVP)** da feature, pode-se expor apenas esses 5 na tela de configuração (mostrar/ocultar). Na **Fase 2**, incluir o restante do catálogo e estender o modelo de dados do paciente (novos campos ou mapa em `MealEntry`) e o formulário no app do paciente.
+**Nota:** Os 6 comportamentos já existentes no `MealEntry` são: `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`, `diuretics`. A timeline do app clínico (diário do paciente) lê esses campos do Firestore e exibe as tags de comportamento. Na **Fase 1 (MVP)** da feature, pode-se expor esses 6 na tela de configuração (mostrar/ocultar). Na **Fase 2**, incluir o restante do catálogo e estender o modelo de dados do paciente (novos campos ou mapa em `MealEntry`) e o formulário no app do paciente.
 
 ---
 

@@ -78,9 +78,9 @@ Ordem sugerida das perguntas na UI: usar a ordem definida no app do clínico (MV
 
 ---
 
-## 4. MVP – Os 5 comportamentos atuais (mapeamento para MealEntry)
+## 4. MVP – Os 6 comportamentos atuais (mapeamento para MealEntry)
 
-No MVP, o app do clínico configura apenas estes 5 IDs. Cada um corresponde a um campo já existente no modelo de refeição (MealEntry ou equivalente) do app do paciente:
+No MVP, o app do clínico configura estes 6 IDs. Cada um corresponde a um campo já existente no modelo de refeição (MealEntry ou equivalente) do app do paciente:
 
 | ID do comportamento (chave em `behaviors`) | Campo no MealEntry / modelo de refeição | Descrição (label) sugerida (pt) |
 |-------------------------------------------|----------------------------------------|----------------------------------|
@@ -89,10 +89,11 @@ No MVP, o app do clínico configura apenas estes 5 IDs. Cada um corresponde a um
 | `forcedVomit` | `forcedVomit` (bool) | Vômito auto induzido |
 | `ateInSecret` | `ateInSecret` (bool) | Comer escondido |
 | `usedLaxatives` | `usedLaxatives` (bool) | Uso de laxante |
+| `diuretics` | `diuretics` (bool) | Uso de diurético |
 
 **Implementação:**  
 - No formulário "Adicionar comida", após decidir que a seção deve ser exibida, iterar sobre os IDs habilitados (por exemplo na ordem acima) e, para cada um, exibir o controle (checkbox/toggle) correspondente.  
-- Ao salvar a refeição, persistir os valores nos **campos já existentes** do MealEntry; não é necessário criar novos campos no MVP.
+- Ao salvar a refeição, persistir os valores nos **campos já existentes** do MealEntry (incluindo `diuretics`), para que a timeline do app clínico reflita corretamente os dados.
 
 ---
 
@@ -112,7 +113,7 @@ No MVP, o app do clínico configura apenas estes 5 IDs. Cada um corresponde a um
    - Para cada ID habilitado, exibir um controle (checkbox/toggle) e ao salvar mapear para o campo correto do MealEntry.
 
 4. **Persistência:**
-   - Salvar a refeição com os campos booleanos já existentes do MealEntry (`hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`). O app do paciente **não escreve** em `form_config`; apenas lê.
+   - Salvar a refeição com os campos booleanos já existentes do MealEntry (`hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`, `diuretics`). O app do paciente **não escreve** em `form_config`; apenas lê. O app clínico exibe esses campos na timeline do diário do paciente.
 
 ---
 
@@ -121,7 +122,7 @@ No MVP, o app do clínico configura apenas estes 5 IDs. Cada um corresponde a um
 - **Ler:** `users/{currentUserId}/form_config/behavior` (documento único, id `behavior`).
 - **Não exibir seção** se: documento não existe **ou** `sectionEnabled == false`.
 - **Exibir seção** apenas quando documento existe **e** `sectionEnabled == true`; mostrar **somente** as perguntas com `behaviors[id] == true`.
-- **MVP:** 5 comportamentos — `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`; mapear para os campos já existentes do MealEntry ao salvar.
+- **MVP:** 6 comportamentos — `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`, `diuretics`; mapear para os campos já existentes do MealEntry ao salvar (a timeline do app clínico lê esses campos e exibe as tags).
 - **Escrita:** o app do paciente **não** escreve em `form_config`; apenas lê e usa para mostrar/ocultar e filtrar as perguntas do formulário.
 
 ---
