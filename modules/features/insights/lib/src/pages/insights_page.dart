@@ -749,29 +749,63 @@ class _PatientAttentionCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: _getScoreColor(insight.attentionScore, appColors)
                             .withValues(alpha: isDark ? 0.25 : 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _getScoreColor(insight.attentionScore, appColors)
+                              .withValues(alpha: isDark ? 0.3 : 0.18),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            l10n.insightsAttentionScore(insight.attentionScore),
-                            style: AppTextStyles.body3.copyWith(
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                l10n.insightsScoreLabel,
+                                style: AppTextStyles.body3.copyWith(
+                                  color: _getScoreColor(
+                                    insight.attentionScore,
+                                    appColors,
+                                  ).withValues(alpha: 0.9),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 10,
+                                ),
+                              ),
+                              const SizedBox(height: 1),
+                              Text(
+                                '${insight.attentionScore}',
+                                style: AppTextStyles.body2.copyWith(
+                                  color: _getScoreColor(
+                                    insight.attentionScore,
+                                    appColors,
+                                  ),
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: _getScoreColor(
+                                insight.attentionScore,
+                                appColors,
+                              ).withValues(alpha: isDark ? 0.18 : 0.14),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.info_outline_rounded,
                               color: _getScoreColor(
                                 insight.attentionScore,
                                 appColors,
                               ),
-                              fontWeight: FontWeight.w600,
+                              size: 11,
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          Icon(
-                            Icons.info_outline_rounded,
-                            color: _getScoreColor(
-                              insight.attentionScore,
-                              appColors,
-                            ),
-                            size: 14,
                           ),
                         ],
                       ),

@@ -1596,13 +1596,19 @@ abstract class AppLocalizations {
   /// No description provided for @insightsAttentionScore.
   ///
   /// In en, this message translates to:
-  /// **'Score: {score}'**
+  /// **'Attention score: {score}'**
   String insightsAttentionScore(int score);
+
+  /// No description provided for @insightsScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Attention score'**
+  String get insightsScoreLabel;
 
   /// No description provided for @insightsScoreHelpTitle.
   ///
   /// In en, this message translates to:
-  /// **'What is the Score?'**
+  /// **'What is the attention score?'**
   String get insightsScoreHelpTitle;
 
   /// No description provided for @insightsScoreHelpBody.
@@ -1644,7 +1650,7 @@ abstract class AppLocalizations {
   /// No description provided for @insightsScoreHelpPageTitle.
   ///
   /// In en, this message translates to:
-  /// **'How the Score works'**
+  /// **'How the attention score works'**
   String get insightsScoreHelpPageTitle;
 
   /// No description provided for @insightsScoreHelpPageBody.

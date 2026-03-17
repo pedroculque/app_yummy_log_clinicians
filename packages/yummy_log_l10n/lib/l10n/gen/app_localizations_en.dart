@@ -778,11 +778,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String insightsAttentionScore(int score) {
-    return 'Score: $score';
+    return 'Attention score: $score';
   }
 
   @override
-  String get insightsScoreHelpTitle => 'What is the Score?';
+  String get insightsScoreLabel => 'Attention score';
+
+  @override
+  String get insightsScoreHelpTitle => 'What is the attention score?';
 
   @override
   String get insightsScoreHelpBody =>
@@ -807,7 +810,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insightsScoreHelpButton => 'Learn how it works';
 
   @override
-  String get insightsScoreHelpPageTitle => 'How the Score works';
+  String get insightsScoreHelpPageTitle => 'How the attention score works';
 
   @override
   String get insightsScoreHelpPageBody =>
