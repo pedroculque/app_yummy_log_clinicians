@@ -307,6 +307,14 @@
   "insightsScoreHelpButton": "Learn how it works",
   "insightsScoreHelpPageTitle": "How the attention score works",
   "insightsScoreHelpPageBody": "The score summarizes attention signals from recent records to make triage easier. It combines the number of alerts, the type of behavior observed, and how long it has been since the last event.",
+  "insightsClinicalPriorityTitle": "Clinical priority",
+  "insightsClinicalPrioritySubtitle": "Quick summary to decide where to look first",
+  "insightsPatientsNeedAttention": "{count} patients need attention",
+  "insightsHighPriorityAlertsCount": "{count} high-priority alerts",
+  "insightsActiveRate": "{percent}% of patients active",
+  "insightsClinicalActionNeeded": "Action recommended today",
+  "insightsClinicalPriorityWithAlerts": "There are recent critical alerts. Review the patients with the highest ranking and the high-priority events first.",
+  "insightsClinicalPriorityNoAlerts": "No recent critical alerts. Use the ranking to review patients with the highest score and inactivity.",
   "insightsMealsCount": "{count} meals (7d)",
   "insightsAlertsCount": "{count} alerts",
   "insightsInactive": "Inactive for {days} days",
@@ -345,6 +353,21 @@
   "@insightsUpdatedAt": {
     "placeholders": {
       "time": {"type": "String"}
+    }
+  },
+  "@insightsPatientsNeedAttention": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsHighPriorityAlertsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsActiveRate": {
+    "placeholders": {
+      "percent": {"type": "String"}
     }
   },
   "mealDetailTitle": "Meal details",

@@ -301,6 +301,14 @@
   "insightsScoreHelpButton": "Entenda como funciona",
   "insightsScoreHelpPageTitle": "Como funciona o Score de atenção",
   "insightsScoreHelpPageBody": "O score resume sinais de atenção a partir dos registros mais recentes para facilitar a triagem. Ele combina a quantidade de alertas, o tipo de comportamento observado e o tempo desde o último evento.",
+  "insightsClinicalPriorityTitle": "Prioridade clínica",
+  "insightsClinicalPrioritySubtitle": "Resumo rápido para decidir onde olhar primeiro",
+  "insightsPatientsNeedAttention": "{count} pacientes precisam de atenção",
+  "insightsHighPriorityAlertsCount": "{count} alertas de alta prioridade",
+  "insightsActiveRate": "{percent}% de pacientes ativos",
+  "insightsClinicalActionNeeded": "Ação recomendada hoje",
+  "insightsClinicalPriorityWithAlerts": "Há alertas críticos recentes. Revise primeiro os pacientes mais altos no ranking e os eventos com prioridade alta.",
+  "insightsClinicalPriorityNoAlerts": "Nenhum alerta crítico recente. Use o ranking para revisar os pacientes com maior score e inatividade.",
   "insightsMealsCount": "{count} refeições (7d)",
   "insightsAlertsCount": "{count} alertas",
   "insightsInactive": "Inativo há {days} dias",
@@ -339,6 +347,21 @@
   "@insightsUpdatedAt": {
     "placeholders": {
       "time": {"type": "String"}
+    }
+  },
+  "@insightsPatientsNeedAttention": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsHighPriorityAlertsCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsActiveRate": {
+    "placeholders": {
+      "percent": {"type": "String"}
     }
   },
   "mealDetailTitle": "Detalhes da refeição",

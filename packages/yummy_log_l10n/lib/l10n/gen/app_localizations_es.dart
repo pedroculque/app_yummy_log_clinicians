@@ -819,6 +819,39 @@ class AppLocalizationsEs extends AppLocalizations {
       'La puntuación resume señales de atención a partir de los registros más recientes para facilitar la priorización. Combina la cantidad de alertas, el tipo de comportamiento observado y el tiempo desde el último evento.';
 
   @override
+  String get insightsClinicalPriorityTitle => 'Prioridad clínica';
+
+  @override
+  String get insightsClinicalPrioritySubtitle =>
+      'Resumen rápido para decidir dónde mirar primero';
+
+  @override
+  String insightsPatientsNeedAttention(int count) {
+    return '$count pacientes necesitan atención';
+  }
+
+  @override
+  String insightsHighPriorityAlertsCount(int count) {
+    return '$count alertas de alta prioridad';
+  }
+
+  @override
+  String insightsActiveRate(String percent) {
+    return '$percent% de pacientes activos';
+  }
+
+  @override
+  String get insightsClinicalActionNeeded => 'Acción recomendada hoy';
+
+  @override
+  String get insightsClinicalPriorityWithAlerts =>
+      'Hay alertas críticas recientes. Revisa primero los pacientes con mayor ranking y los eventos de alta prioridad.';
+
+  @override
+  String get insightsClinicalPriorityNoAlerts =>
+      'No hay alertas críticas recientes. Usa el ranking para revisar a los pacientes con mayor puntuación e inactividad.';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count comidas (7d)';
   }

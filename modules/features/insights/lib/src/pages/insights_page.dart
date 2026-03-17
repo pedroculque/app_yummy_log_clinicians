@@ -122,6 +122,12 @@ class _InsightsContent extends StatelessWidget {
           l10n: l10n,
         ),
         const SizedBox(height: 16),
+        _ClinicalPrioritySection(
+          summary: summary,
+          appColors: appColors,
+          l10n: l10n,
+        ),
+        const SizedBox(height: 16),
         _SummaryCards(summary: summary, appColors: appColors, l10n: l10n),
         const SizedBox(height: 24),
         if (summary.hasAlerts) ...[
@@ -138,6 +144,149 @@ class _InsightsContent extends StatelessWidget {
           l10n: l10n,
         ),
       ],
+    );
+  }
+}
+
+class _ClinicalPrioritySection extends StatelessWidget {
+  const _ClinicalPrioritySection({
+    required this.summary,
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final InsightsSummary summary;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasHighPriorityAlerts = summary.highPriorityAlerts.isNotEmpty;
+    final attentionCount = summary.patientsNeedingAttention.length;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: appColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: appColors.primary.withValues(alpha: 0.16)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: appColors.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.tune_rounded, color: appColors.primary),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.insightsClinicalPriorityTitle,
+                      style: AppTextStyles.h3.copyWith(
+                        color: appColors.neutralBlack,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.insightsClinicalPrioritySubtitle,
+                      style: AppTextStyles.body3.copyWith(
+                        color: appColors.grayDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _PriorityStatChip(
+                icon: Icons.priority_high_rounded,
+                label: l10n.insightsPatientsNeedAttention(attentionCount),
+                color: appColors.primary,
+              ),
+              _PriorityStatChip(
+                icon: Icons.warning_amber_rounded,
+                label: l10n.insightsHighPriorityAlertsCount(
+                  summary.highPriorityAlerts.length,
+                ),
+                color: appColors.error,
+              ),
+              _PriorityStatChip(
+                icon: Icons.percent_rounded,
+                label: l10n.insightsActiveRate(
+                  summary.activePercentage.toStringAsFixed(0),
+                ),
+                color: appColors.secondary,
+              ),
+              if (hasHighPriorityAlerts)
+                _PriorityStatChip(
+                  icon: Icons.flash_on_rounded,
+                  label: l10n.insightsClinicalActionNeeded,
+                  color: Colors.orange,
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            hasHighPriorityAlerts
+                ? l10n.insightsClinicalPriorityWithAlerts
+                : l10n.insightsClinicalPriorityNoAlerts,
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PriorityStatChip extends StatelessWidget {
+  const _PriorityStatChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.16)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTextStyles.body3.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

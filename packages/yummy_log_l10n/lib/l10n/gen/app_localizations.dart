@@ -1659,6 +1659,54 @@ abstract class AppLocalizations {
   /// **'The score summarizes attention signals from recent records to make triage easier. It combines the number of alerts, the type of behavior observed, and how long it has been since the last event.'**
   String get insightsScoreHelpPageBody;
 
+  /// No description provided for @insightsClinicalPriorityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical priority'**
+  String get insightsClinicalPriorityTitle;
+
+  /// No description provided for @insightsClinicalPrioritySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick summary to decide where to look first'**
+  String get insightsClinicalPrioritySubtitle;
+
+  /// No description provided for @insightsPatientsNeedAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} patients need attention'**
+  String insightsPatientsNeedAttention(int count);
+
+  /// No description provided for @insightsHighPriorityAlertsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} high-priority alerts'**
+  String insightsHighPriorityAlertsCount(int count);
+
+  /// No description provided for @insightsActiveRate.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of patients active'**
+  String insightsActiveRate(String percent);
+
+  /// No description provided for @insightsClinicalActionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Action recommended today'**
+  String get insightsClinicalActionNeeded;
+
+  /// No description provided for @insightsClinicalPriorityWithAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'There are recent critical alerts. Review the patients with the highest ranking and the high-priority events first.'**
+  String get insightsClinicalPriorityWithAlerts;
+
+  /// No description provided for @insightsClinicalPriorityNoAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent critical alerts. Use the ranking to review patients with the highest score and inactivity.'**
+  String get insightsClinicalPriorityNoAlerts;
+
   /// No description provided for @insightsMealsCount.
   ///
   /// In en, this message translates to:

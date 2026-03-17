@@ -817,6 +817,39 @@ class AppLocalizationsEn extends AppLocalizations {
       'The score summarizes attention signals from recent records to make triage easier. It combines the number of alerts, the type of behavior observed, and how long it has been since the last event.';
 
   @override
+  String get insightsClinicalPriorityTitle => 'Clinical priority';
+
+  @override
+  String get insightsClinicalPrioritySubtitle =>
+      'Quick summary to decide where to look first';
+
+  @override
+  String insightsPatientsNeedAttention(int count) {
+    return '$count patients need attention';
+  }
+
+  @override
+  String insightsHighPriorityAlertsCount(int count) {
+    return '$count high-priority alerts';
+  }
+
+  @override
+  String insightsActiveRate(String percent) {
+    return '$percent% of patients active';
+  }
+
+  @override
+  String get insightsClinicalActionNeeded => 'Action recommended today';
+
+  @override
+  String get insightsClinicalPriorityWithAlerts =>
+      'There are recent critical alerts. Review the patients with the highest ranking and the high-priority events first.';
+
+  @override
+  String get insightsClinicalPriorityNoAlerts =>
+      'No recent critical alerts. Use the ranking to review patients with the highest score and inactivity.';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count meals (7d)';
   }
