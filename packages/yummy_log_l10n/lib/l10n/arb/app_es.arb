@@ -312,6 +312,7 @@
   "insightsPatientAnalyticsTitle": "Análisis por paciente",
   "insightsPatientAnalyticsSubtitle": "Casos principales que merecen lectura rápida",
   "insightsPatientAnalyticsEmpty": "Todavía no hay suficientes pacientes para comparar análisis individuales.",
+  "insightsTrendComparison": "{current} comidas en la última semana vs {previous} en la semana anterior, {trend}",
   "insightsScoreValue": "Puntuación {score}",
   "insightsMealsTrend": "{current} comidas en 7d vs {previous} en 30d",
   "insightsNegativeFeelings": "{percent}% sentimientos negativos",
@@ -321,6 +322,9 @@
   "insightsTrendModerate": "Atención",
   "insightsTrendLow": "Baja actividad",
   "insightsTrendNoData": "Sin historial",
+  "insightsTrendUp": "en alza",
+  "insightsTrendDown": "en baja",
+  "insightsTrendFlat": "estable",
   "insightsPatientNarrativeInactive": "El paciente lleva {days} días sin comidas registradas y necesita revisión.",
   "insightsPatientNarrativeHighAlert": "Hay señales críticas recientes. Conviene revisar primero los eventos en detalle.",
   "insightsPatientNarrativeBalanced": "Las señales están más equilibradas, así que este paciente puede ir después de los casos prioritarios.",
@@ -382,6 +386,13 @@
   "@insightsScoreValue": {
     "placeholders": {
       "score": {"type": "int"}
+    }
+  },
+  "@insightsTrendComparison": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "previous": {"type": "int"},
+      "trend": {"type": "String"}
     }
   },
   "@insightsMealsTrend": {

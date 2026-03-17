@@ -318,6 +318,7 @@
   "insightsPatientAnalyticsTitle": "Patient analysis",
   "insightsPatientAnalyticsSubtitle": "Top cases that deserve a quick read",
   "insightsPatientAnalyticsEmpty": "There are not enough patients yet to compare individual analysis.",
+  "insightsTrendComparison": "{current} meals in the last week vs {previous} in the previous week, {trend}",
   "insightsScoreValue": "Score {score}",
   "insightsMealsTrend": "{current} meals in 7d vs {previous} in 30d",
   "insightsNegativeFeelings": "{percent}% negative feelings",
@@ -327,6 +328,9 @@
   "insightsTrendModerate": "Watch",
   "insightsTrendLow": "Low activity",
   "insightsTrendNoData": "No history",
+  "insightsTrendUp": "going up",
+  "insightsTrendDown": "going down",
+  "insightsTrendFlat": "flat",
   "insightsPatientNarrativeInactive": "This patient has gone {days} days without a recorded meal and needs review.",
   "insightsPatientNarrativeHighAlert": "There are recent critical signs. It is worth reviewing the events in detail first.",
   "insightsPatientNarrativeBalanced": "The signals are more balanced, so this patient can come after the priority cases.",
@@ -388,6 +392,13 @@
   "@insightsScoreValue": {
     "placeholders": {
       "score": {"type": "int"}
+    }
+  },
+  "@insightsTrendComparison": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "previous": {"type": "int"},
+      "trend": {"type": "String"}
     }
   },
   "@insightsMealsTrend": {

@@ -16,6 +16,7 @@ class InsightsCalculator {
 
     final now = DateTime.now();
     final periodStart = now.subtract(Duration(days: periodDays));
+    final previousPeriodStart = now.subtract(Duration(days: periodDays * 2));
 
     final patientInsights = <PatientInsight>[];
     final allAlerts = <RiskAlert>[];
@@ -26,6 +27,11 @@ class InsightsCalculator {
       final meals = mealsByPatient[patient.id] ?? [];
       final mealsInPeriod =
           meals.where((m) => m.dateTime.isAfter(periodStart)).toList();
+      final previousMealsInPeriod = meals
+          .where((m) =>
+              m.dateTime.isAfter(previousPeriodStart) &&
+              m.dateTime.isBefore(periodStart))
+          .toList();
       final mealsLast30Days =
           meals.where((m) => m.dateTime.isAfter(now.subtract(const Duration(days: 30)))).toList();
 
@@ -36,6 +42,7 @@ class InsightsCalculator {
       }
 
       final alerts = _extractAlerts(patient, mealsInPeriod);
+      final previousAlerts = _extractAlerts(patient, previousMealsInPeriod);
       allAlerts.addAll(alerts);
 
       final feelingDist = _calculateFeelingDistribution(mealsInPeriod);
@@ -60,8 +67,10 @@ class InsightsCalculator {
           patient: patient,
           attentionScore: attentionScore,
           mealsLast7Days: mealsInPeriod.length,
+          mealsPrevious7Days: previousMealsInPeriod.length,
           mealsLast30Days: mealsLast30Days.length,
           alertsLast7Days: alerts.length,
+          alertsPrevious7Days: previousAlerts.length,
           feelingDistribution: feelingDist,
           amountDistribution: amountDist,
           recentAlerts: alerts,

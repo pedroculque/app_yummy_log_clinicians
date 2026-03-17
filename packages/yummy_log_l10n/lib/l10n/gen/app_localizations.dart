@@ -1725,6 +1725,12 @@ abstract class AppLocalizations {
   /// **'There are not enough patients yet to compare individual analysis.'**
   String get insightsPatientAnalyticsEmpty;
 
+  /// No description provided for @insightsTrendComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} meals in the last week vs {previous} in the previous week, {trend}'**
+  String insightsTrendComparison(int current, int previous, String trend);
+
   /// No description provided for @insightsScoreValue.
   ///
   /// In en, this message translates to:
@@ -1778,6 +1784,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No history'**
   String get insightsTrendNoData;
+
+  /// No description provided for @insightsTrendUp.
+  ///
+  /// In en, this message translates to:
+  /// **'going up'**
+  String get insightsTrendUp;
+
+  /// No description provided for @insightsTrendDown.
+  ///
+  /// In en, this message translates to:
+  /// **'going down'**
+  String get insightsTrendDown;
+
+  /// No description provided for @insightsTrendFlat.
+  ///
+  /// In en, this message translates to:
+  /// **'flat'**
+  String get insightsTrendFlat;
 
   /// No description provided for @insightsPatientNarrativeInactive.
   ///

@@ -364,6 +364,7 @@ class _PatientAnalyticsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final trend = _getTrendLabel();
     final trendColor = _getTrendColor();
+    final trendDelta = insight.mealsLast7Days - insight.mealsPrevious7Days;
     final negative = insight.negativeFeelingsPercentage.toStringAsFixed(0);
     final restriction = insight.restrictionPercentage.toStringAsFixed(0);
     final hasHighPriority = insight.hasHighPriorityAlerts;
@@ -392,6 +393,15 @@ class _PatientAnalyticsCard extends StatelessWidget {
               ),
               _TrendBadge(label: trend, color: trendColor),
             ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.insightsTrendComparison(
+              insight.mealsLast7Days,
+              insight.mealsPrevious7Days,
+              _getTrendDeltaLabel(trendDelta),
+            ),
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -440,19 +450,31 @@ class _PatientAnalyticsCard extends StatelessWidget {
   }
 
   String _getTrendLabel() {
-    if (insight.mealsLast30Days == 0) return l10n.insightsTrendNoData;
-    final ratio = insight.mealsLast7Days / insight.mealsLast30Days;
-    if (ratio >= 0.75) return l10n.insightsTrendStable;
-    if (ratio >= 0.45) return l10n.insightsTrendModerate;
+    final current = insight.mealsLast7Days;
+    final previous = insight.mealsPrevious7Days;
+    if (current == 0 && previous == 0) return l10n.insightsTrendNoData;
+    if (previous == 0) return l10n.insightsTrendStable;
+    final ratio = current / previous;
+    if (ratio >= 1.1) return l10n.insightsTrendStable;
+    if (ratio >= 0.8) return l10n.insightsTrendModerate;
     return l10n.insightsTrendLow;
   }
 
   Color _getTrendColor() {
-    if (insight.mealsLast30Days == 0) return appColors.gray;
-    final ratio = insight.mealsLast7Days / insight.mealsLast30Days;
-    if (ratio >= 0.75) return appColors.success;
-    if (ratio >= 0.45) return Colors.orange;
+    final current = insight.mealsLast7Days;
+    final previous = insight.mealsPrevious7Days;
+    if (current == 0 && previous == 0) return appColors.gray;
+    if (previous == 0) return appColors.success;
+    final ratio = current / previous;
+    if (ratio >= 1.1) return appColors.success;
+    if (ratio >= 0.8) return Colors.orange;
     return appColors.error;
+  }
+
+  String _getTrendDeltaLabel(int delta) {
+    if (delta > 0) return l10n.insightsTrendUp;
+    if (delta < 0) return l10n.insightsTrendDown;
+    return l10n.insightsTrendFlat;
   }
 
   String _getNarrative() {

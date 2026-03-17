@@ -863,6 +863,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'Todavía no hay suficientes pacientes para comparar análisis individuales.';
 
   @override
+  String insightsTrendComparison(int current, int previous, String trend) {
+    return '$current comidas en la última semana vs $previous en la semana anterior, $trend';
+  }
+
+  @override
   String insightsScoreValue(int score) {
     return 'Puntuación $score';
   }
@@ -896,6 +901,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get insightsTrendNoData => 'Sin historial';
+
+  @override
+  String get insightsTrendUp => 'en alza';
+
+  @override
+  String get insightsTrendDown => 'en baja';
+
+  @override
+  String get insightsTrendFlat => 'estable';
 
   @override
   String insightsPatientNarrativeInactive(int days) {

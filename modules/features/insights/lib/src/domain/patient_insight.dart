@@ -8,8 +8,10 @@ class PatientInsight extends Equatable {
     required this.patient,
     required this.attentionScore,
     required this.mealsLast7Days,
+    required this.mealsPrevious7Days,
     required this.mealsLast30Days,
     required this.alertsLast7Days,
+    required this.alertsPrevious7Days,
     required this.feelingDistribution,
     required this.amountDistribution,
     required this.recentAlerts,
@@ -20,8 +22,10 @@ class PatientInsight extends Equatable {
   final Patient patient;
   final int attentionScore;
   final int mealsLast7Days;
+  final int mealsPrevious7Days;
   final int mealsLast30Days;
   final int alertsLast7Days;
+  final int alertsPrevious7Days;
   final Map<FeelingLabel, int> feelingDistribution;
   final Map<AmountEaten, int> amountDistribution;
   final List<RiskAlert> recentAlerts;
@@ -57,8 +61,10 @@ class PatientInsight extends Equatable {
         patient,
         attentionScore,
         mealsLast7Days,
+        mealsPrevious7Days,
         mealsLast30Days,
         alertsLast7Days,
+        alertsPrevious7Days,
         feelingDistribution,
         amountDistribution,
         recentAlerts,
