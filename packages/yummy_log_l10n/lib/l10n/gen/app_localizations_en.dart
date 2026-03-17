@@ -910,6 +910,104 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insightsTrendFlat => 'flat';
 
   @override
+  String get insightsActionReviewToday => 'Review today';
+
+  @override
+  String get insightsActionReviewSoon => 'Review soon';
+
+  @override
+  String get insightsActionStable => 'Stable case';
+
+  @override
+  String get insightsActionWorsening => 'Getting worse';
+
+  @override
+  String get insightsActionImproving => 'Improving';
+
+  @override
+  String get insightsActionLabel => 'Action';
+
+  @override
+  String insightsActionSummary(int today, int soon, int stable) {
+    return '$today today, $soon soon and $stable stable';
+  }
+
+  @override
+  String get insightsClinicalSignalsTitle => 'Clinical signals';
+
+  @override
+  String get insightsClinicalSignalsSubtitle =>
+      'Who worsened, who improved and who needs attention';
+
+  @override
+  String get insightsClinicalWhyHere => 'Why this patient is here';
+
+  @override
+  String get insightsClinicalWhyHereHighRisk =>
+      'There is a recent critical alert and the score is high.';
+
+  @override
+  String get insightsClinicalWhyHereWorsening =>
+      'The pattern worsened in the latest comparison.';
+
+  @override
+  String get insightsClinicalWhyHereBalanced =>
+      'The signals are balanced, but the evolution is worth following.';
+
+  @override
+  String get insightsTrendMealsLabel => 'Adherence';
+
+  @override
+  String get insightsTrendAlertsLabel => 'Alerts';
+
+  @override
+  String get insightsTrendWorse => 'worse';
+
+  @override
+  String get insightsTrendBetter => 'better';
+
+  @override
+  String get insightsTrendSame => 'stable';
+
+  @override
+  String get insightsTrendActionWorse => 'Needs earlier review';
+
+  @override
+  String get insightsTrendActionBetter => 'Can be reviewed later';
+
+  @override
+  String insightsPatientPriorityToday(int count) {
+    return '$count to review today';
+  }
+
+  @override
+  String insightsPatientPrioritySoon(int count) {
+    return '$count to review soon';
+  }
+
+  @override
+  String insightsPatientPriorityStable(int count) {
+    return '$count stable';
+  }
+
+  @override
+  String insightsPatientPriorityWorsening(int count) {
+    return '$count worsening';
+  }
+
+  @override
+  String insightsPatientPriorityImproving(int count) {
+    return '$count improving';
+  }
+
+  @override
+  String get insightsDashboardOperationalTitle => 'Operational summary';
+
+  @override
+  String get insightsDashboardOperationalSubtitle =>
+      'Case status to prioritize the schedule';
+
+  @override
   String insightsPatientNarrativeInactive(int days) {
     return 'This patient has gone $days days without a recorded meal and needs review.';
   }

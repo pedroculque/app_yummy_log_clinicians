@@ -52,7 +52,20 @@ class InsightsFeature implements YummyLogFeature {
         builder: (context, state) => const _ScoreHelpRoutePage(),
       ),
       GoRoute(
+        path: '/insights/score-help',
+        builder: (context, state) => const _ScoreHelpRoutePage(),
+      ),
+    ];
+  }
+
+  List<RouteBase> getFullScreenRoutes(
+    GetIt getIt, {
+    GlobalKey<NavigatorState>? rootNavigatorKey,
+  }) {
+    return [
+      GoRoute(
         path: '/insights/patient-detail',
+        parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final insight = state.extra as PatientInsight?;
           return _PatientDetailRoutePage(insight: insight);

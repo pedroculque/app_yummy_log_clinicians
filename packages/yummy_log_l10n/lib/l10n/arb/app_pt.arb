@@ -325,6 +325,33 @@
   "insightsTrendUp": "em alta",
   "insightsTrendDown": "em queda",
   "insightsTrendFlat": "estável",
+  "insightsActionReviewToday": "Revisar hoje",
+  "insightsActionReviewSoon": "Revisar em breve",
+  "insightsActionStable": "Caso estável",
+  "insightsActionWorsening": "Em piora",
+  "insightsActionImproving": "Em melhora",
+  "insightsActionLabel": "Ação",
+  "insightsActionSummary": "{today} hoje, {soon} em breve e {stable} estáveis",
+  "insightsClinicalSignalsTitle": "Sinais clínicos",
+  "insightsClinicalSignalsSubtitle": "Quem piorou, quem melhorou e quem precisa de atenção",
+  "insightsClinicalWhyHere": "Por que este paciente está aqui",
+  "insightsClinicalWhyHereHighRisk": "Há alerta crítico recente e o score está alto.",
+  "insightsClinicalWhyHereWorsening": "O padrão piorou na última comparação temporal.",
+  "insightsClinicalWhyHereBalanced": "Os sinais estão equilibrados, mas vale acompanhar a evolução.",
+  "insightsTrendMealsLabel": "Adesão",
+  "insightsTrendAlertsLabel": "Alertas",
+  "insightsTrendWorse": "piorando",
+  "insightsTrendBetter": "melhorando",
+  "insightsTrendSame": "estável",
+  "insightsTrendActionWorse": "Precisa de revisão mais cedo",
+  "insightsTrendActionBetter": "Pode ficar para revisão posterior",
+  "insightsPatientPriorityToday": "{count} para revisar hoje",
+  "insightsPatientPrioritySoon": "{count} para revisar em breve",
+  "insightsPatientPriorityStable": "{count} estáveis",
+  "insightsPatientPriorityWorsening": "{count} em piora",
+  "insightsPatientPriorityImproving": "{count} em melhora",
+  "insightsDashboardOperationalTitle": "Resumo operacional",
+  "insightsDashboardOperationalSubtitle": "Estado dos casos para priorizar a agenda",
   "insightsPatientNarrativeInactive": "Paciente está há {days} dias sem refeição registrada e precisa de revisão.",
   "insightsPatientNarrativeHighAlert": "Há sinais críticos recentes. Vale revisar os eventos em detalhe primeiro.",
   "insightsPatientNarrativeBalanced": "Os sinais estão mais equilibrados, então este paciente pode ficar após os casos prioritários.",
@@ -403,6 +430,38 @@
       "current": {"type": "int"},
       "previous": {"type": "int"},
       "trend": {"type": "String"}
+    }
+  },
+  "@insightsActionSummary": {
+    "placeholders": {
+      "today": {"type": "int"},
+      "soon": {"type": "int"},
+      "stable": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityToday": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPrioritySoon": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityStable": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityWorsening": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityImproving": {
+    "placeholders": {
+      "count": {"type": "int"}
     }
   },
   "@insightsMealsTrend": {

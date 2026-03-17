@@ -38,6 +38,24 @@ class InsightsSummary extends Equatable {
   List<RiskAlert> get highPriorityAlerts =>
       recentAlerts.where((a) => a.priority == RiskPriority.high).toList();
 
+  int get patientsReviewToday =>
+      patientInsights.where((p) => p.clinicalAction == ClinicalAction.reviewToday).length;
+
+  int get patientsReviewSoon =>
+      patientInsights.where((p) => p.clinicalAction == ClinicalAction.reviewSoon).length;
+
+  int get stablePatients =>
+      patientInsights.where((p) => p.clinicalAction == ClinicalAction.stable).length;
+
+  int get worseningPatients => patientInsights.where((p) => p.isWorsening).length;
+
+  int get improvingPatients => patientInsights.where((p) => p.isImproving).length;
+
+  int get inactivePatients => patientInsights.where((p) => p.isInactive).length;
+
+  int get highRiskPatients =>
+      patientInsights.where((p) => p.hasHighPriorityAlerts).length;
+
   bool get hasAlerts => totalAlerts > 0;
 
   bool get isEmpty => totalPatients == 0;

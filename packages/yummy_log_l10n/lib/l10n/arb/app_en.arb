@@ -331,6 +331,33 @@
   "insightsTrendUp": "going up",
   "insightsTrendDown": "going down",
   "insightsTrendFlat": "flat",
+  "insightsActionReviewToday": "Review today",
+  "insightsActionReviewSoon": "Review soon",
+  "insightsActionStable": "Stable case",
+  "insightsActionWorsening": "Getting worse",
+  "insightsActionImproving": "Improving",
+  "insightsActionLabel": "Action",
+  "insightsActionSummary": "{today} today, {soon} soon and {stable} stable",
+  "insightsClinicalSignalsTitle": "Clinical signals",
+  "insightsClinicalSignalsSubtitle": "Who worsened, who improved and who needs attention",
+  "insightsClinicalWhyHere": "Why this patient is here",
+  "insightsClinicalWhyHereHighRisk": "There is a recent critical alert and the score is high.",
+  "insightsClinicalWhyHereWorsening": "The pattern worsened in the latest comparison.",
+  "insightsClinicalWhyHereBalanced": "The signals are balanced, but the evolution is worth following.",
+  "insightsTrendMealsLabel": "Adherence",
+  "insightsTrendAlertsLabel": "Alerts",
+  "insightsTrendWorse": "worse",
+  "insightsTrendBetter": "better",
+  "insightsTrendSame": "stable",
+  "insightsTrendActionWorse": "Needs earlier review",
+  "insightsTrendActionBetter": "Can be reviewed later",
+  "insightsPatientPriorityToday": "{count} to review today",
+  "insightsPatientPrioritySoon": "{count} to review soon",
+  "insightsPatientPriorityStable": "{count} stable",
+  "insightsPatientPriorityWorsening": "{count} worsening",
+  "insightsPatientPriorityImproving": "{count} improving",
+  "insightsDashboardOperationalTitle": "Operational summary",
+  "insightsDashboardOperationalSubtitle": "Case status to prioritize the schedule",
   "insightsPatientNarrativeInactive": "This patient has gone {days} days without a recorded meal and needs review.",
   "insightsPatientNarrativeHighAlert": "There are recent critical signs. It is worth reviewing the events in detail first.",
   "insightsPatientNarrativeBalanced": "The signals are more balanced, so this patient can come after the priority cases.",
@@ -409,6 +436,38 @@
       "current": {"type": "int"},
       "previous": {"type": "int"},
       "trend": {"type": "String"}
+    }
+  },
+  "@insightsActionSummary": {
+    "placeholders": {
+      "today": {"type": "int"},
+      "soon": {"type": "int"},
+      "stable": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityToday": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPrioritySoon": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityStable": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityWorsening": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "@insightsPatientPriorityImproving": {
+    "placeholders": {
+      "count": {"type": "int"}
     }
   },
   "@insightsMealsTrend": {

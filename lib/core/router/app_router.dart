@@ -37,6 +37,10 @@ GoRouter createAppRouter() {
         getIt,
         rootNavigatorKey: _rootNavigatorKey,
       ),
+      ...insightsFeature.getFullScreenRoutes(
+        getIt,
+        rootNavigatorKey: _rootNavigatorKey,
+      ),
       ...settingsFeature.getFullScreenRoutes(
         getIt,
         rootNavigatorKey: _rootNavigatorKey,

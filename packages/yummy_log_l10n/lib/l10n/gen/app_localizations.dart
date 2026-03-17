@@ -1803,6 +1803,168 @@ abstract class AppLocalizations {
   /// **'flat'**
   String get insightsTrendFlat;
 
+  /// No description provided for @insightsActionReviewToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Review today'**
+  String get insightsActionReviewToday;
+
+  /// No description provided for @insightsActionReviewSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Review soon'**
+  String get insightsActionReviewSoon;
+
+  /// No description provided for @insightsActionStable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable case'**
+  String get insightsActionStable;
+
+  /// No description provided for @insightsActionWorsening.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting worse'**
+  String get insightsActionWorsening;
+
+  /// No description provided for @insightsActionImproving.
+  ///
+  /// In en, this message translates to:
+  /// **'Improving'**
+  String get insightsActionImproving;
+
+  /// No description provided for @insightsActionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get insightsActionLabel;
+
+  /// No description provided for @insightsActionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{today} today, {soon} soon and {stable} stable'**
+  String insightsActionSummary(int today, int soon, int stable);
+
+  /// No description provided for @insightsClinicalSignalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical signals'**
+  String get insightsClinicalSignalsTitle;
+
+  /// No description provided for @insightsClinicalSignalsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who worsened, who improved and who needs attention'**
+  String get insightsClinicalSignalsSubtitle;
+
+  /// No description provided for @insightsClinicalWhyHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this patient is here'**
+  String get insightsClinicalWhyHere;
+
+  /// No description provided for @insightsClinicalWhyHereHighRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'There is a recent critical alert and the score is high.'**
+  String get insightsClinicalWhyHereHighRisk;
+
+  /// No description provided for @insightsClinicalWhyHereWorsening.
+  ///
+  /// In en, this message translates to:
+  /// **'The pattern worsened in the latest comparison.'**
+  String get insightsClinicalWhyHereWorsening;
+
+  /// No description provided for @insightsClinicalWhyHereBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'The signals are balanced, but the evolution is worth following.'**
+  String get insightsClinicalWhyHereBalanced;
+
+  /// No description provided for @insightsTrendMealsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Adherence'**
+  String get insightsTrendMealsLabel;
+
+  /// No description provided for @insightsTrendAlertsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get insightsTrendAlertsLabel;
+
+  /// No description provided for @insightsTrendWorse.
+  ///
+  /// In en, this message translates to:
+  /// **'worse'**
+  String get insightsTrendWorse;
+
+  /// No description provided for @insightsTrendBetter.
+  ///
+  /// In en, this message translates to:
+  /// **'better'**
+  String get insightsTrendBetter;
+
+  /// No description provided for @insightsTrendSame.
+  ///
+  /// In en, this message translates to:
+  /// **'stable'**
+  String get insightsTrendSame;
+
+  /// No description provided for @insightsTrendActionWorse.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs earlier review'**
+  String get insightsTrendActionWorse;
+
+  /// No description provided for @insightsTrendActionBetter.
+  ///
+  /// In en, this message translates to:
+  /// **'Can be reviewed later'**
+  String get insightsTrendActionBetter;
+
+  /// No description provided for @insightsPatientPriorityToday.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to review today'**
+  String insightsPatientPriorityToday(int count);
+
+  /// No description provided for @insightsPatientPrioritySoon.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} to review soon'**
+  String insightsPatientPrioritySoon(int count);
+
+  /// No description provided for @insightsPatientPriorityStable.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} stable'**
+  String insightsPatientPriorityStable(int count);
+
+  /// No description provided for @insightsPatientPriorityWorsening.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} worsening'**
+  String insightsPatientPriorityWorsening(int count);
+
+  /// No description provided for @insightsPatientPriorityImproving.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} improving'**
+  String insightsPatientPriorityImproving(int count);
+
+  /// No description provided for @insightsDashboardOperationalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational summary'**
+  String get insightsDashboardOperationalTitle;
+
+  /// No description provided for @insightsDashboardOperationalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Case status to prioritize the schedule'**
+  String get insightsDashboardOperationalSubtitle;
+
   /// No description provided for @insightsPatientNarrativeInactive.
   ///
   /// In en, this message translates to:

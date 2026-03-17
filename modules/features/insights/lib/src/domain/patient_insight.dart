@@ -32,6 +32,25 @@ class PatientInsight extends Equatable {
   final DateTime? lastMealDate;
   final int daysWithoutMeal;
 
+  int get mealsTrendDelta => mealsLast7Days - mealsPrevious7Days;
+  int get alertsTrendDelta => alertsLast7Days - alertsPrevious7Days;
+
+  bool get isWorsening =>
+      mealsTrendDelta < 0 || alertsTrendDelta > 0 || attentionScore >= 20;
+
+  bool get isImproving =>
+      mealsTrendDelta > 0 && alertsTrendDelta <= 0 && !hasHighPriorityAlerts;
+
+  ClinicalAction get clinicalAction {
+    if (attentionScore >= 25 || hasHighPriorityAlerts || daysWithoutMeal >= 7) {
+      return ClinicalAction.reviewToday;
+    }
+    if (attentionScore >= 10 || isInactive || alertsLast7Days > 0) {
+      return ClinicalAction.reviewSoon;
+    }
+    return ClinicalAction.stable;
+  }
+
   bool get hasHighPriorityAlerts =>
       recentAlerts.any((a) => a.priority == RiskPriority.high);
 
@@ -71,4 +90,10 @@ class PatientInsight extends Equatable {
         lastMealDate,
         daysWithoutMeal,
       ];
+}
+
+enum ClinicalAction {
+  reviewToday,
+  reviewSoon,
+  stable,
 }
