@@ -26,6 +26,8 @@ class InsightsCalculator {
       final meals = mealsByPatient[patient.id] ?? [];
       final mealsInPeriod =
           meals.where((m) => m.dateTime.isAfter(periodStart)).toList();
+      final mealsLast30Days =
+          meals.where((m) => m.dateTime.isAfter(now.subtract(const Duration(days: 30)))).toList();
 
       totalMealsPeriod += mealsInPeriod.length;
 
@@ -58,7 +60,7 @@ class InsightsCalculator {
           patient: patient,
           attentionScore: attentionScore,
           mealsLast7Days: mealsInPeriod.length,
-          mealsLast30Days: mealsInPeriod.length,
+          mealsLast30Days: mealsLast30Days.length,
           alertsLast7Days: alerts.length,
           feelingDistribution: feelingDist,
           amountDistribution: amountDist,

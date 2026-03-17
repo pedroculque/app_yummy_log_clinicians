@@ -143,6 +143,12 @@ class _InsightsContent extends StatelessWidget {
           appColors: appColors,
           l10n: l10n,
         ),
+        const SizedBox(height: 24),
+        _PatientAnalyticsSection(
+          patients: summary.patientInsights,
+          appColors: appColors,
+          l10n: l10n,
+        ),
       ],
     );
   }
@@ -286,6 +292,262 @@ class _PriorityStatChip extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PatientAnalyticsSection extends StatelessWidget {
+  const _PatientAnalyticsSection({
+    required this.patients,
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final List<PatientInsight> patients;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final sortedPatients = [...patients]..sort(
+        (a, b) => b.attentionScore.compareTo(a.attentionScore),
+      );
+    final topPatients = sortedPatients.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.analytics_outlined, color: appColors.primary, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              l10n.insightsPatientAnalyticsTitle,
+              style: AppTextStyles.h3.copyWith(color: appColors.neutralBlack),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.insightsPatientAnalyticsSubtitle,
+          style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+        ),
+        const SizedBox(height: 12),
+        if (topPatients.isEmpty)
+          _NoAnalyticsCard(appColors: appColors, l10n: l10n)
+        else
+          ...topPatients.map(
+            (patient) => _PatientAnalyticsCard(
+              insight: patient,
+              appColors: appColors,
+              l10n: l10n,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _PatientAnalyticsCard extends StatelessWidget {
+  const _PatientAnalyticsCard({
+    required this.insight,
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final PatientInsight insight;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final trend = _getTrendLabel();
+    final trendColor = _getTrendColor();
+    final negative = insight.negativeFeelingsPercentage.toStringAsFixed(0);
+    final restriction = insight.restrictionPercentage.toStringAsFixed(0);
+    final hasHighPriority = insight.hasHighPriorityAlerts;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: appColors.backgroundDefault,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: appColors.gray.withValues(alpha: 0.18)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  insight.patient.name,
+                  style: AppTextStyles.body1.copyWith(
+                    color: appColors.neutralBlack,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _TrendBadge(label: trend, color: trendColor),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _MetricChip(
+                label: l10n.insightsScoreValue(insight.attentionScore),
+                icon: Icons.local_fire_department_outlined,
+                color: appColors.primary,
+              ),
+              _MetricChip(
+                label: l10n.insightsMealsTrend(
+                  insight.mealsLast7Days,
+                  insight.mealsLast30Days,
+                ),
+                icon: Icons.restaurant_outlined,
+                color: appColors.secondary,
+              ),
+              _MetricChip(
+                label: l10n.insightsNegativeFeelings(negative),
+                icon: Icons.sentiment_dissatisfied_outlined,
+                color: Colors.orange,
+              ),
+              _MetricChip(
+                label: l10n.insightsRestrictionRate(restriction),
+                icon: Icons.do_not_disturb_on_outlined,
+                color: appColors.error,
+              ),
+              if (hasHighPriority)
+                _MetricChip(
+                  label: l10n.insightsHighPriorityAlerts,
+                  icon: Icons.warning_amber_rounded,
+                  color: appColors.error,
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            _getNarrative(),
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getTrendLabel() {
+    if (insight.mealsLast30Days == 0) return l10n.insightsTrendNoData;
+    final ratio = insight.mealsLast7Days / insight.mealsLast30Days;
+    if (ratio >= 0.75) return l10n.insightsTrendStable;
+    if (ratio >= 0.45) return l10n.insightsTrendModerate;
+    return l10n.insightsTrendLow;
+  }
+
+  Color _getTrendColor() {
+    if (insight.mealsLast30Days == 0) return appColors.gray;
+    final ratio = insight.mealsLast7Days / insight.mealsLast30Days;
+    if (ratio >= 0.75) return appColors.success;
+    if (ratio >= 0.45) return Colors.orange;
+    return appColors.error;
+  }
+
+  String _getNarrative() {
+    if (insight.isInactive) {
+      return l10n.insightsPatientNarrativeInactive(insight.daysWithoutMeal);
+    }
+    if (insight.hasHighPriorityAlerts) {
+      return l10n.insightsPatientNarrativeHighAlert;
+    }
+    return l10n.insightsPatientNarrativeBalanced;
+  }
+}
+
+class _MetricChip extends StatelessWidget {
+  const _MetricChip({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: AppTextStyles.body3.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TrendBadge extends StatelessWidget {
+  const _TrendBadge({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.body3.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _NoAnalyticsCard extends StatelessWidget {
+  const _NoAnalyticsCard({
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: appColors.gray.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        l10n.insightsPatientAnalyticsEmpty,
+        style: AppTextStyles.body2.copyWith(color: appColors.grayDark),
       ),
     );
   }

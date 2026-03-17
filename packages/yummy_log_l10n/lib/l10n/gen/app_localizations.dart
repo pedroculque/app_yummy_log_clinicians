@@ -1707,6 +1707,96 @@ abstract class AppLocalizations {
   /// **'No recent critical alerts. Use the ranking to review patients with the highest score and inactivity.'**
   String get insightsClinicalPriorityNoAlerts;
 
+  /// No description provided for @insightsPatientAnalyticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient analysis'**
+  String get insightsPatientAnalyticsTitle;
+
+  /// No description provided for @insightsPatientAnalyticsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Top cases that deserve a quick read'**
+  String get insightsPatientAnalyticsSubtitle;
+
+  /// No description provided for @insightsPatientAnalyticsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are not enough patients yet to compare individual analysis.'**
+  String get insightsPatientAnalyticsEmpty;
+
+  /// No description provided for @insightsScoreValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Score {score}'**
+  String insightsScoreValue(int score);
+
+  /// No description provided for @insightsMealsTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} meals in 7d vs {previous} in 30d'**
+  String insightsMealsTrend(int current, int previous);
+
+  /// No description provided for @insightsNegativeFeelings.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% negative feelings'**
+  String insightsNegativeFeelings(String percent);
+
+  /// No description provided for @insightsRestrictionRate.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% low intake'**
+  String insightsRestrictionRate(String percent);
+
+  /// No description provided for @insightsHighPriorityAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'critical alerts'**
+  String get insightsHighPriorityAlerts;
+
+  /// No description provided for @insightsTrendStable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable'**
+  String get insightsTrendStable;
+
+  /// No description provided for @insightsTrendModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch'**
+  String get insightsTrendModerate;
+
+  /// No description provided for @insightsTrendLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low activity'**
+  String get insightsTrendLow;
+
+  /// No description provided for @insightsTrendNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No history'**
+  String get insightsTrendNoData;
+
+  /// No description provided for @insightsPatientNarrativeInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'This patient has gone {days} days without a recorded meal and needs review.'**
+  String insightsPatientNarrativeInactive(int days);
+
+  /// No description provided for @insightsPatientNarrativeHighAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'There are recent critical signs. It is worth reviewing the events in detail first.'**
+  String get insightsPatientNarrativeHighAlert;
+
+  /// No description provided for @insightsPatientNarrativeBalanced.
+  ///
+  /// In en, this message translates to:
+  /// **'The signals are more balanced, so this patient can come after the priority cases.'**
+  String get insightsPatientNarrativeBalanced;
+
   /// No description provided for @insightsMealsCount.
   ///
   /// In en, this message translates to:

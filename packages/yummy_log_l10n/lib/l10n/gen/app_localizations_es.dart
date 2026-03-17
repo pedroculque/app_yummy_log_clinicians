@@ -852,6 +852,65 @@ class AppLocalizationsEs extends AppLocalizations {
       'No hay alertas críticas recientes. Usa el ranking para revisar a los pacientes con mayor puntuación e inactividad.';
 
   @override
+  String get insightsPatientAnalyticsTitle => 'Análisis por paciente';
+
+  @override
+  String get insightsPatientAnalyticsSubtitle =>
+      'Casos principales que merecen lectura rápida';
+
+  @override
+  String get insightsPatientAnalyticsEmpty =>
+      'Todavía no hay suficientes pacientes para comparar análisis individuales.';
+
+  @override
+  String insightsScoreValue(int score) {
+    return 'Puntuación $score';
+  }
+
+  @override
+  String insightsMealsTrend(int current, int previous) {
+    return '$current comidas en 7d vs $previous en 30d';
+  }
+
+  @override
+  String insightsNegativeFeelings(String percent) {
+    return '$percent% sentimientos negativos';
+  }
+
+  @override
+  String insightsRestrictionRate(String percent) {
+    return '$percent% baja ingesta';
+  }
+
+  @override
+  String get insightsHighPriorityAlerts => 'alertas críticas';
+
+  @override
+  String get insightsTrendStable => 'Estable';
+
+  @override
+  String get insightsTrendModerate => 'Atención';
+
+  @override
+  String get insightsTrendLow => 'Baja actividad';
+
+  @override
+  String get insightsTrendNoData => 'Sin historial';
+
+  @override
+  String insightsPatientNarrativeInactive(int days) {
+    return 'El paciente lleva $days días sin comidas registradas y necesita revisión.';
+  }
+
+  @override
+  String get insightsPatientNarrativeHighAlert =>
+      'Hay señales críticas recientes. Conviene revisar primero los eventos en detalle.';
+
+  @override
+  String get insightsPatientNarrativeBalanced =>
+      'Las señales están más equilibradas, así que este paciente puede ir después de los casos prioritarios.';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count comidas (7d)';
   }

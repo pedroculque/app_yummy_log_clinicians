@@ -309,6 +309,21 @@
   "insightsClinicalActionNeeded": "Ação recomendada hoje",
   "insightsClinicalPriorityWithAlerts": "Há alertas críticos recentes. Revise primeiro os pacientes mais altos no ranking e os eventos com prioridade alta.",
   "insightsClinicalPriorityNoAlerts": "Nenhum alerta crítico recente. Use o ranking para revisar os pacientes com maior score e inatividade.",
+  "insightsPatientAnalyticsTitle": "Análise por paciente",
+  "insightsPatientAnalyticsSubtitle": "Topo dos casos que mais merecem leitura rápida",
+  "insightsPatientAnalyticsEmpty": "Ainda não há pacientes suficientes para comparar análises individuais.",
+  "insightsScoreValue": "Score {score}",
+  "insightsMealsTrend": "{current} refeições em 7d vs {previous} em 30d",
+  "insightsNegativeFeelings": "{percent}% sentimentos negativos",
+  "insightsRestrictionRate": "{percent}% baixa ingestão",
+  "insightsHighPriorityAlerts": "alertas críticos",
+  "insightsTrendStable": "Estável",
+  "insightsTrendModerate": "Atenção",
+  "insightsTrendLow": "Baixa atividade",
+  "insightsTrendNoData": "Sem histórico",
+  "insightsPatientNarrativeInactive": "Paciente está há {days} dias sem refeição registrada e precisa de revisão.",
+  "insightsPatientNarrativeHighAlert": "Há sinais críticos recentes. Vale revisar os eventos em detalhe primeiro.",
+  "insightsPatientNarrativeBalanced": "Os sinais estão mais equilibrados, então este paciente pode ficar após os casos prioritários.",
   "insightsMealsCount": "{count} refeições (7d)",
   "insightsAlertsCount": "{count} alertas",
   "insightsInactive": "Inativo há {days} dias",
@@ -362,6 +377,32 @@
   "@insightsActiveRate": {
     "placeholders": {
       "percent": {"type": "String"}
+    }
+  },
+  "@insightsScoreValue": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "@insightsMealsTrend": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "previous": {"type": "int"}
+    }
+  },
+  "@insightsNegativeFeelings": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "@insightsRestrictionRate": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "@insightsPatientNarrativeInactive": {
+    "placeholders": {
+      "days": {"type": "int"}
     }
   },
   "mealDetailTitle": "Detalhes da refeição",

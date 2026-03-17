@@ -315,6 +315,21 @@
   "insightsClinicalActionNeeded": "Action recommended today",
   "insightsClinicalPriorityWithAlerts": "There are recent critical alerts. Review the patients with the highest ranking and the high-priority events first.",
   "insightsClinicalPriorityNoAlerts": "No recent critical alerts. Use the ranking to review patients with the highest score and inactivity.",
+  "insightsPatientAnalyticsTitle": "Patient analysis",
+  "insightsPatientAnalyticsSubtitle": "Top cases that deserve a quick read",
+  "insightsPatientAnalyticsEmpty": "There are not enough patients yet to compare individual analysis.",
+  "insightsScoreValue": "Score {score}",
+  "insightsMealsTrend": "{current} meals in 7d vs {previous} in 30d",
+  "insightsNegativeFeelings": "{percent}% negative feelings",
+  "insightsRestrictionRate": "{percent}% low intake",
+  "insightsHighPriorityAlerts": "critical alerts",
+  "insightsTrendStable": "Stable",
+  "insightsTrendModerate": "Watch",
+  "insightsTrendLow": "Low activity",
+  "insightsTrendNoData": "No history",
+  "insightsPatientNarrativeInactive": "This patient has gone {days} days without a recorded meal and needs review.",
+  "insightsPatientNarrativeHighAlert": "There are recent critical signs. It is worth reviewing the events in detail first.",
+  "insightsPatientNarrativeBalanced": "The signals are more balanced, so this patient can come after the priority cases.",
   "insightsMealsCount": "{count} meals (7d)",
   "insightsAlertsCount": "{count} alerts",
   "insightsInactive": "Inactive for {days} days",
@@ -368,6 +383,32 @@
   "@insightsActiveRate": {
     "placeholders": {
       "percent": {"type": "String"}
+    }
+  },
+  "@insightsScoreValue": {
+    "placeholders": {
+      "score": {"type": "int"}
+    }
+  },
+  "@insightsMealsTrend": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "previous": {"type": "int"}
+    }
+  },
+  "@insightsNegativeFeelings": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "@insightsRestrictionRate": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "@insightsPatientNarrativeInactive": {
+    "placeholders": {
+      "days": {"type": "int"}
     }
   },
   "mealDetailTitle": "Meal details",
