@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insights_feature/src/cubit/insights_cubit.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
+import 'package:insights_feature/src/domain/patient_insight.dart';
 import 'package:insights_feature/src/pages/insights_page.dart';
 import 'package:patients_feature/patients_feature.dart';
 
@@ -50,6 +51,13 @@ class InsightsFeature implements YummyLogFeature {
         path: '/insights/score-help',
         builder: (context, state) => const _ScoreHelpRoutePage(),
       ),
+      GoRoute(
+        path: '/insights/patient-detail',
+        builder: (context, state) {
+          final insight = state.extra as PatientInsight?;
+          return _PatientDetailRoutePage(insight: insight);
+        },
+      ),
     ];
   }
 }
@@ -60,5 +68,16 @@ class _ScoreHelpRoutePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const InsightsPage(scoreHelpMode: true);
+  }
+}
+
+class _PatientDetailRoutePage extends StatelessWidget {
+  const _PatientDetailRoutePage({required this.insight});
+
+  final PatientInsight? insight;
+
+  @override
+  Widget build(BuildContext context) {
+    return PatientDetailPage(insight: insight);
   }
 }

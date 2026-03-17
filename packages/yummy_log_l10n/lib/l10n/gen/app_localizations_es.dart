@@ -925,6 +925,38 @@ class AppLocalizationsEs extends AppLocalizations {
       'Las señales están más equilibradas, así que este paciente puede ir después de los casos prioritarios.';
 
   @override
+  String get insightsPatientDetailTitle => 'Detalle del paciente';
+
+  @override
+  String get insightsPatientDetailSubtitle =>
+      'Resumen clínico rápido con señales y tendencia';
+
+  @override
+  String get insightsPatientDetailSignalsTitle => 'Señales principales';
+
+  @override
+  String get insightsPatientDetailAlertCount => 'Alertas recientes';
+
+  @override
+  String get insightsPatientDetailInactive => 'Días sin comidas';
+
+  @override
+  String get insightsPatientDetailNarrativeTitle => 'Lectura clínica';
+
+  @override
+  String get insightsPatientDetailRecentAlerts => 'Alertas recientes';
+
+  @override
+  String get insightsPatientDetailNoAlerts =>
+      'No hay alertas recientes en este período.';
+
+  @override
+  String get insightsPatientDetailNotFound => 'No se pudo abrir este paciente.';
+
+  @override
+  String get insightsTrendLabel => 'Tendencia';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count comidas (7d)';
   }

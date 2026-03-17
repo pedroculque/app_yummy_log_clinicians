@@ -1821,6 +1821,66 @@ abstract class AppLocalizations {
   /// **'The signals are more balanced, so this patient can come after the priority cases.'**
   String get insightsPatientNarrativeBalanced;
 
+  /// No description provided for @insightsPatientDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient detail'**
+  String get insightsPatientDetailTitle;
+
+  /// No description provided for @insightsPatientDetailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick clinical summary with signals and trend'**
+  String get insightsPatientDetailSubtitle;
+
+  /// No description provided for @insightsPatientDetailSignalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Main signals'**
+  String get insightsPatientDetailSignalsTitle;
+
+  /// No description provided for @insightsPatientDetailAlertCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent alerts'**
+  String get insightsPatientDetailAlertCount;
+
+  /// No description provided for @insightsPatientDetailInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Days without meals'**
+  String get insightsPatientDetailInactive;
+
+  /// No description provided for @insightsPatientDetailNarrativeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical reading'**
+  String get insightsPatientDetailNarrativeTitle;
+
+  /// No description provided for @insightsPatientDetailRecentAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent alerts'**
+  String get insightsPatientDetailRecentAlerts;
+
+  /// No description provided for @insightsPatientDetailNoAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent alerts in this period.'**
+  String get insightsPatientDetailNoAlerts;
+
+  /// No description provided for @insightsPatientDetailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This patient could not be opened.'**
+  String get insightsPatientDetailNotFound;
+
+  /// No description provided for @insightsTrendLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trend'**
+  String get insightsTrendLabel;
+
   /// No description provided for @insightsMealsCount.
   ///
   /// In en, this message translates to:

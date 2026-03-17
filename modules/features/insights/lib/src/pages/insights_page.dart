@@ -369,82 +369,85 @@ class _PatientAnalyticsCard extends StatelessWidget {
     final restriction = insight.restrictionPercentage.toStringAsFixed(0);
     final hasHighPriority = insight.hasHighPriorityAlerts;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: appColors.backgroundDefault,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: appColors.gray.withValues(alpha: 0.18)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  insight.patient.name,
-                  style: AppTextStyles.body1.copyWith(
-                    color: appColors.neutralBlack,
-                    fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () => _openDetail(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: appColors.backgroundDefault,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: appColors.gray.withValues(alpha: 0.18)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    insight.patient.name,
+                    style: AppTextStyles.body1.copyWith(
+                      color: appColors.neutralBlack,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              _TrendBadge(label: trend, color: trendColor),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.insightsTrendComparison(
-              insight.mealsLast7Days,
-              insight.mealsPrevious7Days,
-              _getTrendDeltaLabel(trendDelta),
+                _TrendBadge(label: trend, color: trendColor),
+              ],
             ),
-            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _MetricChip(
-                label: l10n.insightsScoreValue(insight.attentionScore),
-                icon: Icons.local_fire_department_outlined,
-                color: appColors.primary,
+            const SizedBox(height: 8),
+            Text(
+              l10n.insightsTrendComparison(
+                insight.mealsLast7Days,
+                insight.mealsPrevious7Days,
+                _getTrendDeltaLabel(trendDelta),
               ),
-              _MetricChip(
-                label: l10n.insightsMealsTrend(
-                  insight.mealsLast7Days,
-                  insight.mealsLast30Days,
-                ),
-                icon: Icons.restaurant_outlined,
-                color: appColors.secondary,
-              ),
-              _MetricChip(
-                label: l10n.insightsNegativeFeelings(negative),
-                icon: Icons.sentiment_dissatisfied_outlined,
-                color: Colors.orange,
-              ),
-              _MetricChip(
-                label: l10n.insightsRestrictionRate(restriction),
-                icon: Icons.do_not_disturb_on_outlined,
-                color: appColors.error,
-              ),
-              if (hasHighPriority)
+              style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
                 _MetricChip(
-                  label: l10n.insightsHighPriorityAlerts,
-                  icon: Icons.warning_amber_rounded,
+                  label: l10n.insightsScoreValue(insight.attentionScore),
+                  icon: Icons.local_fire_department_outlined,
+                  color: appColors.primary,
+                ),
+                _MetricChip(
+                  label: l10n.insightsMealsTrend(
+                    insight.mealsLast7Days,
+                    insight.mealsLast30Days,
+                  ),
+                  icon: Icons.restaurant_outlined,
+                  color: appColors.secondary,
+                ),
+                _MetricChip(
+                  label: l10n.insightsNegativeFeelings(negative),
+                  icon: Icons.sentiment_dissatisfied_outlined,
+                  color: Colors.orange,
+                ),
+                _MetricChip(
+                  label: l10n.insightsRestrictionRate(restriction),
+                  icon: Icons.do_not_disturb_on_outlined,
                   color: appColors.error,
                 ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            _getNarrative(),
-            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
-          ),
-        ],
+                if (hasHighPriority)
+                  _MetricChip(
+                    label: l10n.insightsHighPriorityAlerts,
+                    icon: Icons.warning_amber_rounded,
+                    color: appColors.error,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _getNarrative(),
+              style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -485,6 +488,15 @@ class _PatientAnalyticsCard extends StatelessWidget {
       return l10n.insightsPatientNarrativeHighAlert;
     }
     return l10n.insightsPatientNarrativeBalanced;
+  }
+
+  void _openDetail(BuildContext context) {
+    unawaited(
+      context.push(
+        '/insights/patient-detail',
+        extra: insight,
+      ),
+    );
   }
 }
 
@@ -571,6 +583,280 @@ class _NoAnalyticsCard extends StatelessWidget {
         l10n.insightsPatientAnalyticsEmpty,
         style: AppTextStyles.body2.copyWith(color: appColors.grayDark),
       ),
+    );
+  }
+}
+
+class PatientDetailPage extends StatelessWidget {
+  const PatientDetailPage({required this.insight, super.key});
+
+  final PatientInsight? insight;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    final l10n = context.l10n;
+    final safeInsight = insight;
+
+    if (safeInsight == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text(l10n.insightsPatientDetailNotFound)),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: appColors.backgroundDefault,
+      appBar: AppBar(
+        backgroundColor: appColors.backgroundDefault,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        title: Text(l10n.insightsPatientDetailTitle),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Text(
+            safeInsight.patient.name,
+            style: AppTextStyles.h2.copyWith(color: appColors.neutralBlack),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.insightsPatientDetailSubtitle,
+            style: AppTextStyles.body2.copyWith(color: appColors.grayDark),
+          ),
+          const SizedBox(height: 16),
+          _DetailHeroCard(insight: safeInsight, appColors: appColors, l10n: l10n),
+          const SizedBox(height: 16),
+          _DetailSection(
+            title: l10n.insightsPatientDetailSignalsTitle,
+            children: [
+              _DetailMetricRow(
+                label: l10n.insightsScoreLabel,
+                value: l10n.insightsScoreValue(safeInsight.attentionScore),
+              ),
+              _DetailMetricRow(
+                label: l10n.insightsTrendLabel,
+                value: l10n.insightsTrendComparison(
+                  safeInsight.mealsLast7Days,
+                  safeInsight.mealsPrevious7Days,
+                  safeInsight.mealsLast7Days >= safeInsight.mealsPrevious7Days
+                      ? l10n.insightsTrendUp
+                      : l10n.insightsTrendDown,
+                ),
+              ),
+              _DetailMetricRow(
+                label: l10n.insightsPatientDetailAlertCount,
+                value: l10n.insightsAlertsCount(safeInsight.alertsLast7Days),
+              ),
+              _DetailMetricRow(
+                label: l10n.insightsPatientDetailInactive,
+                value: l10n.insightsInactive(safeInsight.daysWithoutMeal),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _DetailSection(
+            title: l10n.insightsPatientDetailNarrativeTitle,
+            children: [
+              Text(
+                safeInsight.isInactive
+                    ? l10n.insightsPatientNarrativeInactive(
+                        safeInsight.daysWithoutMeal,
+                      )
+                    : safeInsight.hasHighPriorityAlerts
+                        ? l10n.insightsPatientNarrativeHighAlert
+                        : l10n.insightsPatientNarrativeBalanced,
+                style: AppTextStyles.body2.copyWith(color: appColors.grayDark),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _DetailSection(
+            title: l10n.insightsPatientDetailRecentAlerts,
+            children: safeInsight.recentAlerts.isEmpty
+                ? [
+                    Text(
+                      l10n.insightsPatientDetailNoAlerts,
+                      style: AppTextStyles.body2.copyWith(
+                        color: appColors.grayDark,
+                      ),
+                    ),
+                  ]
+                : safeInsight.recentAlerts
+                    .take(5)
+                    .map(
+                      (alert) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.circle,
+                              size: 10,
+                              color: _getAlertColor(alert.priority, appColors),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                '${_getRiskAlertLabel(alert.type, l10n)} • ${DateFormat('dd/MM HH:mm').format(alert.dateTime)}',
+                                style: AppTextStyles.body3.copyWith(
+                                  color: appColors.grayDark,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getAlertColor(RiskPriority priority, AppColors appColors) {
+    switch (priority) {
+      case RiskPriority.high:
+        return appColors.error;
+      case RiskPriority.medium:
+        return Colors.orange;
+      case RiskPriority.low:
+        return Colors.amber;
+    }
+  }
+}
+
+class _DetailHeroCard extends StatelessWidget {
+  const _DetailHeroCard({
+    required this.insight,
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final PatientInsight insight;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: appColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Wrap(
+        spacing: 10,
+        runSpacing: 10,
+        children: [
+          _DetailChip(label: l10n.insightsScoreValue(insight.attentionScore)),
+          _DetailChip(
+            label: l10n.insightsMealsTrend(
+              insight.mealsLast7Days,
+              insight.mealsPrevious7Days,
+            ),
+          ),
+          _DetailChip(
+            label: l10n.insightsNegativeFeelings(
+              insight.negativeFeelingsPercentage.toStringAsFixed(0),
+            ),
+          ),
+          _DetailChip(
+            label: l10n.insightsRestrictionRate(
+              insight.restrictionPercentage.toStringAsFixed(0),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailSection extends StatelessWidget {
+  const _DetailSection({
+    required this.title,
+    required this.children,
+  });
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: appColors.backgroundDefault,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: appColors.gray.withValues(alpha: 0.14)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyles.body1.copyWith(
+              color: appColors.neutralBlack,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailMetricRow extends StatelessWidget {
+  const _DetailMetricRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+            ),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.body3.copyWith(
+              color: appColors.neutralBlack,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DetailChip extends StatelessWidget {
+  const _DetailChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: appColors.backgroundDefault,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(label, style: AppTextStyles.body3),
     );
   }
 }
@@ -934,6 +1220,23 @@ class _AlertCard extends StatelessWidget {
       case RiskType.ateInSecret:
         return l10n.insightsAlertAteInSecret;
     }
+  }
+}
+
+String _getRiskAlertLabel(RiskType type, AppLocalizations l10n) {
+  switch (type) {
+    case RiskType.forcedVomit:
+      return l10n.insightsAlertForcedVomit;
+    case RiskType.usedLaxatives:
+      return l10n.insightsAlertUsedLaxatives;
+    case RiskType.diuretics:
+      return l10n.insightsAlertDiuretics;
+    case RiskType.regurgitated:
+      return l10n.insightsAlertRegurgitated;
+    case RiskType.hiddenFood:
+      return l10n.insightsAlertHiddenFood;
+    case RiskType.ateInSecret:
+      return l10n.insightsAlertAteInSecret;
   }
 }
 
