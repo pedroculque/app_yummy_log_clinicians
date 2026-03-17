@@ -38,8 +38,10 @@ class FirestorePatientsRepository implements PatientsRepository {
 
       debugPrint(
         '[PatientsRepo] getPatients patientId=$patientId '
-        'link.photoUrl=${linkData['photoUrl']} link.photoURL=${linkData['photoURL']} '
-        'user.photoUrl=${userData['photoUrl']} user.photoURL=${userData['photoURL']}',
+        'link.photoUrl=${linkData['photoUrl']} '
+        'link.photoURL=${linkData['photoURL']} '
+        'user.photoUrl=${userData['photoUrl']} '
+        'user.photoURL=${userData['photoURL']}',
       );
 
       patients.add(
@@ -82,8 +84,10 @@ class FirestorePatientsRepository implements PatientsRepository {
 
           debugPrint(
             '[PatientsRepo] watchPatients patientId=$patientId '
-            'link.photoUrl=${linkData['photoUrl']} link.photoURL=${linkData['photoURL']} '
-            'user.photoUrl=${userData['photoUrl']} user.photoURL=${userData['photoURL']}',
+            'link.photoUrl=${linkData['photoUrl']} '
+            'link.photoURL=${linkData['photoURL']} '
+            'user.photoUrl=${userData['photoUrl']} '
+            'user.photoURL=${userData['photoURL']}',
           );
         } catch (e, st) {
           debugPrint(
