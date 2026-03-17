@@ -8,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:patients_feature/src/cubit/patient_diary_cubit.dart';
 import 'package:patients_feature/src/cubit/patient_diary_state.dart';
+import 'package:patients_feature/src/data/behavior_catalog.dart';
+import 'package:patients_feature/src/utils/meal_behavior_label.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
@@ -1209,20 +1211,13 @@ class _EntryCard extends StatelessWidget {
 
   static const double _leadingSize = 56;
 
-  bool get _hasRiskBehaviors =>
-      entry.forcedVomit == true ||
-      entry.usedLaxatives == true ||
-      entry.diuretics == true ||
-      entry.regurgitated == true ||
-      entry.hiddenFood == true ||
-      entry.ateInSecret == true;
-
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
     final l10n = context.l10n;
     final description = entry.description ?? entry.feelingText;
     final timeStr = DateFormat.Hm().format(entry.dateTime);
+    final hasBehaviors = entry.hasAnyBehaviorSelected;
 
     return GestureDetector(
       onTap: () => _showMealDetail(context),
@@ -1232,10 +1227,10 @@ class _EntryCard extends StatelessWidget {
           color: appColors.neutralSilver,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _hasRiskBehaviors
+            color: hasBehaviors
                 ? appColors.error.withValues(alpha: 0.4)
                 : appColors.grayLight.withValues(alpha: 0.6),
-            width: _hasRiskBehaviors ? 1.5 : 1,
+            width: hasBehaviors ? 1.5 : 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -1301,7 +1296,7 @@ class _EntryCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (_hasRiskBehaviors) ...[
+              if (hasBehaviors) ...[
                 const SizedBox(height: 10),
                 _BehaviorTags(entry: entry, l10n: l10n, appColors: appColors),
               ],
@@ -1412,32 +1407,34 @@ class _BehaviorTags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final behaviors = <Widget>[];
-
-    if (entry.forcedVomit == true) {
-      behaviors.add(_buildTag(l10n.behaviorForcedVomit, appColors.error));
+    final children = <Widget>[];
+    for (final e in BehaviorCatalog.entries) {
+      if (!entry.isBehaviorSelected(e.id)) continue;
+      children.add(
+        _buildTag(
+          mealBehaviorLabel(e.id, l10n),
+          _behaviorAccentColor(e.id, appColors),
+        ),
+      );
     }
-    if (entry.usedLaxatives == true) {
-      behaviors.add(_buildTag(l10n.behaviorUsedLaxatives, appColors.error));
-    }
-    if (entry.diuretics == true) {
-      behaviors.add(_buildTag(l10n.behaviorDiuretics, appColors.error));
-    }
-    if (entry.regurgitated == true) {
-      behaviors.add(_buildTag(l10n.behaviorRegurgitated, Colors.orange));
-    }
-    if (entry.hiddenFood == true) {
-      behaviors.add(_buildTag(l10n.behaviorHiddenFood, Colors.orange));
-    }
-    if (entry.ateInSecret == true) {
-      behaviors.add(_buildTag(l10n.behaviorAteInSecret, Colors.amber.shade700));
-    }
-
     return Wrap(
       spacing: 6,
       runSpacing: 6,
-      children: behaviors,
+      children: children,
     );
+  }
+
+  static Color _behaviorAccentColor(String id, AppColors appColors) {
+    if (id == 'forcedVomit' ||
+        id == 'usedLaxatives' ||
+        id == 'diuretics' ||
+        id == 'otherMedication' ||
+        id == 'compensatoryExercise' ||
+        id == 'chewAndSpit') {
+      return appColors.error;
+    }
+    if (id == 'ateInSecret') return Colors.amber.shade700;
+    return Colors.orange;
   }
 
   Widget _buildTag(String label, Color color) {
@@ -1490,7 +1487,10 @@ class _DetailChips extends StatelessWidget {
             _amountLabel(entry.amountEaten!, l10n),
           ),
         if (entry.whereAte != null && entry.whereAte!.isNotEmpty)
-          _buildChip(Icons.place_outlined, entry.whereAte!),
+          _buildChip(
+            Icons.place_outlined,
+            whereAteDisplay(entry.whereAte, l10n),
+          ),
         if (entry.ateWithOthers == true)
           _buildChip(Icons.people_outline, l10n.yes),
         if (entry.ateWithOthers == false)
@@ -1621,7 +1621,7 @@ class _MealDetailSheet extends StatelessWidget {
                     _DetailRow(
                       icon: Icons.place_outlined,
                       label: l10n.mealDetailWhere,
-                      value: entry.whereAte!,
+                      value: whereAteDisplay(entry.whereAte, l10n),
                       appColors: appColors,
                     ),
                   if (entry.ateWithOthers != null)
@@ -1699,7 +1699,7 @@ class _MealDetailSheet extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (_hasRiskBehaviors) ...[
+                  if (entry.hasAnyBehaviorSelected) ...[
                     const SizedBox(height: 20),
                     Text(
                       l10n.mealDetailBehaviors,
@@ -1723,14 +1723,6 @@ class _MealDetailSheet extends StatelessWidget {
       ),
     );
   }
-
-  bool get _hasRiskBehaviors =>
-      entry.forcedVomit == true ||
-      entry.usedLaxatives == true ||
-      entry.diuretics == true ||
-      entry.regurgitated == true ||
-      entry.hiddenFood == true ||
-      entry.ateInSecret == true;
 
   String _mealTypeLabel(MealType type, AppLocalizations l10n) {
     return switch (type) {
@@ -1840,46 +1832,24 @@ class _BehaviorsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (entry.forcedVomit == true)
-          _buildBehaviorItem(
-            l10n.behaviorForcedVomit,
-            appColors.error,
-            Icons.warning_rounded,
-          ),
-        if (entry.usedLaxatives == true)
-          _buildBehaviorItem(
-            l10n.behaviorUsedLaxatives,
-            appColors.error,
-            Icons.warning_rounded,
-          ),
-        if (entry.diuretics == true)
-          _buildBehaviorItem(
-            l10n.behaviorDiuretics,
-            appColors.error,
-            Icons.warning_rounded,
-          ),
-        if (entry.regurgitated == true)
-          _buildBehaviorItem(
-            l10n.behaviorRegurgitated,
-            Colors.orange,
-            Icons.warning_amber_rounded,
-          ),
-        if (entry.hiddenFood == true)
-          _buildBehaviorItem(
-            l10n.behaviorHiddenFood,
-            Colors.orange,
-            Icons.warning_amber_rounded,
-          ),
-        if (entry.ateInSecret == true)
-          _buildBehaviorItem(
-            l10n.behaviorAteInSecret,
-            Colors.amber.shade700,
-            Icons.visibility_off_outlined,
-          ),
-      ],
-    );
+    final items = <Widget>[];
+    for (final e in BehaviorCatalog.entries) {
+      if (!entry.isBehaviorSelected(e.id)) continue;
+      final color = _BehaviorTags._behaviorAccentColor(e.id, appColors);
+      final icon = e.id == 'ateInSecret'
+          ? Icons.visibility_off_outlined
+          : (color == appColors.error
+              ? Icons.warning_rounded
+              : Icons.warning_amber_rounded);
+      items.add(
+        _buildBehaviorItem(
+          mealBehaviorLabel(e.id, l10n),
+          color,
+          icon,
+        ),
+      );
+    }
+    return Column(children: items);
   }
 
   Widget _buildBehaviorItem(String label, Color color, IconData icon) {

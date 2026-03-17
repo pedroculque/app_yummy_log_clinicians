@@ -39,6 +39,25 @@ enum FeelingLabel {
 /// Status de sincronização (local only — não persiste no Firestore).
 enum SyncStatus { synced, pending, error }
 
+bool? _mealBool(dynamic v) {
+  if (v == null) return null;
+  if (v is bool) return v;
+  return null;
+}
+
+/// Mesmo formato do app do paciente (`app_yummy_log`): mapa no Firestore.
+Map<String, bool>? _parseBehaviorFlags(dynamic value) {
+  if (value == null) return null;
+  if (value is! Map) return null;
+  final result = <String, bool>{};
+  for (final e in value.entries) {
+    final k = e.key?.toString();
+    if (k == null) continue;
+    result[k] = e.value == true;
+  }
+  return result.isEmpty ? null : result;
+}
+
 /// Entrada do diário (uma refeição registrada).
 class MealEntry {
   const MealEntry({
@@ -59,7 +78,18 @@ class MealEntry {
     this.forcedVomit,
     this.ateInSecret,
     this.usedLaxatives,
+    this.behaviorFlags,
     this.diuretics,
+    this.otherMedication,
+    this.compensatoryExercise,
+    this.chewAndSpit,
+    this.intermittentFast,
+    this.skipMeal,
+    this.bingeEating,
+    this.guiltAfterEating,
+    this.calorieCounting,
+    this.bodyChecking,
+    this.bodyWeighing,
     this.updatedAt,
     this.deletedAt,
     this.syncStatus = SyncStatus.pending,
@@ -81,19 +111,30 @@ class MealEntry {
           : null,
       feelingText: json['feelingText'] as String?,
       whereAte: json['whereAte'] as String?,
-      ateWithOthers: json['ateWithOthers'] as bool?,
+      ateWithOthers: _mealBool(json['ateWithOthers']),
       amountEaten: json['amountEaten'] != null
           ? AmountEaten.values
               .firstWhere((e) => e.name == json['amountEaten'] as String)
           : null,
       photoPath: json['photoPath'] as String?,
       photoUrl: json['photoUrl'] as String?,
-      hiddenFood: json['hiddenFood'] as bool?,
-      regurgitated: json['regurgitated'] as bool?,
-      forcedVomit: json['forcedVomit'] as bool?,
-      ateInSecret: json['ateInSecret'] as bool?,
-      usedLaxatives: json['usedLaxatives'] as bool?,
-      diuretics: json['diuretics'] as bool?,
+      hiddenFood: _mealBool(json['hiddenFood']),
+      regurgitated: _mealBool(json['regurgitated']),
+      forcedVomit: _mealBool(json['forcedVomit']),
+      ateInSecret: _mealBool(json['ateInSecret']),
+      usedLaxatives: _mealBool(json['usedLaxatives']),
+      behaviorFlags: _parseBehaviorFlags(json['behaviorFlags']),
+      diuretics: _mealBool(json['diuretics']),
+      otherMedication: _mealBool(json['otherMedication']),
+      compensatoryExercise: _mealBool(json['compensatoryExercise']),
+      chewAndSpit: _mealBool(json['chewAndSpit']),
+      intermittentFast: _mealBool(json['intermittentFast']),
+      skipMeal: _mealBool(json['skipMeal']),
+      bingeEating: _mealBool(json['bingeEating']),
+      guiltAfterEating: _mealBool(json['guiltAfterEating']),
+      calorieCounting: _mealBool(json['calorieCounting']),
+      bodyChecking: _mealBool(json['bodyChecking']),
+      bodyWeighing: _mealBool(json['bodyWeighing']),
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
@@ -107,34 +148,100 @@ class MealEntry {
     );
   }
 
+  /// IDs na mesma ordem do app do paciente / catálogo clínico.
+  static const List<String> behaviorCatalogIds = [
+    'forcedVomit',
+    'usedLaxatives',
+    'diuretics',
+    'otherMedication',
+    'compensatoryExercise',
+    'chewAndSpit',
+    'intermittentFast',
+    'skipMeal',
+    'bingeEating',
+    'ateInSecret',
+    'guiltAfterEating',
+    'calorieCounting',
+    'bodyChecking',
+    'bodyWeighing',
+    'hiddenFood',
+    'regurgitated',
+  ];
+
   final String id;
   final MealType mealType;
   final DateTime dateTime;
-  /// ID do usuário (Firebase UID) após login; null = apenas locais.
   final String? userId;
-  /// Descrição do que comeu (exibida quando não há foto).
   final String? description;
   final FeelingLabel? feelingLabel;
   final String? feelingText;
   final String? whereAte;
   final bool? ateWithOthers;
   final AmountEaten? amountEaten;
-  /// Caminho local da foto (cache offline).
   final String? photoPath;
-  /// URL da foto no Cloud Storage (sync).
   final String? photoUrl;
   final bool? hiddenFood;
   final bool? regurgitated;
   final bool? forcedVomit;
   final bool? ateInSecret;
   final bool? usedLaxatives;
+  /// App paciente: demais comportamentos (exceto 5 legados) vêm neste mapa.
+  final Map<String, bool>? behaviorFlags;
+  /// Fallback top-level (ex.: refeição salva só pelo app clínico).
   final bool? diuretics;
-  /// Timestamp da última modificação (resolução de conflitos no sync).
+  final bool? otherMedication;
+  final bool? compensatoryExercise;
+  final bool? chewAndSpit;
+  final bool? intermittentFast;
+  final bool? skipMeal;
+  final bool? bingeEating;
+  final bool? guiltAfterEating;
+  final bool? calorieCounting;
+  final bool? bodyChecking;
+  final bool? bodyWeighing;
   final DateTime? updatedAt;
-  /// Soft delete: quando não-nulo, a entrada foi excluída logicamente.
   final DateTime? deletedAt;
-  /// Status de sync local (não persiste no Firestore).
   final SyncStatus syncStatus;
+
+  bool get hasAnyBehaviorSelected =>
+      behaviorCatalogIds.any(isBehaviorSelected);
+
+  /// Cinco legados no topo do documento (igual app paciente).
+  static const Set<String> _legacyTopLevelBehaviorIds = {
+    'hiddenFood',
+    'regurgitated',
+    'forcedVomit',
+    'ateInSecret',
+    'usedLaxatives',
+  };
+
+  bool isBehaviorSelected(String behaviorId) {
+    if (_legacyTopLevelBehaviorIds.contains(behaviorId)) {
+      return switch (behaviorId) {
+        'hiddenFood' => hiddenFood == true,
+        'regurgitated' => regurgitated == true,
+        'forcedVomit' => forcedVomit == true,
+        'ateInSecret' => ateInSecret == true,
+        'usedLaxatives' => usedLaxatives == true,
+        _ => false,
+      };
+    }
+    if (behaviorFlags?[behaviorId] == true) return true;
+    return switch (behaviorId) {
+      'diuretics' => diuretics == true,
+      'otherMedication' => otherMedication == true,
+      'compensatoryExercise' => compensatoryExercise == true,
+      'chewAndSpit' => chewAndSpit == true,
+      'intermittentFast' => intermittentFast == true,
+      'skipMeal' => skipMeal == true,
+      'bingeEating' => bingeEating == true,
+      'guiltAfterEating' => guiltAfterEating == true,
+      'calorieCounting' => calorieCounting == true,
+      'bodyChecking' => bodyChecking == true,
+      'bodyWeighing' => bodyWeighing == true,
+      _ => false,
+    };
+  }
 
   MealEntry copyWith({
     String? id,
@@ -154,7 +261,18 @@ class MealEntry {
     bool? forcedVomit,
     bool? ateInSecret,
     bool? usedLaxatives,
+    Map<String, bool>? behaviorFlags,
     bool? diuretics,
+    bool? otherMedication,
+    bool? compensatoryExercise,
+    bool? chewAndSpit,
+    bool? intermittentFast,
+    bool? skipMeal,
+    bool? bingeEating,
+    bool? guiltAfterEating,
+    bool? calorieCounting,
+    bool? bodyChecking,
+    bool? bodyWeighing,
     DateTime? updatedAt,
     DateTime? deletedAt,
     SyncStatus? syncStatus,
@@ -177,7 +295,19 @@ class MealEntry {
       forcedVomit: forcedVomit ?? this.forcedVomit,
       ateInSecret: ateInSecret ?? this.ateInSecret,
       usedLaxatives: usedLaxatives ?? this.usedLaxatives,
+      behaviorFlags: behaviorFlags ?? this.behaviorFlags,
       diuretics: diuretics ?? this.diuretics,
+      otherMedication: otherMedication ?? this.otherMedication,
+      compensatoryExercise:
+          compensatoryExercise ?? this.compensatoryExercise,
+      chewAndSpit: chewAndSpit ?? this.chewAndSpit,
+      intermittentFast: intermittentFast ?? this.intermittentFast,
+      skipMeal: skipMeal ?? this.skipMeal,
+      bingeEating: bingeEating ?? this.bingeEating,
+      guiltAfterEating: guiltAfterEating ?? this.guiltAfterEating,
+      calorieCounting: calorieCounting ?? this.calorieCounting,
+      bodyChecking: bodyChecking ?? this.bodyChecking,
+      bodyWeighing: bodyWeighing ?? this.bodyWeighing,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
       syncStatus: syncStatus ?? this.syncStatus,
@@ -206,15 +336,24 @@ class MealEntry {
       'forcedVomit': forcedVomit,
       'ateInSecret': ateInSecret,
       'usedLaxatives': usedLaxatives,
+      'behaviorFlags': behaviorFlags,
       'diuretics': diuretics,
+      'otherMedication': otherMedication,
+      'compensatoryExercise': compensatoryExercise,
+      'chewAndSpit': chewAndSpit,
+      'intermittentFast': intermittentFast,
+      'skipMeal': skipMeal,
+      'bingeEating': bingeEating,
+      'guiltAfterEating': guiltAfterEating,
+      'calorieCounting': calorieCounting,
+      'bodyChecking': bodyChecking,
+      'bodyWeighing': bodyWeighing,
       'updatedAt': updatedAt?.toIso8601String(),
       'deletedAt': deletedAt?.toIso8601String(),
       'syncStatus': syncStatus.name,
     };
   }
 
-  /// JSON para envio ao Firestore (sem campos locais como
-  /// photoPath e syncStatus).
   Map<String, dynamic> toFirestoreJson() {
     return {
       'id': id,
@@ -233,7 +372,20 @@ class MealEntry {
       'forcedVomit': forcedVomit,
       'ateInSecret': ateInSecret,
       'usedLaxatives': usedLaxatives,
-      'diuretics': diuretics,
+      if (behaviorFlags != null && behaviorFlags!.isNotEmpty)
+        'behaviorFlags': behaviorFlags,
+      if (diuretics != null) 'diuretics': diuretics,
+      if (otherMedication != null) 'otherMedication': otherMedication,
+      if (compensatoryExercise != null)
+        'compensatoryExercise': compensatoryExercise,
+      if (chewAndSpit != null) 'chewAndSpit': chewAndSpit,
+      if (intermittentFast != null) 'intermittentFast': intermittentFast,
+      if (skipMeal != null) 'skipMeal': skipMeal,
+      if (bingeEating != null) 'bingeEating': bingeEating,
+      if (guiltAfterEating != null) 'guiltAfterEating': guiltAfterEating,
+      if (calorieCounting != null) 'calorieCounting': calorieCounting,
+      if (bodyChecking != null) 'bodyChecking': bodyChecking,
+      if (bodyWeighing != null) 'bodyWeighing': bodyWeighing,
       'updatedAt': (updatedAt ?? DateTime.now()).toIso8601String(),
       'deletedAt': deletedAt?.toIso8601String(),
     };

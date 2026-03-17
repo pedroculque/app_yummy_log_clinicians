@@ -36,13 +36,17 @@ String feelingLabel(FeelingLabel feeling, AppLocalizations l10n) {
   };
 }
 
-/// Retorna o rótulo localizado para "onde comeu"
-/// (valor armazenado: null, 'work', 'restaurant', 'other').
+/// Retorna o rótulo localizado para "onde comeu".
+/// Valores conhecidos: `home`, `work`, `restaurant`, `other` (chaves estáveis).
+/// Outros textos são exibidos como digitados (ex.: apps antigos).
 String whereAteDisplay(String? key, AppLocalizations l10n) {
-  return switch (key) {
+  if (key == null || key.isEmpty) return '';
+  final k = key.trim().toLowerCase();
+  return switch (k) {
+    'home' => l10n.whereAteHome,
     'work' => l10n.whereAteWork,
     'restaurant' => l10n.whereAteRestaurant,
     'other' => l10n.whereAteOther,
-    _ => l10n.whereAteHome,
+    _ => key.trim(),
   };
 }
