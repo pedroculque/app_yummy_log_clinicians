@@ -751,8 +751,10 @@ class _PatientAttentionCard extends StatelessWidget {
                             .withValues(alpha: isDark ? 0.25 : 0.1),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: _getScoreColor(insight.attentionScore, appColors)
-                              .withValues(alpha: isDark ? 0.3 : 0.18),
+                          color: _getScoreColor(
+                            insight.attentionScore,
+                            appColors,
+                          ).withValues(alpha: isDark ? 0.3 : 0.18),
                         ),
                       ),
                       child: Row(
@@ -782,7 +784,7 @@ class _PatientAttentionCard extends StatelessWidget {
                                     appColors,
                                   ),
                                   fontWeight: FontWeight.w700,
-                                  height: 1.0,
+                                  height: 1,
                                 ),
                               ),
                             ],
@@ -862,9 +864,9 @@ void _showScoreHelp(BuildContext context, AppColors appColors) {
         disclaimer: l10n.insightsScoreHelpDisclaimer,
         ctaLabel: l10n.insightsScoreHelpButton,
         accentColor: appColors.primary,
-        onLearnMore: () {
+        onLearnMore: () async {
           Navigator.of(sheetContext).pop();
-          context.push('/insights/score-help');
+          await context.push('/insights/score-help');
         },
       ),
     ),
@@ -987,7 +989,9 @@ class _ScoreHelpSheet extends StatelessWidget {
                 ),
                 child: Text(
                   disclaimer,
-                  style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.grayDark,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
