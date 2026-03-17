@@ -14,7 +14,9 @@ import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 class InsightsPage extends StatefulWidget {
-  const InsightsPage({super.key});
+  const InsightsPage({super.key, this.scoreHelpMode = false});
+
+  final bool scoreHelpMode;
 
   @override
   State<InsightsPage> createState() => _InsightsPageState();
@@ -27,6 +29,7 @@ class _InsightsPageState extends State<InsightsPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.scoreHelpMode) return;
     final current = context.read<AuthRepository>().currentUser;
     _lastLoadedUserId = current?.uid;
     unawaited(context.read<InsightsCubit>().load());
@@ -47,6 +50,10 @@ class _InsightsPageState extends State<InsightsPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.scoreHelpMode) {
+      return _ScoreHelpPage(onBack: () => context.pop());
+    }
+
     final appColors = AppColors.fromContext(context);
     final l10n = context.l10n;
     final user = context.read<AuthRepository>().currentUser;
@@ -729,21 +736,45 @@ class _PatientAttentionCard extends StatelessWidget {
             ),
             Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _getScoreColor(insight.attentionScore, appColors)
-                        .withValues(alpha: isDark ? 0.25 : 0.1),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _showScoreHelp(context, appColors),
                     borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    l10n.insightsAttentionScore(insight.attentionScore),
-                    style: AppTextStyles.body3.copyWith(
-                      color: _getScoreColor(insight.attentionScore, appColors),
-                      fontWeight: FontWeight.w600,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getScoreColor(insight.attentionScore, appColors)
+                            .withValues(alpha: isDark ? 0.25 : 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.insightsAttentionScore(insight.attentionScore),
+                            style: AppTextStyles.body3.copyWith(
+                              color: _getScoreColor(
+                                insight.attentionScore,
+                                appColors,
+                              ),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.info_outline_rounded,
+                            color: _getScoreColor(
+                              insight.attentionScore,
+                              appColors,
+                            ),
+                            size: 14,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -775,6 +806,296 @@ class _PatientAttentionCard extends StatelessWidget {
     if (score >= 10) return Colors.orange;
     if (score > 0) return Colors.amber.shade700;
     return appColors.success;
+  }
+}
+
+void _showScoreHelp(BuildContext context, AppColors appColors) {
+  final l10n = context.l10n;
+
+  unawaited(
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _ScoreHelpSheet(
+        title: l10n.insightsScoreHelpTitle,
+        body: l10n.insightsScoreHelpBody,
+        bullets: [
+          l10n.insightsScoreHelpBullets1,
+          l10n.insightsScoreHelpBullets2,
+          l10n.insightsScoreHelpBullets3,
+        ],
+        disclaimer: l10n.insightsScoreHelpDisclaimer,
+        ctaLabel: l10n.insightsScoreHelpButton,
+        accentColor: appColors.primary,
+        onLearnMore: () {
+          Navigator.of(sheetContext).pop();
+          context.push('/insights/score-help');
+        },
+      ),
+    ),
+  );
+}
+
+class _ScoreHelpSheet extends StatelessWidget {
+  const _ScoreHelpSheet({
+    required this.title,
+    required this.body,
+    required this.bullets,
+    required this.disclaimer,
+    required this.ctaLabel,
+    required this.accentColor,
+    required this.onLearnMore,
+  });
+
+  final String title;
+  final String body;
+  final List<String> bullets;
+  final String disclaimer;
+  final String ctaLabel;
+  final Color accentColor;
+  final VoidCallback onLearnMore;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+
+    return Container(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      decoration: BoxDecoration(
+        color: appColors.backgroundDefault,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: appColors.gray.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.insights_rounded, color: accentColor),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: AppTextStyles.h3.copyWith(
+                        color: appColors.neutralBlack,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(Icons.close, color: appColors.gray),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                body,
+                style: AppTextStyles.body2.copyWith(color: appColors.grayDark),
+              ),
+              const SizedBox(height: 12),
+              ...bullets.map(
+                (bullet) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.check_circle_rounded,
+                        size: 18,
+                        color: accentColor,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          bullet,
+                          style: AppTextStyles.body2.copyWith(
+                            color: appColors.neutralBlack,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: appColors.gray.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  disclaimer,
+                  style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+                ),
+              ),
+              const SizedBox(height: 16),
+              UiAutoWidthButton(text: ctaLabel, onPressed: onLearnMore),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ScoreHelpPage extends StatelessWidget {
+  const _ScoreHelpPage({required this.onBack});
+
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    final l10n = context.l10n;
+
+    return Scaffold(
+      backgroundColor: appColors.backgroundDefault,
+      appBar: AppBar(
+        backgroundColor: appColors.backgroundDefault,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: onBack,
+          icon: Icon(Icons.arrow_back_ios_new, color: appColors.neutralBlack),
+        ),
+        title: Text(
+          l10n.insightsScoreHelpPageTitle,
+          style: AppTextStyles.h4.copyWith(
+            color: appColors.neutralBlack,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: appColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.insights_rounded, color: appColors.primary),
+                const SizedBox(height: 12),
+                Text(
+                  l10n.insightsScoreHelpPageTitle,
+                  style: AppTextStyles.h3.copyWith(
+                    color: appColors.neutralBlack,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.insightsScoreHelpPageBody,
+                  style: AppTextStyles.body2.copyWith(
+                    color: appColors.grayDark,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          _HelpSection(
+            title: l10n.insightsScoreHelpTitle,
+            items: [
+              l10n.insightsScoreHelpBullets1,
+              l10n.insightsScoreHelpBullets2,
+              l10n.insightsScoreHelpBullets3,
+            ],
+            appColors: appColors,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.insightsScoreHelpDisclaimer,
+            style: AppTextStyles.body3.copyWith(color: appColors.gray),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HelpSection extends StatelessWidget {
+  const _HelpSection({
+    required this.title,
+    required this.items,
+    required this.appColors,
+  });
+
+  final String title;
+  final List<String> items;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: AppTextStyles.body1.copyWith(
+            color: appColors.neutralBlack,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...items.map(
+          (item) => Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.check_circle_rounded,
+                  size: 18,
+                  color: appColors.primary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    item,
+                    style: AppTextStyles.body2.copyWith(
+                      color: appColors.grayDark,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

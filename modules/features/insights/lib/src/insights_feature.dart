@@ -46,6 +46,19 @@ class InsightsFeature implements YummyLogFeature {
           ),
         ),
       ),
+      GoRoute(
+        path: '/insights/score-help',
+        builder: (context, state) => const _ScoreHelpRoutePage(),
+      ),
     ];
+  }
+}
+
+class _ScoreHelpRoutePage extends StatelessWidget {
+  const _ScoreHelpRoutePage();
+
+  @override
+  Widget build(BuildContext context) {
+    return const InsightsPage(scoreHelpMode: true);
   }
 }

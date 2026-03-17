@@ -782,6 +782,39 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get insightsScoreHelpTitle => '¿Qué es la Puntuación?';
+
+  @override
+  String get insightsScoreHelpBody =>
+      'Es un indicador que ayuda a priorizar a los pacientes con más señales de atención en los registros recientes.';
+
+  @override
+  String get insightsScoreHelpBullets1 =>
+      'Basada en la frecuencia de alertas';
+
+  @override
+  String get insightsScoreHelpBullets2 =>
+      'Considera qué tan recientes son los eventos';
+
+  @override
+  String get insightsScoreHelpBullets3 =>
+      'No reemplaza la evaluación clínica';
+
+  @override
+  String get insightsScoreHelpDisclaimer =>
+      'Cuanto mayor sea la puntuación, mayor es la necesidad de seguimiento.';
+
+  @override
+  String get insightsScoreHelpButton => 'Entender cómo funciona';
+
+  @override
+  String get insightsScoreHelpPageTitle => 'Cómo funciona la Puntuación';
+
+  @override
+  String get insightsScoreHelpPageBody =>
+      'La puntuación resume señales de atención a partir de los registros más recientes para facilitar la priorización. Combina la cantidad de alertas, el tipo de comportamiento observado y el tiempo desde el último evento.';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count comidas (7d)';
   }

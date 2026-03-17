@@ -782,6 +782,38 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get insightsScoreHelpTitle => 'What is the Score?';
+
+  @override
+  String get insightsScoreHelpBody =>
+      'It is an indicator that helps prioritize patients with more attention signals in recent records.';
+
+  @override
+  String get insightsScoreHelpBullets1 => 'Based on alert frequency';
+
+  @override
+  String get insightsScoreHelpBullets2 =>
+      'Considers how recent the events are';
+
+  @override
+  String get insightsScoreHelpBullets3 =>
+      'Does not replace clinical assessment';
+
+  @override
+  String get insightsScoreHelpDisclaimer =>
+      'The higher the score, the greater the need for follow-up.';
+
+  @override
+  String get insightsScoreHelpButton => 'Learn how it works';
+
+  @override
+  String get insightsScoreHelpPageTitle => 'How the Score works';
+
+  @override
+  String get insightsScoreHelpPageBody =>
+      'The score summarizes attention signals from recent records to make triage easier. It combines the number of alerts, the type of behavior observed, and how long it has been since the last event.';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count meals (7d)';
   }

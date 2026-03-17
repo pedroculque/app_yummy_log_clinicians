@@ -782,6 +782,39 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get insightsScoreHelpTitle => 'O que é o Score?';
+
+  @override
+  String get insightsScoreHelpBody =>
+      'É um indicador que ajuda a priorizar pacientes com mais sinais de atenção nos registros recentes.';
+
+  @override
+  String get insightsScoreHelpBullets1 =>
+      'Baseado na frequência dos alertas';
+
+  @override
+  String get insightsScoreHelpBullets2 =>
+      'Considera a recência dos eventos';
+
+  @override
+  String get insightsScoreHelpBullets3 =>
+      'Não substitui avaliação clínica';
+
+  @override
+  String get insightsScoreHelpDisclaimer =>
+      'Quanto maior o score, maior a necessidade de acompanhamento.';
+
+  @override
+  String get insightsScoreHelpButton => 'Entenda como funciona';
+
+  @override
+  String get insightsScoreHelpPageTitle => 'Como funciona o Score';
+
+  @override
+  String get insightsScoreHelpPageBody =>
+      'O score resume sinais de atenção a partir dos registros mais recentes para facilitar a triagem. Ele combina a quantidade de alertas, o tipo de comportamento observado e o tempo desde o último evento.';
+
+  @override
   String insightsMealsCount(int count) {
     return '$count refeições (7d)';
   }

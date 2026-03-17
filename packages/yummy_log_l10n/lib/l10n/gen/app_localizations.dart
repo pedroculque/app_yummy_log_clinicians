@@ -1599,6 +1599,60 @@ abstract class AppLocalizations {
   /// **'Score: {score}'**
   String insightsAttentionScore(int score);
 
+  /// No description provided for @insightsScoreHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the Score?'**
+  String get insightsScoreHelpTitle;
+
+  /// No description provided for @insightsScoreHelpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It is an indicator that helps prioritize patients with more attention signals in recent records.'**
+  String get insightsScoreHelpBody;
+
+  /// No description provided for @insightsScoreHelpBullets1.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on alert frequency'**
+  String get insightsScoreHelpBullets1;
+
+  /// No description provided for @insightsScoreHelpBullets2.
+  ///
+  /// In en, this message translates to:
+  /// **'Considers how recent the events are'**
+  String get insightsScoreHelpBullets2;
+
+  /// No description provided for @insightsScoreHelpBullets3.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not replace clinical assessment'**
+  String get insightsScoreHelpBullets3;
+
+  /// No description provided for @insightsScoreHelpDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'The higher the score, the greater the need for follow-up.'**
+  String get insightsScoreHelpDisclaimer;
+
+  /// No description provided for @insightsScoreHelpButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn how it works'**
+  String get insightsScoreHelpButton;
+
+  /// No description provided for @insightsScoreHelpPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How the Score works'**
+  String get insightsScoreHelpPageTitle;
+
+  /// No description provided for @insightsScoreHelpPageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The score summarizes attention signals from recent records to make triage easier. It combines the number of alerts, the type of behavior observed, and how long it has been since the last event.'**
+  String get insightsScoreHelpPageBody;
+
   /// No description provided for @insightsMealsCount.
   ///
   /// In en, this message translates to:
