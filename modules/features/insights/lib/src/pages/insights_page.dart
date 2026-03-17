@@ -122,7 +122,11 @@ class _InsightsContent extends StatelessWidget {
           l10n: l10n,
         ),
         const SizedBox(height: 16),
-        _OperationalSummarySection(summary: summary, appColors: appColors, l10n: l10n),
+        _OperationalSummarySection(
+          summary: summary,
+          appColors: appColors,
+          l10n: l10n,
+        ),
         const SizedBox(height: 16),
         _ClinicalPrioritySection(
           summary: summary,
@@ -286,7 +290,11 @@ class _OperationalSummarySection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.dashboard_outlined, color: appColors.primary, size: 20),
+              Icon(
+                Icons.dashboard_outlined,
+                color: appColors.primary,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 l10n.insightsDashboardOperationalTitle,
@@ -407,9 +415,8 @@ class _PatientAnalyticsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sortedPatients = [...patients]..sort(
-        (a, b) => b.attentionScore.compareTo(a.attentionScore),
-      );
+    final sortedPatients = [...patients]
+      ..sort((a, b) => b.attentionScore.compareTo(a.attentionScore));
     final topPatients = sortedPatients.take(3).toList();
 
     return Column(
@@ -510,14 +517,16 @@ class _PatientAnalyticsCard extends StatelessWidget {
                 ),
                 _ActionBadge(
                   label: l10n.insightsTrendMealsLabel,
-                  color: insight.isWorsening ? appColors.error : appColors.secondary,
+                  color: insight.isWorsening
+                      ? appColors.error
+                      : appColors.secondary,
                 ),
                 _ActionBadge(
                   label: insight.isWorsening
                       ? l10n.insightsTrendWorse
                       : insight.isImproving
-                          ? l10n.insightsTrendBetter
-                          : l10n.insightsTrendSame,
+                      ? l10n.insightsTrendBetter
+                      : l10n.insightsTrendSame,
                   color: trendColor,
                 ),
               ],
@@ -623,12 +632,7 @@ class _PatientAnalyticsCard extends StatelessWidget {
   }
 
   void _openDetail(BuildContext context) {
-    unawaited(
-      context.push(
-        '/insights/patient-detail',
-        extra: insight,
-      ),
-    );
+    unawaited(context.push('/insights/patient-detail', extra: insight));
   }
 
   String _getActionLabel(ClinicalAction action) {
@@ -655,10 +659,7 @@ class _PatientAnalyticsCard extends StatelessWidget {
 }
 
 class _ActionBadge extends StatelessWidget {
-  const _ActionBadge({
-    required this.label,
-    required this.color,
-  });
+  const _ActionBadge({required this.label, required this.color});
 
   final String label;
   final Color color;
@@ -746,10 +747,7 @@ class _TrendBadge extends StatelessWidget {
 }
 
 class _NoAnalyticsCard extends StatelessWidget {
-  const _NoAnalyticsCard({
-    required this.appColors,
-    required this.l10n,
-  });
+  const _NoAnalyticsCard({required this.appColors, required this.l10n});
 
   final AppColors appColors;
   final AppLocalizations l10n;
@@ -791,9 +789,13 @@ class PatientDetailPage extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: isDark ? colorScheme.surface : appColors.backgroundDefault,
+      backgroundColor: isDark
+          ? colorScheme.surface
+          : appColors.backgroundDefault,
       appBar: AppBar(
-        backgroundColor: isDark ? colorScheme.surface : appColors.backgroundDefault,
+        backgroundColor: isDark
+            ? colorScheme.surface
+            : appColors.backgroundDefault,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         title: Text(l10n.insightsPatientDetailTitle),
@@ -834,22 +836,24 @@ class PatientDetailPage extends StatelessWidget {
             accentColor: safeInsight.hasHighPriorityAlerts
                 ? appColors.error
                 : safeInsight.isWorsening
-                    ? Colors.orange
-                    : appColors.secondary,
+                ? Colors.orange
+                : appColors.secondary,
             leadingIcon: safeInsight.hasHighPriorityAlerts
                 ? Icons.warning_amber_rounded
                 : safeInsight.isWorsening
-                    ? Icons.trending_down_rounded
-                    : Icons.info_outline_rounded,
+                ? Icons.trending_down_rounded
+                : Icons.info_outline_rounded,
             children: [
               Text(
                 safeInsight.hasHighPriorityAlerts
                     ? l10n.insightsClinicalWhyHereHighRisk
                     : safeInsight.isWorsening
-                        ? l10n.insightsClinicalWhyHereWorsening
-                        : l10n.insightsClinicalWhyHereBalanced,
+                    ? l10n.insightsClinicalWhyHereWorsening
+                    : l10n.insightsClinicalWhyHereBalanced,
                 style: AppTextStyles.body2.copyWith(
-                  color: isDark ? colorScheme.onSurfaceVariant : appColors.grayDark,
+                  color: isDark
+                      ? colorScheme.onSurfaceVariant
+                      : appColors.grayDark,
                 ),
               ),
             ],
@@ -928,8 +932,8 @@ class PatientDetailPage extends StatelessWidget {
                   safeInsight.alertsTrendDelta > 0
                       ? l10n.insightsTrendUp
                       : safeInsight.alertsTrendDelta < 0
-                          ? l10n.insightsTrendDown
-                          : l10n.insightsTrendFlat,
+                      ? l10n.insightsTrendDown
+                      : l10n.insightsTrendFlat,
                 ),
               ),
               const SizedBox(height: 14),
@@ -940,7 +944,11 @@ class PatientDetailPage extends StatelessWidget {
                   safeInsight.mealsPrevious7Days.toDouble(),
                   safeInsight.mealsLast30Days.toDouble(),
                 ],
-                colors: [appColors.primary, appColors.secondary, appColors.gray],
+                colors: [
+                  appColors.primary,
+                  appColors.secondary,
+                  appColors.gray,
+                ],
                 labels: [
                   l10n.insightsPeriod7Days,
                   l10n.insightsTrendSame,
@@ -965,10 +973,12 @@ class PatientDetailPage extends StatelessWidget {
                         safeInsight.daysWithoutMeal,
                       )
                     : safeInsight.hasHighPriorityAlerts
-                        ? l10n.insightsPatientNarrativeHighAlert
-                        : l10n.insightsPatientNarrativeBalanced,
+                    ? l10n.insightsPatientNarrativeHighAlert
+                    : l10n.insightsPatientNarrativeBalanced,
                 style: AppTextStyles.body2.copyWith(
-                  color: isDark ? colorScheme.onSurfaceVariant : appColors.grayDark,
+                  color: isDark
+                      ? colorScheme.onSurfaceVariant
+                      : appColors.grayDark,
                 ),
               ),
             ],
@@ -981,25 +991,27 @@ class PatientDetailPage extends StatelessWidget {
                     Text(
                       l10n.insightsPatientDetailNoAlerts,
                       style: AppTextStyles.body2.copyWith(
-                        color: isDark ? colorScheme.onSurfaceVariant : appColors.grayDark,
+                        color: isDark
+                            ? colorScheme.onSurfaceVariant
+                            : appColors.grayDark,
                       ),
                     ),
                   ]
                 : safeInsight.recentAlerts
-                    .take(8)
-                    .map(
-                      (alert) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _TimelineAlertRow(
-                          alert: alert,
-                          appColors: appColors,
-                          colorScheme: colorScheme,
-                          isDark: isDark,
-                          label: _getRiskAlertLabel(alert.type, l10n),
+                      .take(8)
+                      .map(
+                        (alert) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: _TimelineAlertRow(
+                            alert: alert,
+                            appColors: appColors,
+                            colorScheme: colorScheme,
+                            isDark: isDark,
+                            label: _getRiskAlertLabel(alert.type, l10n),
+                          ),
                         ),
-                      ),
-                    )
-                    .toList(),
+                      )
+                      .toList(),
           ),
         ],
       ),
@@ -1045,7 +1057,9 @@ class _DetailHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final isDark = colorScheme.brightness == Brightness.dark;
-    final accent = insight.hasHighPriorityAlerts ? appColors.error : appColors.primary;
+    final accent = insight.hasHighPriorityAlerts
+        ? appColors.error
+        : appColors.primary;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -1136,18 +1150,16 @@ class _DetailSection extends StatelessWidget {
           Row(
             children: [
               if (leadingIcon != null) ...[
-                Icon(
-                  leadingIcon,
-                  size: 18,
-                  color: effectiveAccent,
-                ),
+                Icon(leadingIcon, size: 18, color: effectiveAccent),
                 const SizedBox(width: 8),
               ],
               Expanded(
                 child: Text(
                   title,
                   style: AppTextStyles.body1.copyWith(
-                    color: isDark ? colorScheme.onSurface : appColors.neutralBlack,
+                    color: isDark
+                        ? colorScheme.onSurface
+                        : appColors.neutralBlack,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1262,7 +1274,10 @@ class _MiniTrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
-    final maxValue = [currentValue, previousValue].fold<double>(0, (a, b) => a > b ? a : b);
+    final maxValue = [
+      currentValue,
+      previousValue,
+    ].fold<double>(0, (a, b) => a > b ? a : b);
     final safeMax = maxValue <= 0 ? 1.0 : maxValue;
 
     return Column(
@@ -1322,7 +1337,7 @@ class _MiniBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = 72.0;
+    const height = 72.0;
     final barHeight = (height * value).clamp(8.0, height);
     final appColors = AppColors.fromContext(context);
 
@@ -1391,7 +1406,9 @@ class _MiniDistributionChart extends StatelessWidget {
             final value = values[index] / safeMax;
             return Expanded(
               child: Padding(
-                padding: EdgeInsets.only(right: index == values.length - 1 ? 0 : 8),
+                padding: EdgeInsets.only(
+                  right: index == values.length - 1 ? 0 : 8,
+                ),
                 child: Column(
                   children: [
                     SizedBox(
@@ -1411,7 +1428,9 @@ class _MiniDistributionChart extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       labels[index],
-                      style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+                      style: AppTextStyles.body3.copyWith(
+                        color: appColors.grayDark,
+                      ),
                     ),
                   ],
                 ),
@@ -1452,10 +1471,7 @@ class _TimelineAlertRow extends StatelessWidget {
             Container(
               width: 10,
               height: 10,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             Container(
               width: 2,
@@ -1479,7 +1495,9 @@ class _TimelineAlertRow extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.body1.copyWith(
-                    color: isDark ? colorScheme.onSurface : appColors.neutralBlack,
+                    color: isDark
+                        ? colorScheme.onSurface
+                        : appColors.neutralBlack,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1487,7 +1505,9 @@ class _TimelineAlertRow extends StatelessWidget {
                 Text(
                   dateFormat.format(alert.dateTime),
                   style: AppTextStyles.body3.copyWith(
-                    color: isDark ? colorScheme.onSurfaceVariant : appColors.grayDark,
+                    color: isDark
+                        ? colorScheme.onSurfaceVariant
+                        : appColors.grayDark,
                   ),
                 ),
               ],
@@ -1530,7 +1550,7 @@ class _HeaderSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-          Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
@@ -1548,9 +1568,7 @@ class _HeaderSection extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             l10n.insightsUpdatedAt(timeFormat.format(lastUpdated!)),
-            style: AppTextStyles.body3.copyWith(
-              color: appColors.gray,
-            ),
+            style: AppTextStyles.body3.copyWith(color: appColors.gray),
           ),
         ],
       ],
@@ -1696,10 +1714,7 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: AppTextStyles.h2.copyWith(color: color),
-          ),
+          Text(value, style: AppTextStyles.h2.copyWith(color: color)),
           const SizedBox(height: 4),
           Text(
             label,
@@ -1743,12 +1758,11 @@ class _AlertsSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        ...alerts.take(5).map(
-              (alert) => _AlertCard(
-                alert: alert,
-                appColors: appColors,
-                l10n: l10n,
-              ),
+        ...alerts
+            .take(5)
+            .map(
+              (alert) =>
+                  _AlertCard(alert: alert, appColors: appColors, l10n: l10n),
             ),
       ],
     );
@@ -1823,11 +1837,7 @@ class _AlertCard extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: appColors.gray,
-              size: 20,
-            ),
+            Icon(Icons.chevron_right, color: appColors.gray, size: 20),
           ],
         ),
       ),
@@ -1890,10 +1900,7 @@ String _getRiskAlertLabel(RiskType type, AppLocalizations l10n) {
 }
 
 class _PriorityBadge extends StatelessWidget {
-  const _PriorityBadge({
-    required this.priority,
-    required this.l10n,
-  });
+  const _PriorityBadge({required this.priority, required this.l10n});
 
   final RiskPriority priority;
   final AppLocalizations l10n;
@@ -1989,10 +1996,7 @@ class _AttentionSection extends StatelessWidget {
 }
 
 class _NoAttentionCard extends StatelessWidget {
-  const _NoAttentionCard({
-    required this.appColors,
-    required this.l10n,
-  });
+  const _NoAttentionCard({required this.appColors, required this.l10n});
 
   final AppColors appColors;
   final AppLocalizations l10n;
@@ -2053,9 +2057,7 @@ class _PatientAttentionCard extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: colorScheme.shadow.withValues(
-                alpha: isDark ? 0.2 : 0.05,
-              ),
+              color: colorScheme.shadow.withValues(alpha: isDark ? 0.2 : 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -2093,8 +2095,9 @@ class _PatientAttentionCard extends StatelessWidget {
                       if (insight.alertsLast7Days > 0)
                         _InfoChip(
                           icon: Icons.warning_amber_outlined,
-                          label: l10n
-                              .insightsAlertsCount(insight.alertsLast7Days),
+                          label: l10n.insightsAlertsCount(
+                            insight.alertsLast7Days,
+                          ),
                           color: appColors.error,
                         ),
                       if (insight.isInactive)
@@ -2132,8 +2135,10 @@ class _PatientAttentionCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _getScoreColor(insight.attentionScore, appColors)
-                            .withValues(alpha: isDark ? 0.25 : 0.1),
+                        color: _getScoreColor(
+                          insight.attentionScore,
+                          appColors,
+                        ).withValues(alpha: isDark ? 0.25 : 0.1),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: _getScoreColor(
@@ -2540,10 +2545,7 @@ class _PatientAvatar extends StatelessWidget {
         : '?';
 
     if (photoUrl != null && photoUrl!.isNotEmpty) {
-      return CircleAvatar(
-        radius: 24,
-        backgroundImage: NetworkImage(photoUrl!),
-      );
+      return CircleAvatar(radius: 24, backgroundImage: NetworkImage(photoUrl!));
     }
 
     return CircleAvatar(
@@ -2586,10 +2588,7 @@ class _InfoChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             label,
-            style: AppTextStyles.body3.copyWith(
-              color: color,
-              fontSize: 11,
-            ),
+            style: AppTextStyles.body3.copyWith(color: color, fontSize: 11),
           ),
         ],
       ),
@@ -2598,10 +2597,7 @@ class _InfoChip extends StatelessWidget {
 }
 
 class _EmptyView extends StatelessWidget {
-  const _EmptyView({
-    required this.appColors,
-    required this.l10n,
-  });
+  const _EmptyView({required this.appColors, required this.l10n});
 
   final AppColors appColors;
   final AppLocalizations l10n;
@@ -2622,16 +2618,12 @@ class _EmptyView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               l10n.insightsEmptyTitle,
-              style: AppTextStyles.h2.copyWith(
-                color: appColors.neutralBlack,
-              ),
+              style: AppTextStyles.h2.copyWith(color: appColors.neutralBlack),
             ),
             const SizedBox(height: 8),
             Text(
               l10n.insightsEmptySubtitle,
-              style: AppTextStyles.body1.copyWith(
-                color: appColors.gray,
-              ),
+              style: AppTextStyles.body1.copyWith(color: appColors.gray),
               textAlign: TextAlign.center,
             ),
           ],
@@ -2642,10 +2634,7 @@ class _EmptyView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorView({required this.message, required this.onRetry});
 
   final String message;
   final VoidCallback onRetry;
@@ -2669,23 +2658,16 @@ class _ErrorView extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               l10n.somethingWentWrong,
-              style: AppTextStyles.h2.copyWith(
-                color: appColors.neutralBlack,
-              ),
+              style: AppTextStyles.h2.copyWith(color: appColors.neutralBlack),
             ),
             const SizedBox(height: 8),
             Text(
               message,
-              style: AppTextStyles.body1.copyWith(
-                color: appColors.gray,
-              ),
+              style: AppTextStyles.body1.copyWith(color: appColors.gray),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: onRetry,
-              child: Text(l10n.tryAgain),
-            ),
+            ElevatedButton(onPressed: onRetry, child: Text(l10n.tryAgain)),
           ],
         ),
       ),

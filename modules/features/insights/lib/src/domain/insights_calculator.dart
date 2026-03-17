@@ -25,15 +25,21 @@ class InsightsCalculator {
 
     for (final patient in patients) {
       final meals = mealsByPatient[patient.id] ?? [];
-      final mealsInPeriod =
-          meals.where((m) => m.dateTime.isAfter(periodStart)).toList();
-      final previousMealsInPeriod = meals
-          .where((m) =>
-              m.dateTime.isAfter(previousPeriodStart) &&
-              m.dateTime.isBefore(periodStart))
+      final mealsInPeriod = meals
+          .where((m) => m.dateTime.isAfter(periodStart))
           .toList();
-      final mealsLast30Days =
-          meals.where((m) => m.dateTime.isAfter(now.subtract(const Duration(days: 30)))).toList();
+      final previousMealsInPeriod = meals
+          .where(
+            (m) =>
+                m.dateTime.isAfter(previousPeriodStart) &&
+                m.dateTime.isBefore(periodStart),
+          )
+          .toList();
+      final mealsLast30Days = meals
+          .where(
+            (m) => m.dateTime.isAfter(now.subtract(const Duration(days: 30))),
+          )
+          .toList();
 
       totalMealsPeriod += mealsInPeriod.length;
 
@@ -52,8 +58,8 @@ class InsightsCalculator {
       final daysWithoutMeal = lastMealDate != null
           ? now.difference(lastMealDate).inDays
           : patient.linkedAt != null
-              ? now.difference(patient.linkedAt!).inDays
-              : 999;
+          ? now.difference(patient.linkedAt!).inDays
+          : 999;
 
       final attentionScore = _calculateAttentionScore(
         mealsInPeriod: mealsInPeriod,
