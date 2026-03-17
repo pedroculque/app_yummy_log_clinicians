@@ -96,6 +96,7 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
         widget.patientName?.isEmpty ?? true
             ? l10n.patientDefaultName
             : widget.patientName!;
+    final diaryTitle = '${l10n.diaryTitle} de $displayName';
 
     return Scaffold(
       backgroundColor: appColors.backgroundDefault,
@@ -115,17 +116,13 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    displayName,
+                    diaryTitle,
                     style: AppTextStyles.h4.copyWith(
                       color: appColors.neutralBlack,
                       fontWeight: FontWeight.w600,
                     ),
-                  ),
-                  Text(
-                    l10n.diaryTitle,
-                    style: AppTextStyles.body3.copyWith(
-                      color: appColors.gray,
-                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -171,17 +168,13 @@ class _PatientDiaryPageState extends State<PatientDiaryPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    displayName,
+                    diaryTitle,
                     style: AppTextStyles.h4.copyWith(
                       color: appColors.neutralBlack,
                       fontWeight: FontWeight.w600,
                     ),
-                  ),
-                  Text(
-                    l10n.diaryTitle,
-                    style: AppTextStyles.body3.copyWith(
-                      color: appColors.gray,
-                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -1331,15 +1324,15 @@ class _EntryCard extends StatelessWidget {
         color: appColors.grayLight.withValues(alpha: 0.5),
       ),
       clipBehavior: Clip.antiAlias,
-      child: entry.photoUrl != null
-          ? Image.network(
-              entry.photoUrl!,
-              width: _leadingSize,
-              height: _leadingSize,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => _leadingPlaceholder(appColors),
-            )
-          : _leadingPlaceholder(appColors),
+      child: MealPhoto(
+        photoPath: entry.photoPath,
+        photoUrl: entry.photoUrl,
+        width: _leadingSize,
+        height: _leadingSize,
+        borderRadius: BorderRadius.circular(14),
+        placeholder: _leadingPlaceholder(appColors),
+        errorWidget: _leadingPlaceholder(appColors),
+      ),
     );
   }
 
@@ -1592,15 +1585,16 @@ class _MealDetailSheet extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (entry.photoUrl != null) ...[
+                  if (entry.photoPath != null || entry.photoUrl != null) ...[
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        entry.photoUrl!,
+                      child: MealPhoto(
+                        photoPath: entry.photoPath,
+                        photoUrl: entry.photoUrl,
                         width: double.infinity,
                         height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                        borderRadius: BorderRadius.circular(16),
+                        errorWidget: const SizedBox.shrink(),
                       ),
                     ),
                     const SizedBox(height: 16),

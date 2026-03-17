@@ -36,6 +36,12 @@ class FirestorePatientsRepository implements PatientsRepository {
           ? patientDoc.data()!
           : <String, dynamic>{};
 
+      debugPrint(
+        '[PatientsRepo] getPatients patientId=$patientId '
+        'link.photoUrl=${linkData['photoUrl']} link.photoURL=${linkData['photoURL']} '
+        'user.photoUrl=${userData['photoUrl']} user.photoURL=${userData['photoURL']}',
+      );
+
       patients.add(
         Patient.fromFirestore(
           {...userData, ...linkData},
@@ -73,6 +79,12 @@ class FirestorePatientsRepository implements PatientsRepository {
           userData = patientDoc.exists
               ? patientDoc.data()!
               : <String, dynamic>{};
+
+          debugPrint(
+            '[PatientsRepo] watchPatients patientId=$patientId '
+            'link.photoUrl=${linkData['photoUrl']} link.photoURL=${linkData['photoURL']} '
+            'user.photoUrl=${userData['photoUrl']} user.photoURL=${userData['photoURL']}',
+          );
         } catch (e, st) {
           debugPrint(
             '[PatientsRepo] permission-denied ou erro ao ler users/$patientId: $e',

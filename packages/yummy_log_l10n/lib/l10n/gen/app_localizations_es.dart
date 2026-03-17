@@ -12,7 +12,7 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get diaryTitle => 'YummyLog';
+  String get diaryTitle => 'Diario';
 
   @override
   String get greeting => 'Hola';

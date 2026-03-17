@@ -12,7 +12,7 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get diaryTitle => 'YummyLog';
+  String get diaryTitle => 'Diário';
 
   @override
   String get greeting => 'Olá';

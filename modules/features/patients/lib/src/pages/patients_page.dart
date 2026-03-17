@@ -977,6 +977,11 @@ class _PatientCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
+                _PatientAvatar(
+                  photoUrl: patient.photoUrl,
+                  appColors: appColors,
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1054,6 +1059,47 @@ class _PatientCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PatientAvatar extends StatelessWidget {
+  const _PatientAvatar({
+    required this.photoUrl,
+    required this.appColors,
+  });
+
+  final String? photoUrl;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    final placeholder = Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: appColors.grayLight.withValues(alpha: 0.7),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.person_rounded,
+        color: appColors.grayDark,
+        size: 22,
+      ),
+    );
+
+    if (photoUrl == null || photoUrl!.isEmpty) {
+      return placeholder;
+    }
+
+    return ClipOval(
+      child: Image.network(
+        photoUrl!,
+        width: 44,
+        height: 44,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => placeholder,
       ),
     );
   }
