@@ -1,5 +1,7 @@
 # Configuração do formulário de comportamento (clínico)
 
+**Status:** ✅ Implementado no app do clínico (Fase 2.2). Pendente: leitura no app do paciente.
+
 Especificação da feature que permite ao **clínico** configurar quais perguntas de **comportamento** aparecem no formulário "Adicionar comida" do **paciente**. A seção de comportamento no app do paciente só é exibida (e apenas os itens habilitados) quando o paciente está vinculado a um clínico que configurou o formulário.
 
 ---

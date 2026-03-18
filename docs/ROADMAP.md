@@ -96,29 +96,29 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 ---
 
-### Fase 2.2: Configuração do formulário de comportamento 📋
+### Fase 2.2: Configuração do formulário de comportamento 📋 ✅
 
-**Status:** Planejado
+**Status:** Concluído
 
 **Objetivo:** O clínico pode configurar, por paciente, quais perguntas de **comportamento** aparecem no formulário "Adicionar comida" do paciente. A seção de comportamento no app do paciente só é exibida (e apenas os itens habilitados) quando o clínico configurou o formulário para esse paciente.
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Entrada na config | Botão "Configurar formulário" no card do paciente ou no header do diário | Pendente |
-| Tela de comportamentos | Lista de cards por categoria (Métodos compensatórios, Restrição, etc.) com toggle mostrar/ocultar | Pendente |
-| Toggle global | Habilitar/desabilitar toda a seção de comportamento no form do paciente | Pendente |
-| Persistência | Salvar config em `users/{patientId}/form_config` (clínico escreve; paciente lê) | Pendente |
-| Regras Firestore | Clínico pode escrever em `form_config` apenas para pacientes vinculados | Pendente |
+| Entrada na config | Botão "Configurar formulário" no card do paciente ou no header do diário | ✅ |
+| Tela de comportamentos | Lista de cards por categoria (Métodos compensatórios, Restrição, etc.) com toggle mostrar/ocultar | ✅ |
+| Toggle global | Habilitar/desabilitar toda a seção de comportamento no form do paciente | ✅ |
+| Persistência | Salvar config em `users/{patientId}/form_config` (clínico escreve; paciente lê) | ✅ |
+| Regras Firestore | Clínico pode escrever em `form_config` apenas para pacientes vinculados | ✅ |
 
-**MVP (Fase 2.2.1):** Apenas os 5 comportamentos atuais do `MealEntry` (hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives) com toggle cada um.
+**MVP (Fase 2.2.1):** Apenas os 5 comportamentos atuais do `MealEntry` (hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives) com toggle cada um. ✅ Implementado com catálogo estendido (6+ comportamentos).
 
 **Fase 2.2.2 (futuro):** Catálogo completo (vômito, laxante, diurético, exercício compensatório, mastigar e cuspir, jejum, pular refeição, compulsão, comer escondido, culpa, contagem de calorias, checagem/pesagem corporal, etc.) e extensão do modelo no app do paciente.
 
 **Entregáveis:**
-- [ ] Rota full-screen `/patients/:patientId/form-config` (ou equivalente)
-- [ ] Tela "Comportamentos para o formulário" com categorias e toggles
-- [ ] Repositório/serviço para ler e gravar `users/{patientId}/form_config`
-- [ ] Documento de especificação: [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md)
+- [x] Rota full-screen `/patients/:patientId/form-config` (ou equivalente)
+- [x] Tela "Comportamentos para o formulário" com categorias e toggles
+- [x] Repositório/serviço para ler e gravar `users/{patientId}/form_config`
+- [x] Documento de especificação: [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md)
 - [ ] App do paciente: ler config e exibir seção/comportamentos conforme config (escopo em outro repo)
 
 ---
@@ -228,12 +228,12 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 
 ### Alta (próximos passos)
 
-1. **Configuração do formulário de comportamento** – Clínico configura, por paciente, quais comportamentos aparecem no form "Adicionar comida". Ver [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md).
-2. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro.
-3. **Fase 3** – Insights e métricas (3.2, 3.3).
+1. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro.
+2. **Fase 3** – Insights e métricas (3.2, 3.3).
 
 ### Média
 
+3. ~~Configuração do formulário de comportamento.~~ ✅ Implementado (Fase 2.2)
 4. ~~Notificações push (quando paciente registra nova entrada).~~ ✅ Implementado (Fase 3.4)
 
 ---

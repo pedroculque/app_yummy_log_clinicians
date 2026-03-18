@@ -10,9 +10,10 @@ O **YummyLog for Clinicians** permite que nutricionistas, psicólogos e outros p
 
 1. **Convidem pacientes** através de um código de 6 caracteres
 2. **Visualizem o diário alimentar** dos pacientes vinculados (read-only)
-3. **Acompanhem sentimentos** associados às refeições
-4. **Identifiquem comportamentos de risco** (vômito forçado, laxantes, etc.)
-5. **Analisem métricas** de frequência e padrões alimentares via dashboard de Insights
+3. **Configurem o formulário de comportamento** por paciente (quais perguntas aparecem no form "Adicionar comida")
+4. **Acompanhem sentimentos** associados às refeições
+5. **Identifiquem comportamentos de risco** (vômito forçado, laxantes, etc.)
+6. **Analisem métricas** de frequência e padrões alimentares via dashboard de Insights
 
 ### Modelo de Negócio
 
@@ -91,7 +92,8 @@ app_yummy_log_clinicians/
 7. **Compartilha código** → paciente insere no app dele
 8. **Paciente aparece na lista** → tap no card ou "ACOMPANHAR"
 9. **Visualiza diário** → timeline ou calendário, refeições, sentimentos (read-only)
-10. **Remover paciente** → swipe para esquerda no card, confirma no bottom sheet
+10. **Configurar formulário** → botão no card ou no header do diário → tela com toggles por comportamento
+11. **Remover paciente** → swipe para esquerda no card, confirma no bottom sheet
 
 ---
 
@@ -99,7 +101,7 @@ app_yummy_log_clinicians/
 
 | Documento | Descrição |
 |-----------|-----------|
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1-C25) |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1-C34) |
 | [STATE.md](STATE.md) | Posição atual, decisões, próximos passos |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica |

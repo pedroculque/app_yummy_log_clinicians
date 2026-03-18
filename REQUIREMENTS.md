@@ -12,6 +12,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | **v1** | MVP: tab bar, código de convite, lista de pacientes, empty state visual | ✅ Concluído |
 | **v2** | Visualizar diário do paciente (read-only) | ✅ Concluído |
 | **v2.1** | Monetização: planos Free/Pro, limite de pacientes | ✅ Concluído |
+| **v2.2** | Configuração do formulário de comportamento por paciente | ✅ Concluído |
 | **v3** | Insights e métricas dos pacientes | ✅ Em andamento |
 
 ---
@@ -59,6 +60,18 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 ---
 
+## Requisitos funcionais (v2.2 – Configuração do formulário de comportamento)
+
+| ID | Descrição | Status |
+|----|-----------|--------|
+| C22a | **Entrada na config:** botão "Configurar formulário" no card do paciente e no header do diário. | ✅ |
+| C22b | **Tela de comportamentos:** lista de cards por categoria com toggle mostrar/ocultar. | ✅ |
+| C22c | **Toggle global:** habilitar/desabilitar toda a seção de comportamento no form do paciente. | ✅ |
+| C22d | **Persistência:** salvar config em `users/{patientId}/form_config/behavior` (clínico escreve; paciente lê). | ✅ |
+| C22e | **Histórico de alterações:** exibir quem alterou e quando. | ✅ |
+
+---
+
 ## Requisitos funcionais (v3 – Insights)
 
 | ID | Descrição | Prioridade | Status |
@@ -89,7 +102,6 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 - Edição de refeições do paciente (app é read-only para o clínico).
 - Perfil completo do clínico (nome, CRN, bio, etc).
-- Notificações push.
 - Chat com paciente.
 - Exportar relatórios (PDF).
 

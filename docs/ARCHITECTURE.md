@@ -43,8 +43,8 @@ Login **NÃO é obrigatório** para navegar pelo app. Quando o usuário tenta co
 
 - **Instância global:** `getIt` em `lib/core/di/injection.dart`.
 - **Configuração no startup:** `configureDependencies()` registra:
-  - `PatientsFeature` → `PatientsRepository`, `PatientsCubit`
-  - `InsightsFeature` → (placeholder)
+  - `PatientsFeature` → `PatientsRepository`, `PatientsCubit`, `FormConfigCubit`, `PatientDiaryCubit`
+  - `InsightsFeature` → `InsightsCubit`, repositórios de métricas
   - `SettingsFeature` → `AuthCubit`
   - Cubits globais: `ThemeModeCubit`, `LocaleCubit`
 - **Acesso:** `getIt<PatientsRepository>()`, `getIt<AuthRepository>()`, etc.
@@ -56,11 +56,11 @@ Login **NÃO é obrigatório** para navegar pelo app. Quando o usuário tenta co
 ```
 modules/
 ├── features/
-│   ├── patients/           # Feature principal
+│   ├── patients/           # Feature principal (lista, diário, form config)
 │   │   ├── lib/src/
-│   │   │   ├── cubit/      # PatientsCubit, PatientsState
-│   │   │   ├── data/       # Patient, PatientsRepository
-│   │   │   ├── pages/      # PatientsPage
+│   │   │   ├── cubit/      # PatientsCubit, FormConfigCubit, PatientDiaryCubit
+│   │   │   ├── data/       # Patient, PatientsRepository, FormConfigRepository
+│   │   │   ├── pages/      # PatientsPage, PatientDiaryPage, PatientFormConfigPage
 │   │   │   └── patients_feature.dart
 │   │   └── pubspec.yaml
 │   ├── insights/           # Placeholder

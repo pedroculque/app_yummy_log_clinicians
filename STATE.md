@@ -24,6 +24,13 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Tags de comportamentos de risco nos cards (vômito, laxantes, etc.)
   - Chips de detalhes (quantidade, onde comeu, acompanhado)
   - Bottom sheet com detalhes completos da refeição (tap no card)
+  - Botão "Configurar formulário" no header
+- **Configuração do formulário de comportamento:** `PatientFormConfigPage` com:
+  - Botão "Configurar formulário" no card do paciente e no header do diário
+  - Tela full-screen `/patients/:patientId/form-config` com categorias e toggles
+  - Toggle global para habilitar/desabilitar seção de comportamento
+  - Persistência em `users/{patientId}/form_config/behavior`
+  - Histórico de alterações (quem alterou e quando)
 - **Monetização:** Sistema de planos implementado:
   - Plano Gratuito: limite de 2 pacientes
   - Plano Pro: pacientes ilimitados (R$ 24,90/mês ou R$ 179,90/ano)
@@ -53,7 +60,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 - **Limite de pacientes:** Plano gratuito permite até 2 pacientes; Pro é ilimitado.
 - **Preços Pro:** R$ 24,90/mês ou R$ 179,90/ano (economia de 40%).
-- **Rotas full-screen:** `/patients/:patientId/diary` e `/plans` ficam fora do `StatefulShellRoute` para não mostrar tab bar.
+- **Rotas full-screen:** `/patients/:patientId/diary`, `/patients/:patientId/form-config` e `/plans` ficam fora do `StatefulShellRoute` para não mostrar tab bar.
 - **Filtragem client-side:** Refeições deletadas (`deletedAt != null`) são filtradas no cliente para evitar índice composto no Firestore.
 - **Swipe-to-remove:** Confirmação via bottom sheet antes de remover paciente.
 - **Login NÃO obrigatório:** Usuário pode navegar pelo app sem login. Login é solicitado apenas ao tentar convidar pacientes.
@@ -73,6 +80,7 @@ Nenhum no momento.
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
 2. **Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.
 3. **Exportar relatórios:** PDF com resumo do paciente para consultas.
+4. **App do paciente:** Ler config em `form_config` e exibir seção/comportamentos conforme config (escopo em outro repo).
 
 ---
 

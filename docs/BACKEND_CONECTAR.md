@@ -50,6 +50,15 @@ Documento que descreve a estrutura Firestore e o fluxo de vínculo entre pacient
 
 - Mantido pelo app do paciente (sync). Após o backend Conectar, o documento pode incluir `clinicianUid` e `displayName` vindos de `clinician_codes`.
 
+### `users/{patientId}/form_config/behavior`
+
+- **Caminho:** documento único em `users/{patientId}/form_config/behavior`.
+- **Descrição:** Configuração do formulário de comportamento do paciente. O clínico define quais perguntas de comportamento aparecem no formulário "Adicionar comida" do app do paciente.
+- **Campos:** `sectionEnabled`, `behaviors` (mapa behaviorId → boolean), `updatedAt`, `updatedBy`, `updatedByDisplayName`, `changeLog`.
+- **Quem escreve:** clínicos vinculados ao paciente (`exists(clinicians/(auth.uid)/patients/(patientId))`).
+- **Quem lê:** o próprio paciente (`auth.uid == patientId`) e clínicos vinculados.
+- Ver [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) para detalhes.
+
 ### `clinicians/{clinicianUid}/notification_tokens/{token}`
 
 - **Caminho:** subcoleção de tokens FCM do clínico.
@@ -108,17 +117,19 @@ Ou seja: quando existe documento em `clinicians/{clinicianUid}/patients/{patient
 
 ## O que o app do nutricionista precisa fazer
 
-1. **Criar/gerenciar código:** ao configurar seu perfil, o nutricionista cria ou atualiza um documento em `clinician_codes/{code}` com:
+1. **Configurar formulário de comportamento:** para cada paciente vinculado, o clínico pode acessar a tela "Configurar formulário" e gravar em `users/{patientId}/form_config/behavior` quais comportamentos aparecem no formulário "Adicionar comida" do paciente.
+2. **Criar/gerenciar código:** ao configurar seu perfil, o nutricionista cria ou atualiza um documento em `clinician_codes/{code}` com:
    - **ID do doc:** código de 6 caracteres (A–Z, 0–9, maiúsculas), ex.: `ABC123`. Deve ser único na coleção.
    - `clinicianUid`: seu Firebase Auth UID.
    - `displayName` (opcional): nome exibido para o paciente.
-2. **Listar pacientes:** ler a subcoleção `clinicians/{seuUid}/patients` (cada doc id = `patientId`).
-3. **Ler diário do paciente:** com o `patientId`, ler `users/{patientId}/meals` e, se necessário, `users/{patientId}/connections` (as regras permitem se existir o vínculo em `clinicians/{uid}/patients/{patientId}`).
+3. **Listar pacientes:** ler a subcoleção `clinicians/{seuUid}/patients` (cada doc id = `patientId`).
+4. **Ler diário do paciente:** com o `patientId`, ler `users/{patientId}/meals` e, se necessário, `users/{patientId}/connections` (as regras permitem se existir o vínculo em `clinicians/{uid}/patients/{patientId}`).
 
 ---
 
 ## Referências
 
-- [firestore.rules](../firestore.rules) – regras de `clinician_codes` e `clinicians/.../patients`
+- [firestore.rules](../firestore.rules) – regras de `clinician_codes`, `clinicians/.../patients` e `form_config`
+- [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) – Configuração do formulário de comportamento
 - [sync_foundation](../modules/foundation/sync) – `ClinicianLinkService` (resolve código, add/remove paciente)
-- [ROADMAP.md](ROADMAP.md) – Fase 3 Conectar, item Backend/API
+- [ROADMAP.md](ROADMAP.md) – Fases e entregáveis
