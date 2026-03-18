@@ -6,6 +6,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 ## Posição atual
 
+- **Pacotes:** `meal_domain` concentra `MealEntry` (patients, insights, sync, diary). Módulo `conectar` removido (fluxo do clínico é convite em `patients_feature`).
 - **Fase:** 3.1 (Insights MVP) concluída. Fase 3.2 planejada.
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
 - **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.

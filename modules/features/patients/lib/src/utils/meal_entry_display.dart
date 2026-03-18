@@ -1,7 +1,6 @@
 import 'package:meal_domain/meal_domain.dart';
 import 'package:yummy_log_l10n/l10n/gen/app_localizations.dart';
 
-/// Retorna o rótulo localizado para [MealType].
 String mealTypeLabel(MealType type, AppLocalizations l10n) {
   return switch (type) {
     MealType.breakfast => l10n.mealTypeBreakfast,
@@ -14,7 +13,6 @@ String mealTypeLabel(MealType type, AppLocalizations l10n) {
   };
 }
 
-/// Retorna o rótulo localizado para [AmountEaten].
 String amountEatenLabel(AmountEaten amount, AppLocalizations l10n) {
   return switch (amount) {
     AmountEaten.nothing => l10n.amountNothing,
@@ -25,7 +23,6 @@ String amountEatenLabel(AmountEaten amount, AppLocalizations l10n) {
   };
 }
 
-/// Retorna o rótulo localizado para [FeelingLabel].
 String feelingLabel(FeelingLabel feeling, AppLocalizations l10n) {
   return switch (feeling) {
     FeelingLabel.sad => l10n.feelingSad,
@@ -36,9 +33,6 @@ String feelingLabel(FeelingLabel feeling, AppLocalizations l10n) {
   };
 }
 
-/// Retorna o rótulo localizado para "onde comeu".
-/// Valores conhecidos: `home`, `work`, `restaurant`, `other` (chaves estáveis).
-/// Outros textos são exibidos como digitados (ex.: apps antigos).
 String whereAteDisplay(String? key, AppLocalizations l10n) {
   if (key == null || key.isEmpty) return '';
   final k = key.trim().toLowerCase();

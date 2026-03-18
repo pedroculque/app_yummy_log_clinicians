@@ -1,7 +1,7 @@
+export 'package:meal_domain/meal_domain.dart';
 export 'src/cubit/diary_cubit.dart';
 export 'src/data/meal_entry_repository.dart';
 export 'src/diary_feature.dart';
-export 'src/domain/meal_entry.dart';
 export 'src/l10n/meal_entry_labels.dart';
 export 'src/pages/add_meal_page.dart';
 export 'src/pages/diary_page.dart';

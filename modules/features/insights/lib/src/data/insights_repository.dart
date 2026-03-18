@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diary_feature/diary_feature.dart';
 import 'package:insights_feature/src/domain/insights_calculator.dart';
 import 'package:insights_feature/src/domain/insights_summary.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:patients_feature/patients_feature.dart';
 
 abstract interface class InsightsRepository {

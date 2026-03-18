@@ -12,7 +12,7 @@ dependencies:
   bloc: ^9.2.0
   cloud_firestore: ^5.6.5
   feature_contract:
-    path: ../../../packages/feature_contract
+    path: ../../shared/feature_contract
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -25,7 +25,7 @@ dependencies:
       url: https://github.com/pedroculque/flutter_ui_kit.git
       ref: main
   yummy_log_l10n:
-    path: ../../../packages/yummy_log_l10n
+    path: ../../shared/yummy_log_l10n
 
 dev_dependencies:
   bloc_lint: ^0.3.7

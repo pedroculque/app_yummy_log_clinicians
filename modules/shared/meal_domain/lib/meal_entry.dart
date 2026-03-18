@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs -- modelo espelhado do app paciente
+
 /// Tipo de refeição (Qual Refeição?).
 enum MealType {
   breakfast('Café da manhã'),

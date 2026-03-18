@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:diary_feature/src/cubit/entry_detail_cubit.dart';
-import 'package:diary_feature/src/domain/meal_entry.dart';
 import 'package:diary_feature/src/l10n/meal_entry_labels.dart';
 import 'package:diary_feature/src/util/meal_photo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:meal_domain/meal_domain.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 

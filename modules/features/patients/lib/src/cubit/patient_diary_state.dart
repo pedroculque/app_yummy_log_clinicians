@@ -1,5 +1,5 @@
-import 'package:diary_feature/diary_feature.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meal_domain/meal_domain.dart';
 
 enum PatientDiaryStatus { initial, loading, loaded, error }
 

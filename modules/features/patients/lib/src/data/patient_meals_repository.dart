@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:diary_feature/diary_feature.dart';
 import 'package:flutter/foundation.dart';
+import 'package:meal_domain/meal_domain.dart';
 
 abstract class PatientMealsRepository {
   Future<List<MealEntry>> getMeals(String patientId, {Source? source});

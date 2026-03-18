@@ -4,7 +4,6 @@ import 'dart:math' as math;
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:diary_feature/src/cubit/diary_cubit.dart';
-import 'package:diary_feature/src/domain/meal_entry.dart';
 import 'package:diary_feature/src/l10n/meal_entry_labels.dart';
 import 'package:diary_feature/src/util/meal_photo_storage.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 

@@ -72,7 +72,7 @@ app_yummy_log_clinicians/
 │       ├── auth/                 # AuthRepository (Firebase)
 │       ├── persistence/          # Sembast (cache local)
 │       └── sync/                 # Utilitários Firestore
-├── packages/
+├── modules/shared/        # feature_contract, meal_domain, yummy_log_l10n
 │   ├── feature_contract/         # Interface base YummyLogFeature
 │   └── yummy_log_l10n/           # Localizações (pt, en, es)
 ├── docs/                         # Documentação detalhada
@@ -166,11 +166,11 @@ dart run bloc_tools:bloc lint .
 
 Idiomas suportados: **pt-BR**, **en**, **es**.
 
-As strings ficam no package `yummy_log_l10n` em `packages/yummy_log_l10n/lib/l10n/arb/`.
+As strings ficam no package `yummy_log_l10n` em `modules/shared/yummy_log_l10n/lib/l10n/arb/`.
 
 ```sh
 # Gerar localizações
-flutter gen-l10n --arb-dir="packages/yummy_log_l10n/lib/l10n/arb"
+flutter gen-l10n --arb-dir="modules/shared/yummy_log_l10n/lib/l10n/arb"
 ```
 
 ---

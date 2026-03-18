@@ -125,7 +125,7 @@ Módulo foundation sem strings de UI. O `SyncIndicator` usa strings do `yummy_lo
 - `connectivity_plus` – detecção de rede
 - `sembast` – fila persistente
 - `flutter_bloc` – SyncCubit
-- `auth_foundation`, `persistence_foundation`, `diary_feature` – módulos internos
+- `auth_foundation`, `persistence_foundation`, `meal_domain` – módulos internos
 
 ## Referências
 

@@ -61,8 +61,9 @@ app_yummy_log_clinicians/
 │       ├── auth/               # AuthRepository, LoginPage
 │       ├── persistence/        # Sembast (cache local)
 │       └── sync/               # Firestore connection
-├── packages/
+├── modules/shared/
 │   ├── feature_contract/       # Interface YummyLogFeature
+│   ├── meal_domain/            # MealEntry
 │   └── yummy_log_l10n/         # Localizações
 └── docs/                       # Documentação
 ```

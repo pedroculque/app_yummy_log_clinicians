@@ -14,12 +14,12 @@ echo ""
 
 # Ordem: packages base, foundation (persistence > auth > sync), features, app.
 MODULES=(
-  "packages/feature_contract"
-  "packages/yummy_log_l10n"
+  "modules/shared/feature_contract"
+  "modules/shared/meal_domain"
+  "modules/shared/yummy_log_l10n"
   "modules/foundation/persistence"
   "modules/foundation/auth"
   "modules/foundation/sync"
-  "modules/features/conectar"
   "modules/features/diary"
   "modules/features/settings"
   "modules/features/patients"

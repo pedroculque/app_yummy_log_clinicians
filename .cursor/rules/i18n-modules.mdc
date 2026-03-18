@@ -16,7 +16,7 @@ Todos os módulos em **modules/features** e **modules/foundation** devem dar sup
 
 1. **Textos de UI:** Nunca usar strings fixas em português (ou só em um idioma) em widgets. Usar sempre as chaves do pacote `yummy_log_l10n` via `AppLocalizations` (ex.: `context.l10n` ou `AppLocalizations.of(context)`).
 
-2. **Novas chaves:** Ao adicionar textos novos usados por features ou foundation, adicionar as traduções nos três idiomas no pacote `packages/yummy_log_l10n`:
+2. **Novas chaves:** Ao adicionar textos novos usados por features ou foundation, adicionar as traduções nos três idiomas no pacote `modules/shared/yummy_log_l10n`:
    - `lib/l10n/arb/app_pt.arb`
    - `lib/l10n/arb/app_es.arb`
    - `lib/l10n/arb/app_en.arb`  
@@ -28,5 +28,5 @@ Todos os módulos em **modules/features** e **modules/foundation** devem dar sup
 
 ## Referência
 
-- Pacote central: `packages/yummy_log_l10n`
+- Pacote central: `modules/shared/yummy_log_l10n`
 - Uso: `import 'package:yummy_log_l10n/yummy_log_l10n.dart';` e `context.l10n` (com extensão) ou `AppLocalizations.of(context)`.

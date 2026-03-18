@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:diary_feature/src/domain/meal_entry.dart';
 import 'package:flutter/foundation.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 
 /// Callback para notificar o SyncService de operações.

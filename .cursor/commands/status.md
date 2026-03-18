@@ -21,7 +21,7 @@ Mostra o status atual do projeto **Yummy Log** (app do paciente).
 
 | Módulo / package | Descrição | Status |
 |------------------|-----------|--------|
-| packages/feature_contract | Contrato YummyLogFeature | ✅ |
+| modules/shared/feature_contract | Contrato YummyLogFeature | ✅ |
 | modules/features/diary | Feature Diário + Adicionar refeição | ✅ shell / 🟡 conteúdo |
 | modules/features/conectar | Feature Conectar com nutricionista | ✅ shell / 🔴 fluxo |
 | modules/features/settings | Feature Configurações (Login, etc.) | ✅ shell / 🔴 login |
@@ -45,7 +45,7 @@ Diário | Conectar | Configurações (StatefulShellRoute + 3 branches)
 ## Referências
 
 - `docs/ROADMAP.md` – Fases (MVP, Auth, Conectar, Sync).
-- `docs/ARCHITECTURE.md` – Estrutura (packages/, modules/features/, go_router, get_it).
+- `docs/ARCHITECTURE.md` – Estrutura (modules/shared/, features/, go_router, get_it).
 - `docs/PROJETO_YUMMY_LOG.md` – Escopo, tab bar, features.
 
 ## Responda em Português (pt-BR)

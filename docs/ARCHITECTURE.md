@@ -55,6 +55,10 @@ Login **NÃO é obrigatório** para navegar pelo app. Quando o usuário tenta co
 
 ```
 modules/
+├── shared/
+│   ├── feature_contract/   # YummyLogFeature
+│   ├── meal_domain/        # MealEntry + enums (Firestore)
+│   └── yummy_log_l10n/      # i18n pt/es/en
 ├── features/
 │   ├── patients/           # Feature principal (lista, diário, form config)
 │   │   ├── lib/src/
@@ -63,7 +67,7 @@ modules/
 │   │   │   ├── pages/      # PatientsPage, PatientDiaryPage, PatientFormConfigPage
 │   │   │   └── patients_feature.dart
 │   │   └── pubspec.yaml
-│   ├── insights/           # Placeholder
+│   ├── insights/           # Dashboard clínico
 │   │   └── ...
 │   └── settings/           # Configurações
 │       ├── lib/src/

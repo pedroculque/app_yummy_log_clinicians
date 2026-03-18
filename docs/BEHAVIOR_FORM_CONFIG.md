@@ -171,5 +171,5 @@ A lógica será implementada no app do paciente em breve.
 
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura `clinicians/.../patients` e regras.
 - [ROADMAP.md](ROADMAP.md) – Fase "Configuração do formulário de comportamento".
-- `MealEntry` (diary_feature) – Campos atuais: `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`.
+- `MealEntry` (`meal_domain`) – Campos atuais: `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`.
 - `modules/features/patients` – Lista de pacientes, diário do paciente; ponto de entrada do botão "Configurar formulário".

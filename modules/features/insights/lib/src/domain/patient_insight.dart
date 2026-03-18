@@ -1,6 +1,6 @@
-import 'package:diary_feature/diary_feature.dart';
 import 'package:equatable/equatable.dart';
 import 'package:insights_feature/src/domain/risk_alert.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:patients_feature/patients_feature.dart';
 
 class PatientInsight extends Equatable {

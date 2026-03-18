@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:diary_feature/src/cubit/diary_cubit.dart';
-import 'package:diary_feature/src/domain/meal_entry.dart';
 import 'package:diary_feature/src/l10n/meal_entry_labels.dart';
 import 'package:diary_feature/src/util/meal_photo_storage.dart';
 import 'package:diary_feature/src/util/meal_photo_widget.dart';
@@ -11,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:meal_domain/meal_domain.dart';
 import 'package:sync_foundation/sync_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';

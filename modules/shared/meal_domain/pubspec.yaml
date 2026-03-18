@@ -1,0 +1,12 @@
+name: meal_domain
+description: >
+  Modelo de refeição (MealEntry) compartilhado entre app clínico e diary_feature.
+  Formato alinhado ao Firestore do app do paciente.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dev_dependencies:
+  very_good_analysis: ^10.2.0

@@ -3,10 +3,11 @@ import 'dart:io';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:diary_feature/diary_feature.dart';
 import 'package:flutter/foundation.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 import 'package:sync_foundation/src/connection_sync_remote.dart';
+import 'package:sync_foundation/src/meal_photo_path.dart';
 import 'package:sync_foundation/src/meal_sync_remote.dart';
 import 'package:sync_foundation/src/photo_upload_service.dart';
 import 'package:sync_foundation/src/sync_config.dart';
@@ -244,7 +245,7 @@ class SyncService {
 
       final existingPhotoPath = localMeal['photoPath'] as String?;
       if (existingPhotoPath != null && existingPhotoPath.isNotEmpty) {
-        final absolutePath = await resolvePhotoPath(existingPhotoPath);
+        final absolutePath = await resolveMealPhotoPath(existingPhotoPath);
         if (File(absolutePath).existsSync()) continue;
       }
 
@@ -419,7 +420,7 @@ class SyncService {
         var finalPhotoUrl = photoUrl;
         if (photoPath != null && photoUrl == null) {
           try {
-            final absolutePath = await resolvePhotoPath(photoPath);
+            final absolutePath = await resolveMealPhotoPath(photoPath);
             debugPrint('[SyncService] Uploading photo: $absolutePath');
             final url = await _photoUpload.uploadPhoto(
               userId: userId,

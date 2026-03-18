@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:diary_feature/src/data/meal_entry_repository.dart';
-import 'package:diary_feature/src/domain/meal_entry.dart';
 import 'package:flutter/foundation.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:path/path.dart' as p;
 
 /// Estado da lista do diário.

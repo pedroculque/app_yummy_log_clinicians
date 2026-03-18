@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:diary_feature/src/data/meal_entry_repository.dart';
-import 'package:diary_feature/src/domain/meal_entry.dart';
+import 'package:meal_domain/meal_domain.dart';
 
 /// Estado do detalhe de uma entrada (carregar por id).
 class EntryDetailState {

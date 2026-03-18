@@ -37,7 +37,7 @@ lib/
     ├── diary_feature.dart      # YummyLogFeature: deps + rotas
     ├── cubit/                  # DiaryCubit, EntryDetailCubit
     ├── data/                   # MealEntryRepository
-    ├── domain/                 # MealEntry, enums (MealType, FeelingLabel, etc.)
+    ├── (domínio)              # [meal_domain](../../shared/meal_domain) — MealEntry, enums
     ├── pages/                  # DiaryPage, AddMealPage, EntryDetailPage
     ├── l10n/                   # meal_entry_labels (tipos/sentimentos)
     └── util/                   # MealPhotoStorage

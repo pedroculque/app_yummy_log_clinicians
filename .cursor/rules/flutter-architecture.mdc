@@ -22,17 +22,17 @@ app_yummy_log/
 │   └── ...
 ├── modules/
 │   ├── features/             # Features por aba/fluxo
-│   │   ├── diary/            # Diário (meal entries)
-│   │   ├── conectar/         # Conectar com nutricionista
-│   │   └── settings/         # Configurações
-│   └── foundation/          # Infra compartilhada
+│   │   ├── patients/insights/settings/  # App clínico (YummyLog for Clinicians)
+│   │   └── diary/            # Legado paciente (UI); domínio em modules/shared/meal_domain
+│   ├── shared/               # Pacotes transversais (path deps)
+│   │   ├── yummy_log_l10n/   # i18n (pt, es, en)
+│   │   ├── meal_domain/      # MealEntry (Firestore)
+│   │   └── feature_contract/ # Contrato de feature (getRoutes)
+│   └── foundation/           # Infra compartilhada
 │       ├── auth/             # auth_foundation
 │       ├── persistence/      # persistence_foundation (Sembast)
 │       └── sync/             # sync_foundation (Firestore)
-└── packages/
-    ├── yummy_log_l10n/       # i18n (pt, es, en)
-    ├── feature_contract/     # Contrato de feature (getRoutes)
-    └── ui_kit/               # Design system (externo)
+└── (ui_kit via git)          # Design system externo
 ```
 
 ## Estrutura de uma Feature

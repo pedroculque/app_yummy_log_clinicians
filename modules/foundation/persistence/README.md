@@ -45,4 +45,4 @@ lib/
 ## Referências
 
 - [REQUIREMENTS.md](../../../REQUIREMENTS.md) – R5 (persistência local)
-- [diary_feature](../../features/diary/README.md) – consome via `MealEntryRepository`
+- [meal_domain](../../shared/meal_domain/README.md) – modelo `MealEntry`; diary usa via repositório local

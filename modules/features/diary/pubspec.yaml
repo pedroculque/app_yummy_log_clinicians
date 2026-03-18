@@ -12,7 +12,7 @@ dependencies:
   bloc: ^9.2.0
   cached_network_image: ^3.4.1
   feature_contract:
-    path: ../../../packages/feature_contract
+    path: ../../shared/feature_contract
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -20,6 +20,8 @@ dependencies:
   go_router: ^14.6.3
   image_picker: ^1.0.7
   intl: any
+  meal_domain:
+    path: ../../shared/meal_domain
   path: ^1.9.0
   path_provider: ^2.1.5
   persistence_foundation:
@@ -31,7 +33,7 @@ dependencies:
       url: https://github.com/pedroculque/flutter_ui_kit.git
       ref: main
   yummy_log_l10n:
-    path: ../../../packages/yummy_log_l10n
+    path: ../../shared/yummy_log_l10n
 
 dev_dependencies:
   bloc_lint: ^0.3.7

@@ -1,15 +1,17 @@
 import 'dart:async';
 
-import 'package:diary_feature/diary_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:patients_feature/src/cubit/patient_diary_cubit.dart';
 import 'package:patients_feature/src/cubit/patient_diary_state.dart';
 import 'package:patients_feature/src/data/behavior_catalog.dart';
 import 'package:patients_feature/src/utils/meal_behavior_label.dart';
+import 'package:patients_feature/src/utils/meal_entry_display.dart';
+import 'package:patients_feature/src/widgets/patient_meal_photo.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 

@@ -1,7 +1,7 @@
-import 'package:diary_feature/diary_feature.dart';
 import 'package:insights_feature/src/domain/insights_summary.dart';
 import 'package:insights_feature/src/domain/patient_insight.dart';
 import 'package:insights_feature/src/domain/risk_alert.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:patients_feature/patients_feature.dart';
 
 class InsightsCalculator {
