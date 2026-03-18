@@ -171,8 +171,10 @@ Os recursos Firebase (Firestore, Storage) usam o **projeto** `app-yummy-log-diar
 | Comando | Descrição |
 |--------|-----------|
 | `firebase deploy --project app-yummy-log-diary --only firestore:rules` | Publica apenas as regras do Firestore (`firestore.rules`). Use após alterar regras de segurança. |
+| `firebase deploy --project app-yummy-log-diary --only firestore:indexes` | Publica índices do Firestore (`firestore.indexes.json`). |
+| `firebase deploy --project app-yummy-log-diary --only functions` | Publica Cloud Functions (ex.: `notifyCliniciansOnNewMeal` para push). |
 | `firebase deploy --project app-yummy-log-diary --only storage` | Publica apenas as regras do Storage (`storage.rules`). |
-| `firebase deploy --project app-yummy-log-diary` | Publica Firestore e Storage (regras). |
+| `firebase deploy --project app-yummy-log-diary` | Publica Firestore (regras + índices), Functions e Storage. |
 
 **Exemplo – só regras do Firestore:**
 

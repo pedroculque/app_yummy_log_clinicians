@@ -156,6 +156,29 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Análise por refeição | Refeições puladas, correlação com sentimentos | Pendente |
 | Tendências agregadas | Comparativo temporal (semana atual vs anterior) | Pendente |
 
+#### Fase 3.4 - Notificações Push ✅
+
+**Status:** Concluído
+
+**Objetivo:** Alertar o clínico quando um paciente registra nova entrada no diário.
+
+| Feature | Descrição | Status |
+|---------|-----------|--------|
+| Registro de token FCM | App do clínico registra token em `clinicians/{uid}/notification_tokens` ao autenticar | ✅ |
+| Cloud Function | `notifyCliniciansOnNewMeal` dispara em `users/{patientId}/meals` onCreate | ✅ |
+| Busca de clínicos | Function lê `connections` do paciente (clinicianUid) para saber quem notificar | ✅ |
+| Envio FCM | Envia push para todos os tokens de cada clínico vinculado | ✅ |
+| Deep link | Ao tocar na notificação, navega para `/patients/:patientId/diary` | ✅ |
+| Config iOS por ambiente | Plists em `ios/Runner/config/{dev,stg,prod}/` (ver config/README.md) | ✅ |
+
+**Entregáveis:**
+- [x] `ClinicianNotificationService` (permissão, token, persistência, deep link)
+- [x] Firebase Functions: `notifyCliniciansOnNewMeal`
+- [x] Firestore indexes e firebase.json
+- [x] AppDelegate, Info.plist, Runner.entitlements para push iOS
+
+Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo detalhado.
+
 **Dependências:** Fase 2 concluída.
 
 **Dados utilizados:**
@@ -192,6 +215,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 |---------|-----------|-------------------|
 | `clinician_codes/{code}` | Código de convite → `clinicianUid`, `displayName` | Escrita (próprio código) |
 | `clinicians/{clinicianId}/patients/{patientId}` | Lista de pacientes vinculados | Leitura |
+| `clinicians/{clinicianId}/notification_tokens/{token}` | Tokens FCM do clínico (push) | Escrita (app clínico); leitura (Cloud Function) |
 | `users/{patientId}/meals/{mealId}` | Refeições do paciente | Leitura (se vinculado) |
 | `users/{patientId}/connections/{connectionId}` | Conexões do paciente | Leitura (se vinculado) |
 | `users/{patientId}/form_config` | Config do formulário de comportamento (clínico grava; paciente lê) | Escrita (clínico vinculado); leitura (paciente) |
@@ -210,7 +234,7 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 
 ### Média
 
-4. Notificações push (quando paciente registra nova entrada).
+4. ~~Notificações push (quando paciente registra nova entrada).~~ ✅ Implementado (Fase 3.4)
 
 ---
 

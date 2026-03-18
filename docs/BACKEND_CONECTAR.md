@@ -60,6 +60,29 @@ Documento que descreve a estrutura Firestore e o fluxo de vínculo entre pacient
 - **Quem escreve:** o app do clínico ao autenticar e obter permissão de notificação.
 - **Quem lê:** Cloud Function de notificação para enviar push quando houver nova entrada.
 
+---
+
+## Fluxo de notificações push
+
+Quando um paciente registra uma nova refeição, o clínico vinculado recebe uma notificação push. O fluxo é:
+
+1. **Paciente cria refeição** → documento em `users/{patientId}/meals/{mealId}`.
+2. **Cloud Function dispara** → `notifyCliniciansOnNewMeal` (trigger `onCreate`).
+3. **Function busca clínicos** → lê `users/{patientId}/connections` e extrai `clinicianUid` de cada conexão com `status !== 'removed'`.
+4. **Para cada clínico** → lê `clinicians/{clinicianUid}/notification_tokens` e obtém os tokens FCM.
+5. **Envia FCM** → `admin.messaging().sendEachForMulticast()` com:
+   - **notification:** título "Nova entrada no diário", body "{nome} registrou uma nova refeição".
+   - **data:** `patientId`, `patientName`, `mealType`, `eventType: 'new_meal_entry'`.
+6. **Clínico toca na notificação** → app abre e navega para `/patients/{patientId}/diary`.
+
+O app do clínico (`ClinicianNotificationService`) é responsável por:
+- Solicitar permissão de notificação.
+- Obter e persistir o token FCM em `clinicians/{uid}/notification_tokens/{token}`.
+- Remover o token ao fazer logout.
+- Tratar `onMessageOpenedApp` e `getInitialMessage` para navegar ao diário.
+
+---
+
 ### Regras de leitura para o clínico
 
 As regras em `firestore.rules` já permitem:

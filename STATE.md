@@ -40,6 +40,12 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`.
 - **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**.
+- **Notificações push:** Implementado fluxo completo:
+  - `ClinicianNotificationService` registra token FCM em `clinicians/{uid}/notification_tokens`
+  - Cloud Function `notifyCliniciansOnNewMeal` dispara ao criar refeição em `users/{patientId}/meals`
+  - Busca clínicos via `connections` (clinicianUid) e envia push para seus tokens
+  - Ao tocar na notificação, app navega para `/patients/:patientId/diary`
+  - Config iOS por ambiente (dev/stg/prod) em `ios/Runner/config/`; plists no `.gitignore`
 
 ---
 
@@ -66,14 +72,13 @@ Nenhum no momento.
 
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
 2. **Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.
-3. **Notificações push:** Alertar clínico quando paciente registra nova entrada no diário.
-4. **Exportar relatórios:** PDF com resumo do paciente para consultas.
+3. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 
 ---
 
 ## Referências
 
 - [docs/ROADMAP.md](docs/ROADMAP.md) – Fases e entregáveis
+- [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) – Estrutura Firestore, fluxo de notificações push e vínculo paciente–clínico
 - [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md) – Configurar Firebase (registrar app do clínico)
 - [REQUIREMENTS.md](REQUIREMENTS.md) – Requisitos v1/v2/v3
-- App do paciente: docs/BACKEND_CONECTAR.md – Estrutura Firestore compartilhada

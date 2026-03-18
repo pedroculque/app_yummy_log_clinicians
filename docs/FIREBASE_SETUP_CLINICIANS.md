@@ -2,7 +2,7 @@
 
 Este guia descreve como **registrar o app do clínico** no Firebase, usando o **mesmo projeto** do app do paciente (`app-yummy-log-diary`) para compartilhar Firestore e Auth.
 
-**Status:** O app do clínico já está registrado no projeto **app-yummy-log-diary**. Os arquivos `android/app/google-services.json` e `ios/Runner/GoogleService-Info.plist` no repositório estão configurados para `com.yummylogdiaryforclinicians.app`. Use os passos abaixo se precisar refazer o registro (ex.: novo ambiente) ou adicionar flavors (.dev, .stg).
+**Status:** O app do clínico já está registrado no projeto **app-yummy-log-diary**. O `android/app/google-services.json` está no repositório. Os `GoogleService-Info.plist` do iOS **não estão no repositório** (ver `ios/Runner/config/README.md`): cada dev deve baixá-los do Firebase Console e colocar em `ios/Runner/config/{dev,stg,prod}/`. Use os passos abaixo se precisar refazer o registro ou adicionar flavors.
 
 ---
 
@@ -54,11 +54,14 @@ Este guia descreve como **registrar o app do clínico** no Firebase, usando o **
    - **App Store ID:** opcional.
 3. Clique em **Registrar app**.
 4. **Baixe** o arquivo `GoogleService-Info.plist`.
-5. **Substitua** o arquivo existente em:
+5. **Coloque** o arquivo em:
    ```
-   ios/Runner/GoogleService-Info.plist
+   ios/Runner/config/prod/GoogleService-Info.plist   # produção
+   ios/Runner/config/dev/GoogleService-Info.plist   # development
+   ios/Runner/config/stg/GoogleService-Info.plist   # staging
    ```
-6. Conclua o assistente. O Xcode costuma encontrar o plist automaticamente se estiver em `Runner/`.
+   Ver [ios/Runner/config/README.md](../ios/Runner/config/README.md) para detalhes. Os plists não estão no repositório (`.gitignore`).
+6. Conclua o assistente. O Xcode usa o plist correto por scheme (dev/stg/prod).
 
 ---
 
@@ -77,11 +80,23 @@ Para cada um, baixe o `google-services.json` ou `GoogleService-Info.plist` e use
 
 ---
 
-## Passo 5: Verificar no projeto
+## Passo 5: Notificações push (Cloud Messaging)
+
+Para as notificações push funcionarem no iOS:
+
+1. No Firebase Console → **Project Settings** → **Cloud Messaging** → **Apple app configuration**.
+2. Faça upload da **APNs Authentication Key** (.p8) ou do certificado APNs do seu app.
+3. No Xcode, habilite **Push Notifications** e **Background Modes → Remote notifications** (já configurado no projeto).
+
+O app do clínico usa `firebase_messaging` e a Cloud Function `notifyCliniciansOnNewMeal` envia push quando um paciente registra nova refeição. Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo.
+
+---
+
+## Passo 6: Verificar no projeto
 
 1. Confirme que:
    - `android/app/google-services.json` contém `"package_name": "com.yummylogdiaryforclinicians.app"` (ou o package do flavor que você registrou).
-   - `ios/Runner/GoogleService-Info.plist` contém `<key>BUNDLE_ID</key>` com `com.yummylogdiaryforclinicians.app` (ou o bundle do flavor).
+   - `ios/Runner/config/*/GoogleService-Info.plist` contém `<key>BUNDLE_ID</key>` com o bundle correto (dev/stg/prod).
 2. Rode o app:
    ```bash
    flutter run --flavor development -t lib/main_development.dart
@@ -117,6 +132,6 @@ Se quiser manter o fluxo atual (sem `firebase_options.dart`), basta seguir os pa
 | Registrar app Android | Package: `com.yummylogdiaryforclinicians.app` |
 | Registrar app iOS | Bundle ID: `com.yummylogdiaryforclinicians.app` |
 | Colocar config Android | `android/app/google-services.json` |
-| Colocar config iOS | `ios/Runner/GoogleService-Info.plist` |
+| Colocar config iOS | `ios/Runner/config/{dev,stg,prod}/GoogleService-Info.plist` (ver config/README.md) |
 
 Depois de substituir os arquivos e rodar o app, o login e o uso do Firestore (código de convite, lista de pacientes) devem funcionar com o app do clínico.
