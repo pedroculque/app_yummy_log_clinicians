@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "prod": "app-yummy-log-diary"
+  },
+  "targets": {},
+  "etags": {}
+}

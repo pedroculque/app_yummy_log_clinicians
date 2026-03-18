@@ -66,7 +66,7 @@ Nenhum no momento.
 
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
 2. **Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.
-3. **Notificações push:** Alertar clínico quando paciente registra comportamento de risco.
+3. **Notificações push:** Alertar clínico quando paciente registra nova entrada no diário.
 4. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 
 ---

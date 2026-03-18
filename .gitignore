@@ -127,6 +127,19 @@ obfuscation.map.json
 # Generated l10n files
 lib/l10n/gen/
 
+# Firebase CLI
+.firebase-debug.log
+.firebase-debug.*.log
+
+# Firebase config (baixar do Console e colocar localmente)
+ios/Runner/config/*/GoogleService-Info.plist
+
+# Firebase Functions
+functions/node_modules/
+functions/lib/
+functions/.firebase/
+functions/*.log
+
 # CI deploy key (repositório privado flutter_ui_kit)
 deploy_key
 deploy_key.pub

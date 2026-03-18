@@ -1,17 +1,34 @@
+import 'dart:async';
+
+import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 /// Shell do app: tab bar (Pacientes, Insights, Configurações)
 /// e área de conteúdo.
-class AppShell extends StatelessWidget {
+class AppShell extends StatefulWidget {
   const AppShell({
     required this.navigationShell,
     super.key,
   });
 
   final StatefulNavigationShell navigationShell;
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(GetIt.I<ClinicianNotificationService>().start());
+    });
+  }
 
   static List<_TabItem> _buildTabs(AppLocalizations l10n) => [
     _TabItem(
@@ -40,7 +57,7 @@ class AppShell extends StatelessWidget {
     final barColor = isDark ? appColors.neutralBlack : appColors.neutralWhite;
 
     return Scaffold(
-      body: navigationShell,
+      body: widget.navigationShell,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: barColor,
@@ -63,7 +80,7 @@ class AppShell extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             child: Row(
               children: List.generate(tabs.length, (i) {
-                final isSelected = navigationShell.currentIndex == i;
+                final isSelected = widget.navigationShell.currentIndex == i;
                 return Expanded(
                   child: _NavBarItem(
                     tab: tabs[i],
@@ -71,7 +88,7 @@ class AppShell extends StatelessWidget {
                     selectedColor: appColors.primary,
                     unselectedColor: appColors.gray,
                     pillColor: appColors.primary.withValues(alpha: 0.1),
-                    onTap: () => navigationShell.goBranch(i),
+                    onTap: () => widget.navigationShell.goBranch(i),
                   ),
                 );
               }),

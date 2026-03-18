@@ -210,7 +210,7 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 
 ### Média
 
-4. Notificações push (quando paciente registra refeição).
+4. Notificações push (quando paciente registra nova entrada).
 
 ---
 

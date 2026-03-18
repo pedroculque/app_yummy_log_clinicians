@@ -50,6 +50,16 @@ Documento que descreve a estrutura Firestore e o fluxo de vínculo entre pacient
 
 - Mantido pelo app do paciente (sync). Após o backend Conectar, o documento pode incluir `clinicianUid` e `displayName` vindos de `clinician_codes`.
 
+### `clinicians/{clinicianUid}/notification_tokens/{token}`
+
+- **Caminho:** subcoleção de tokens FCM do clínico.
+- **Campos:**
+  - `token` (string, obrigatório): token FCM do dispositivo.
+  - `platform` (string, opcional): `ios`, `android`, etc.
+  - `createdAt` / `updatedAt` (timestamp): controle do registro.
+- **Quem escreve:** o app do clínico ao autenticar e obter permissão de notificação.
+- **Quem lê:** Cloud Function de notificação para enviar push quando houver nova entrada.
+
 ### Regras de leitura para o clínico
 
 As regras em `firestore.rules` já permitem:

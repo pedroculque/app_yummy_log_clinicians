@@ -1,4 +1,6 @@
 import 'package:app_yummy_log_clinicians/app/app.dart';
+import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
+import 'package:auth_foundation/auth_foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:insights_feature/insights_feature.dart';
 import 'package:patients_feature/patients_feature.dart';
@@ -33,5 +35,8 @@ void configureDependencies() {
         getLocale: () => localeCubit.state,
         setLocale: localeCubit.setLocale,
       ),
+    )
+    ..registerSingleton<ClinicianNotificationService>(
+      ClinicianNotificationService(authRepository: getIt<AuthRepository>()),
     );
 }
