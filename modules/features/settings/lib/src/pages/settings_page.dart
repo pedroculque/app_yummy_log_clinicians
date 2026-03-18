@@ -10,6 +10,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 import 'package:settings_feature/src/cubit/auth_cubit.dart';
+import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
@@ -111,15 +112,24 @@ class SettingsPage extends StatelessWidget {
                       );
                     }
                     if (state.isLoggedIn) {
-                      return _LoggedInSection(
-                        userId: state.user!.uid,
-                        email: state.user!.email ?? state.user!.uid,
-                        photoUrl: state.user!.photoUrl,
-                        displayName: state.user!.displayName,
-                        onLogout: () => unawaited(
-                          context.read<AuthCubit>().signOut(),
-                        ),
-                        onSetDisplayName: _showSetDisplayNameDialog,
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _LoggedInSection(
+                            userId: state.user!.uid,
+                            email: state.user!.email ?? state.user!.uid,
+                            photoUrl: state.user!.photoUrl,
+                            displayName: state.user!.displayName,
+                            onLogout: () => unawaited(
+                              context.read<AuthCubit>().signOut(),
+                            ),
+                            onSetDisplayName: _showSetDisplayNameDialog,
+                          ),
+                          const SizedBox(height: 32),
+                          _NotificationPushPreferencesSection(
+                            userId: state.user!.uid,
+                          ),
+                        ],
                       );
                     }
                     return _LoggedOutSection(
@@ -234,6 +244,222 @@ class SettingsPage extends StatelessWidget {
     uiSnackBar(
       context: context,
       message: context.l10n.copySupportId,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// ALERTAS PUSH (estilo lembretes: switch mestre + opções)
+// ---------------------------------------------------------------------------
+
+class _NotificationPushPreferencesSection extends StatelessWidget {
+  const _NotificationPushPreferencesSection({required this.userId});
+
+  final String userId;
+
+  @override
+  Widget build(BuildContext context) {
+    final repo = GetIt.instance<NotificationPushPreferencesRepository>();
+    final l10n = context.l10n;
+    final appColors = AppColors.fromContext(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _SectionTitle(
+          title: l10n.sectionNotificationsPush,
+          icon: Icons.notifications_outlined,
+        ),
+        const SizedBox(height: 8),
+        StreamBuilder<NotificationPushPrefs>(
+          stream: repo.watchPrefs(userId),
+          builder: (context, snapshot) {
+            final prefs = snapshot.data ??
+                const NotificationPushPrefs(
+                  pushEnabled: true,
+                  mode: NotificationPushMode.all,
+                );
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                color: appColors.grayLight.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: appColors.grayLight.withValues(alpha: 0.8),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 18, 6, 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.notificationPushMasterTitle,
+                                style: AppTextStyles.body1.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: appColors.neutralBlack,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.notificationPushMasterSubtitle,
+                                style: AppTextStyles.body3.copyWith(
+                                  color: appColors.gray,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch.adaptive(
+                          value: prefs.pushEnabled,
+                          onChanged: (v) =>
+                              unawaited(
+                                repo.setPushEnabled(
+                                  userId,
+                                  enabled: v,
+                                ),
+                              ),
+                          activeTrackColor:
+                              appColors.primary.withValues(alpha: 0.45),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (prefs.pushEnabled) ...[
+                    Divider(height: 1, color: appColors.grayLight),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                      child: Text(
+                        l10n.notificationPushCustomizeHint,
+                        style: AppTextStyles.body3.copyWith(
+                          color: appColors.gray,
+                        ),
+                      ),
+                    ),
+                    _NotificationPushSubRow(
+                      title: l10n.notificationPushAllEntries,
+                      subtitle: l10n.notificationPushAllEntriesRowSubtitle,
+                      value: prefs.mode == NotificationPushMode.all,
+                      onChanged: (on) {
+                        if (on) {
+                          unawaited(
+                            repo.setPushMode(
+                              userId,
+                              NotificationPushMode.all,
+                            ),
+                          );
+                        } else {
+                          unawaited(
+                            repo.setPushMode(
+                              userId,
+                              NotificationPushMode.criticalOnly,
+                            ),
+                          );
+                        }
+                      },
+                      appColors: appColors,
+                    ),
+                    Divider(
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                      color: appColors.grayLight,
+                    ),
+                    _NotificationPushSubRow(
+                      title: l10n.notificationPushCriticalOnly,
+                      subtitle: l10n.notificationPushCriticalOnlyRowSubtitle,
+                      value:
+                          prefs.mode == NotificationPushMode.criticalOnly,
+                      onChanged: (on) {
+                        if (on) {
+                          unawaited(
+                            repo.setPushMode(
+                              userId,
+                              NotificationPushMode.criticalOnly,
+                            ),
+                          );
+                        } else {
+                          unawaited(
+                            repo.setPushMode(
+                              userId,
+                              NotificationPushMode.all,
+                            ),
+                          );
+                        }
+                      },
+                      appColors: appColors,
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _NotificationPushSubRow extends StatelessWidget {
+  const _NotificationPushSubRow({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.onChanged,
+    required this.appColors,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final AppColors appColors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.body2.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: appColors.neutralBlack,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.body3.copyWith(
+                      color: appColors.gray,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Switch.adaptive(
+            value: value,
+            onChanged: onChanged,
+            activeTrackColor: appColors.primary.withValues(alpha: 0.45),
+          ),
+        ],
+      ),
     );
   }
 }

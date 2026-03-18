@@ -102,7 +102,7 @@ abstract class AppLocalizations {
   /// No description provided for @diaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'YummyLog'**
+  /// **'Diary'**
   String get diaryTitle;
 
   /// No description provided for @greeting.
@@ -1400,6 +1400,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subscription'**
   String get sectionSubscription;
+
+  /// No description provided for @sectionNotificationsPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts'**
+  String get sectionNotificationsPush;
+
+  /// No description provided for @notificationPushMasterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New diary entries'**
+  String get notificationPushMasterTitle;
+
+  /// No description provided for @notificationPushMasterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified when your patients log meals.'**
+  String get notificationPushMasterSubtitle;
+
+  /// No description provided for @notificationPushCustomizeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the type of alert below'**
+  String get notificationPushCustomizeHint;
+
+  /// No description provided for @notificationPushAllEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'All new entries'**
+  String get notificationPushAllEntries;
+
+  /// No description provided for @notificationPushAllEntriesRowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every meal your patient logs.'**
+  String get notificationPushAllEntriesRowSubtitle;
+
+  /// No description provided for @notificationPushCriticalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk behaviors only'**
+  String get notificationPushCriticalOnly;
+
+  /// No description provided for @notificationPushCriticalOnlyRowSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vomiting, laxatives, regurgitation, secret eating, etc.'**
+  String get notificationPushCriticalOnlyRowSubtitle;
 
   /// No description provided for @restorePurchases.
   ///

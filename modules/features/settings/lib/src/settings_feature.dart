@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:settings_feature/src/cubit/auth_cubit.dart';
+import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:settings_feature/src/pages/plans_page.dart';
 import 'package:settings_feature/src/pages/settings_page.dart';
 
@@ -15,11 +16,15 @@ class SettingsFeature implements YummyLogFeature {
 
   @override
   void registerDependencies(GetIt getIt) {
-    getIt.registerSingleton<AuthCubit>(
-      AuthCubit(
-        authRepository: getIt<AuthRepository>(),
-      ),
-    );
+    getIt
+      ..registerSingleton<NotificationPushPreferencesRepository>(
+        NotificationPushPreferencesRepository(),
+      )
+      ..registerSingleton<AuthCubit>(
+        AuthCubit(
+          authRepository: getIt<AuthRepository>(),
+        ),
+      );
   }
 
   @override

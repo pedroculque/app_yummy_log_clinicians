@@ -679,6 +679,30 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sectionSubscription => 'Assinatura';
 
   @override
+  String get sectionNotificationsPush => 'Alertas';
+
+  @override
+  String get notificationPushMasterTitle => 'Novas entradas no diário';
+
+  @override
+  String get notificationPushMasterSubtitle => 'Receba notificações quando seus pacientes registrarem refeições.';
+
+  @override
+  String get notificationPushCustomizeHint => 'Personalize o tipo de alerta abaixo';
+
+  @override
+  String get notificationPushAllEntries => 'Todas as novas entradas';
+
+  @override
+  String get notificationPushAllEntriesRowSubtitle => 'Cada refeição que o paciente registrar.';
+
+  @override
+  String get notificationPushCriticalOnly => 'Somente com comportamento de risco';
+
+  @override
+  String get notificationPushCriticalOnlyRowSubtitle => 'Vômito, laxantes, regurgitação, comer escondido, etc.';
+
+  @override
   String get restorePurchases => 'Restaurar compras';
 
   @override
@@ -788,42 +812,34 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsScoreHelpTitle => 'O que é o Score de atenção?';
 
   @override
-  String get insightsScoreHelpBody =>
-      'É um indicador que ajuda a priorizar pacientes com mais sinais de atenção nos registros recentes.';
+  String get insightsScoreHelpBody => 'É um indicador que ajuda a priorizar pacientes com mais sinais de atenção nos registros recentes.';
 
   @override
-  String get insightsScoreHelpBullets1 =>
-      'Baseado na frequência dos alertas';
+  String get insightsScoreHelpBullets1 => 'Baseado na frequência dos alertas';
 
   @override
-  String get insightsScoreHelpBullets2 =>
-      'Considera a recência dos eventos';
+  String get insightsScoreHelpBullets2 => 'Considera a recência dos eventos';
 
   @override
-  String get insightsScoreHelpBullets3 =>
-      'Não substitui avaliação clínica';
+  String get insightsScoreHelpBullets3 => 'Não substitui avaliação clínica';
 
   @override
-  String get insightsScoreHelpDisclaimer =>
-      'Quanto maior o score, maior a necessidade de acompanhamento.';
+  String get insightsScoreHelpDisclaimer => 'Quanto maior o score, maior a necessidade de acompanhamento.';
 
   @override
   String get insightsScoreHelpButton => 'Entenda como funciona';
 
   @override
-  String get insightsScoreHelpPageTitle =>
-      'Como funciona o Score de atenção';
+  String get insightsScoreHelpPageTitle => 'Como funciona o Score de atenção';
 
   @override
-  String get insightsScoreHelpPageBody =>
-      'O score resume sinais de atenção a partir dos registros mais recentes para facilitar a triagem. Ele combina a quantidade de alertas, o tipo de comportamento observado e o tempo desde o último evento.';
+  String get insightsScoreHelpPageBody => 'O score resume sinais de atenção a partir dos registros mais recentes para facilitar a triagem. Ele combina a quantidade de alertas, o tipo de comportamento observado e o tempo desde o último evento.';
 
   @override
   String get insightsClinicalPriorityTitle => 'Prioridade clínica';
 
   @override
-  String get insightsClinicalPrioritySubtitle =>
-      'Resumo rápido para decidir onde olhar primeiro';
+  String get insightsClinicalPrioritySubtitle => 'Resumo rápido para decidir onde olhar primeiro';
 
   @override
   String insightsPatientsNeedAttention(int count) {
@@ -844,23 +860,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsClinicalActionNeeded => 'Ação recomendada hoje';
 
   @override
-  String get insightsClinicalPriorityWithAlerts =>
-      'Há alertas críticos recentes. Revise primeiro os pacientes com maior ranking e os eventos de alta prioridade.';
+  String get insightsClinicalPriorityWithAlerts => 'Há alertas críticos recentes. Revise primeiro os pacientes mais altos no ranking e os eventos com prioridade alta.';
 
   @override
-  String get insightsClinicalPriorityNoAlerts =>
-      'Não há alertas críticos recentes. Use o ranking para revisar os pacientes com maior score e inatividade.';
+  String get insightsClinicalPriorityNoAlerts => 'Nenhum alerta crítico recente. Use o ranking para revisar os pacientes com maior score e inatividade.';
 
   @override
   String get insightsPatientAnalyticsTitle => 'Análise por paciente';
 
   @override
-  String get insightsPatientAnalyticsSubtitle =>
-      'Casos principais que merecem leitura rápida';
+  String get insightsPatientAnalyticsSubtitle => 'Topo dos casos que mais merecem leitura rápida';
 
   @override
-  String get insightsPatientAnalyticsEmpty =>
-      'Ainda não há pacientes suficientes para comparar análises individuais.';
+  String get insightsPatientAnalyticsEmpty => 'Ainda não há pacientes suficientes para comparar análises individuais.';
 
   @override
   String insightsTrendComparison(int current, int previous, String trend) {
@@ -938,23 +950,19 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsClinicalSignalsTitle => 'Sinais clínicos';
 
   @override
-  String get insightsClinicalSignalsSubtitle =>
-      'Quem piorou, quem melhorou e quem precisa de atenção';
+  String get insightsClinicalSignalsSubtitle => 'Quem piorou, quem melhorou e quem precisa de atenção';
 
   @override
   String get insightsClinicalWhyHere => 'Por que este paciente está aqui';
 
   @override
-  String get insightsClinicalWhyHereHighRisk =>
-      'Há alerta crítico recente e o score está alto.';
+  String get insightsClinicalWhyHereHighRisk => 'Há alerta crítico recente e o score está alto.';
 
   @override
-  String get insightsClinicalWhyHereWorsening =>
-      'O padrão piorou na última comparação.';
+  String get insightsClinicalWhyHereWorsening => 'O padrão piorou na última comparação temporal.';
 
   @override
-  String get insightsClinicalWhyHereBalanced =>
-      'Os sinais estão equilibrados, mas vale acompanhar a evolução.';
+  String get insightsClinicalWhyHereBalanced => 'Os sinais estão equilibrados, mas vale acompanhar a evolução.';
 
   @override
   String get insightsTrendMealsLabel => 'Adesão';
@@ -1006,28 +1014,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsDashboardOperationalTitle => 'Resumo operacional';
 
   @override
-  String get insightsDashboardOperationalSubtitle =>
-      'Estado dos casos para priorizar a agenda';
+  String get insightsDashboardOperationalSubtitle => 'Estado dos casos para priorizar a agenda';
 
   @override
   String insightsPatientNarrativeInactive(int days) {
-    return 'Este paciente está há $days dias sem refeição registrada e precisa de revisão.';
+    return 'Paciente está há $days dias sem refeição registrada e precisa de revisão.';
   }
 
   @override
-  String get insightsPatientNarrativeHighAlert =>
-      'Há sinais críticos recentes. Vale revisar os eventos em detalhe primeiro.';
+  String get insightsPatientNarrativeHighAlert => 'Há sinais críticos recentes. Vale revisar os eventos em detalhe primeiro.';
 
   @override
-  String get insightsPatientNarrativeBalanced =>
-      'Os sinais estão mais equilibrados, então este paciente pode ficar após os casos prioritários.';
+  String get insightsPatientNarrativeBalanced => 'Os sinais estão mais equilibrados, então este paciente pode ficar após os casos prioritários.';
 
   @override
   String get insightsPatientDetailTitle => 'Detalhe do paciente';
 
   @override
-  String get insightsPatientDetailSubtitle =>
-      'Resumo clínico rápido com sinais e tendência';
+  String get insightsPatientDetailSubtitle => 'Resumo clínico rápido com sinais e tendência';
 
   @override
   String get insightsPatientDetailSignalsTitle => 'Sinais principais';
@@ -1045,8 +1049,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsPatientDetailRecentAlerts => 'Alertas recentes';
 
   @override
-  String get insightsPatientDetailNoAlerts =>
-      'Nenhum alerta recente neste período.';
+  String get insightsPatientDetailNoAlerts => 'Nenhum alerta recente neste período.';
 
   @override
   String get insightsPatientDetailNotFound => 'Não foi possível abrir este paciente.';

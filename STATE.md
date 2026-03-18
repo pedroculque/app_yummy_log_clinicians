@@ -50,7 +50,9 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Notificações push:** Implementado fluxo completo:
   - `ClinicianNotificationService` registra token FCM em `clinicians/{uid}/notification_tokens`
   - Cloud Function `notifyCliniciansOnNewMeal` dispara ao criar refeição em `users/{patientId}/meals`
-  - Busca clínicos via `connections` (clinicianUid) e envia push para seus tokens
+  - Preferências em `clinicians/{uid}/preferences/notification`: `pushEnabled`, `pushMode`; UI na aba Configurações (Alertas, switches)
+  - FCM: refeição **com** risco → título/corpo de alerta; **sem** risco → “Nova entrada no diário” (vale no modo todas e no só-risco)
+  - Busca clínicos via `connections` (clinicianUid) e envia push conforme preferência
   - Ao tocar na notificação, app navega para `/patients/:patientId/diary`
   - Config iOS por ambiente (dev/stg/prod) em `ios/Runner/config/`; plists no `.gitignore`
 

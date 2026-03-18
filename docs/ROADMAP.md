@@ -167,13 +167,14 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Registro de token FCM | App do clínico registra token em `clinicians/{uid}/notification_tokens` ao autenticar | ✅ |
 | Cloud Function | `notifyCliniciansOnNewMeal` dispara em `users/{patientId}/meals` onCreate | ✅ |
 | Busca de clínicos | Function lê `connections` do paciente (clinicianUid) para saber quem notificar | ✅ |
-| Envio FCM | Envia push para todos os tokens de cada clínico vinculado | ✅ |
+| Envio FCM | Push por clínico vinculado; texto **genérico** ou **alerta** conforme risco na refeição | ✅ |
 | Deep link | Ao tocar na notificação, navega para `/patients/:patientId/diary` | ✅ |
 | Config iOS por ambiente | Plists em `ios/Runner/config/{dev,stg,prod}/` (ver config/README.md) | ✅ |
+| Preferência push | Aba Alertas: ligar/desligar (`pushEnabled`); modo todas vs só risco (`pushMode`) | ✅ |
 
 **Entregáveis:**
 - [x] `ClinicianNotificationService` (permissão, token, persistência, deep link)
-- [x] Firebase Functions: `notifyCliniciansOnNewMeal`
+- [x] Firebase Functions: `notifyCliniciansOnNewMeal` (mensagem diferenciada para refeição com risco)
 - [x] Firestore indexes e firebase.json
 - [x] AppDelegate, Info.plist, Runner.entitlements para push iOS
 
@@ -196,9 +197,9 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo detalhado.
 │  Tab: Pacientes      │  Tab: Insights       │  Tab: Configurações        │
 │  • Header saudação   │  • Dashboard         │  • Assinatura (Free/Pro)   │
 │  • Lista pacientes   │  • Estatísticas      │  • Login/Logout            │
-│  • Swipe → remover   │  • Gráficos          │  • Idioma, Aparência       │
-│  • Tap → diário      │                      │  • Sobre, Suporte          │
-│  • Convidar paciente │                      │                            │
+│  • Swipe → remover   │  • Gráficos          │  • Push: todas ou só risco │
+│  • Tap → diário      │                      │  • Idioma, Aparência       │
+│  • Convidar paciente │                      │  • Sobre, Suporte          │
 ├──────────────────────┴──────────────────────┴────────────────────────────┤
 │  Full screen (acima da tab bar):                                         │
 │  • Diário do paciente (/patients/:id/diary) — Timeline + Calendário      │
@@ -219,6 +220,7 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo detalhado.
 | `users/{patientId}/meals/{mealId}` | Refeições do paciente | Leitura (se vinculado) |
 | `users/{patientId}/connections/{connectionId}` | Conexões do paciente | Leitura (se vinculado) |
 | `users/{patientId}/form_config` | Config do formulário de comportamento (clínico grava; paciente lê) | Escrita (clínico vinculado); leitura (paciente) |
+| `clinicians/{uid}/preferences/notification` | `pushEnabled`, `pushMode` (`all` / `critical_only`) | Escrita/leitura (próprio clínico) |
 
 Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) para detalhes.
 

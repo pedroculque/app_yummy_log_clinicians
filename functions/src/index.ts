@@ -6,11 +6,61 @@ admin.initializeApp();
 type MealEntryDoc = {
   mealType?: string;
   deletedAt?: unknown;
+  hiddenFood?: unknown;
+  regurgitated?: unknown;
+  forcedVomit?: unknown;
+  ateInSecret?: unknown;
+  usedLaxatives?: unknown;
+  diuretics?: unknown;
+  otherMedication?: unknown;
+  compensatoryExercise?: unknown;
+  chewAndSpit?: unknown;
+  intermittentFast?: unknown;
+  skipMeal?: unknown;
+  bingeEating?: unknown;
+  guiltAfterEating?: unknown;
+  calorieCounting?: unknown;
+  bodyChecking?: unknown;
+  bodyWeighing?: unknown;
+  behaviorFlags?: Record<string, unknown>;
 };
 
 type TokenDoc = {
   token?: string;
 };
+
+const TOP_LEVEL_BEHAVIORS = [
+  'hiddenFood',
+  'regurgitated',
+  'forcedVomit',
+  'ateInSecret',
+  'usedLaxatives',
+  'diuretics',
+  'otherMedication',
+  'compensatoryExercise',
+  'chewAndSpit',
+  'intermittentFast',
+  'skipMeal',
+  'bingeEating',
+  'guiltAfterEating',
+  'calorieCounting',
+  'bodyChecking',
+  'bodyWeighing',
+] as const;
+
+/** Alinhado ao catálogo de comportamentos / alertas de risco no app clínico. */
+function mealHasCriticalBehavior(meal: MealEntryDoc): boolean {
+  for (const k of TOP_LEVEL_BEHAVIORS) {
+    if (meal[k] === true) return true;
+  }
+  const bf = meal.behaviorFlags;
+  if (bf && typeof bf === 'object') {
+    for (const v of Object.values(bf)) {
+      if (v === true) return true;
+    }
+  }
+  return false;
+}
 
 // Usando Gen 1 (mais estável com Firestore triggers)
 export const notifyCliniciansOnNewMeal = firestore
@@ -27,6 +77,9 @@ export const notifyCliniciansOnNewMeal = firestore
       console.log('[notifyClinicians] Skipping: no data or deleted');
       return null;
     }
+
+    const isCritical = mealHasCriticalBehavior(meal);
+    console.log(`[notifyClinicians] Meal has critical behavior: ${isCritical}`);
 
     try {
       // Buscar o documento do usuário para pegar o nome
@@ -62,6 +115,23 @@ export const notifyCliniciansOnNewMeal = firestore
       for (const clinicianId of clinicianIds) {
         console.log(`[notifyClinicians] Processing clinician: ${clinicianId}`);
 
+        const prefSnap = await db
+          .collection('clinicians')
+          .doc(clinicianId)
+          .collection('preferences')
+          .doc('notification')
+          .get();
+        const prefData = prefSnap.data();
+        if (prefData?.pushEnabled === false) {
+          console.log(`[notifyClinicians] Clinician ${clinicianId} disabled push — skipping`);
+          continue;
+        }
+        const pushMode = prefData?.pushMode as string | undefined;
+        if (pushMode === 'critical_only' && !isCritical) {
+          console.log(`[notifyClinicians] Clinician ${clinicianId} wants critical_only — skipping non-critical meal`);
+          continue;
+        }
+
         // Buscar tokens do clínico
         const tokensSnap = await db
           .collection('clinicians')
@@ -82,19 +152,28 @@ export const notifyCliniciansOnNewMeal = firestore
           continue;
         }
 
+        // Entrada crítica: mensagem de alerta (modo "todas" ou "só risco").
+        const title = isCritical
+          ? 'Alerta: comportamento de risco'
+          : 'Nova entrada no diário';
+        const body = isCritical
+          ? `Alerta: ${userName} registrou comportamento de risco nesta refeição.`
+          : `${userName} registrou uma nova refeição.`;
+
         console.log(`[notifyClinicians] Sending to ${tokens.length} tokens for clinician ${clinicianId}`);
 
         const result = await admin.messaging().sendEachForMulticast({
           tokens,
           notification: {
-            title: 'Nova entrada no diário',
-            body: `${userName} registrou uma nova refeição.`,
+            title,
+            body,
           },
           data: {
             patientId,
             patientName: userName,
             mealType: meal.mealType ?? '',
             eventType: 'new_meal_entry',
+            criticalOnly: String(isCritical),
           },
           apns: {
             payload: {

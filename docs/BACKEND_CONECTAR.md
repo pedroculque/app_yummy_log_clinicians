@@ -69,26 +69,39 @@ Documento que descreve a estrutura Firestore e o fluxo de vínculo entre pacient
 - **Quem escreve:** o app do clínico ao autenticar e obter permissão de notificação.
 - **Quem lê:** Cloud Function de notificação para enviar push quando houver nova entrada.
 
+### `clinicians/{clinicianUid}/preferences/notification`
+
+- **Campos:** `pushEnabled` (`bool`, padrão `true` se omitido); `pushMode` (`string`): `all` ou `critical_only`; `updatedAt` (timestamp).
+- **Quem escreve:** o próprio clínico (app, aba Configurações → Alertas).
+- **Quem lê:** Cloud Function ao decidir se envia push para aquele clínico.
+
+Se `pushEnabled === false`, **nenhum** push é enviado a esse clínico. Se `pushMode == 'critical_only'` (e notificações ligadas), a function só envia quando a refeição tiver comportamento de risco (booleans + `behaviorFlags`). Sem documento: notificações **ligadas**, modo **todas** as entradas.
+
 ---
 
 ## Fluxo de notificações push
 
-Quando um paciente registra uma nova refeição, o clínico vinculado recebe uma notificação push. O fluxo é:
+Quando um paciente registra uma nova refeição, cada clínico vinculado pode receber push conforme sua preferência. O fluxo é:
 
 1. **Paciente cria refeição** → documento em `users/{patientId}/meals/{mealId}`.
 2. **Cloud Function dispara** → `notifyCliniciansOnNewMeal` (trigger `onCreate`).
 3. **Function busca clínicos** → lê `users/{patientId}/connections` e extrai `clinicianUid` de cada conexão com `status !== 'removed'`.
-4. **Para cada clínico** → lê `clinicians/{clinicianUid}/notification_tokens` e obtém os tokens FCM.
-5. **Envia FCM** → `admin.messaging().sendEachForMulticast()` com:
-   - **notification:** título "Nova entrada no diário", body "{nome} registrou uma nova refeição".
-   - **data:** `patientId`, `patientName`, `mealType`, `eventType: 'new_meal_entry'`.
-6. **Clínico toca na notificação** → app abre e navega para `/patients/{patientId}/diary`.
+4. **Para cada clínico** → lê `clinicians/{clinicianUid}/preferences/notification`. Se `pushMode == 'critical_only'` e a refeição **não** tem comportamento de risco → **não envia** para esse clínico.
+5. **Tokens FCM** → lê `clinicians/{clinicianUid}/notification_tokens`.
+6. **Envia FCM** → texto depende se a refeição é considerada **com risco** (mesma lógica de booleans + `behaviorFlags` na function). Independente de `pushMode` ser `all` ou `critical_only`: se houver risco, usa cópia de alerta; senão, genérica.
+7. **data:** `patientId`, `patientName`, `mealType`, `eventType: 'new_meal_entry'`, `criticalOnly` (`'true'` / `'false'`).
+8. **Clínico toca na notificação** → app abre e navega para `/patients/{patientId}/diary`.
 
-O app do clínico (`ClinicianNotificationService`) é responsável por:
-- Solicitar permissão de notificação.
-- Obter e persistir o token FCM em `clinicians/{uid}/notification_tokens/{token}`.
-- Remover o token ao fazer logout.
-- Tratar `onMessageOpenedApp` e `getInitialMessage` para navegar ao diário.
+### Textos da notificação (FCM)
+
+| Situação | Título | Corpo |
+|----------|--------|--------|
+| Refeição **com** comportamento de risco | `Alerta: comportamento de risco` | `Alerta: {displayName} registrou comportamento de risco nesta refeição.` |
+| Refeição **sem** risco | `Nova entrada no diário` | `{displayName} registrou uma nova refeição.` |
+
+O app do clínico é responsável por:
+- **Configurações:** `NotificationPushPreferencesRepository` grava `pushEnabled` e `pushMode` em `preferences/notification` (aba Alertas).
+- **`ClinicianNotificationService`:** permissão, token FCM, logout remove token, deep link ao diário.
 
 ---
 

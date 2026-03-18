@@ -88,7 +88,7 @@ Para as notificações push funcionarem no iOS:
 2. Faça upload da **APNs Authentication Key** (.p8) ou do certificado APNs do seu app.
 3. No Xcode, habilite **Push Notifications** e **Background Modes → Remote notifications** (já configurado no projeto).
 
-O app do clínico usa `firebase_messaging` e a Cloud Function `notifyCliniciansOnNewMeal` envia push quando um paciente registra nova refeição. Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo.
+O app do clínico usa `firebase_messaging` e a Cloud Function `notifyCliniciansOnNewMeal` envia push quando um paciente registra nova refeição (texto de **alerta** se houver comportamento de risco na refeição, senão texto genérico). Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md).
 
 ---
 
