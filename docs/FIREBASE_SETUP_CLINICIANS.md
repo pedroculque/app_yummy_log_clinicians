@@ -88,6 +88,15 @@ Para as notificações push funcionarem no iOS:
 2. Faça upload da **APNs Authentication Key** (.p8) ou do certificado APNs do seu app.
 3. No Xcode, habilite **Push Notifications** e **Background Modes → Remote notifications** (já configurado no projeto).
 
+**APNs por build (iOS):**
+
+| Entitlements | Configurações Xcode |
+|--------------|---------------------|
+| `Runner/Runner.entitlements` → `aps-environment` **development** | Debug-development, Release-development, Profile-development, Debug-production, **Debug-staging** |
+| `Runner/Runner-Production.entitlements` → **production** | **Release-production**, **Profile-production**, **Release-staging**, **Profile-staging** (TestFlight, App Store, Ad Hoc) |
+
+TestFlight/App Store **precisam** de `production`; dev/simulador usam `development`. Cada app iOS registrado no Firebase (bundle prod vs dev) deve ter a chave APNs associada.
+
 O app do clínico usa `firebase_messaging` e a Cloud Function `notifyCliniciansOnNewMeal` envia push quando um paciente registra nova refeição (texto de **alerta** se houver comportamento de risco na refeição, senão texto genérico). Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md).
 
 ---

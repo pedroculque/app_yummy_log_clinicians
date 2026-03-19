@@ -48,6 +48,12 @@ const TOP_LEVEL_BEHAVIORS = [
   'bodyWeighing',
 ] as const;
 
+/** FCM indica token inválido ou expirado — remover doc em notification_tokens. */
+const FCM_TOKEN_CLEANUP_CODES = new Set([
+  'messaging/registration-token-not-registered',
+  'messaging/invalid-registration-token',
+]);
+
 /** Alinhado ao catálogo de comportamentos / alertas de risco no app clínico. */
 function mealHasCriticalBehavior(meal: MealEntryDoc): boolean {
   for (const k of TOP_LEVEL_BEHAVIORS) {
@@ -193,12 +199,32 @@ export const notifyCliniciansOnNewMeal = firestore
         });
 
         console.log(`[notifyClinicians] FCM result: ${result.successCount} ok, ${result.failureCount} fail`);
-        if (result.failureCount > 0) {
-          result.responses.forEach((r, i) => {
-            if (!r.success && r.error) {
-              console.error(`[notifyClinicians] Token ${i} fail: ${r.error.code} - ${r.error.message}`);
+        for (let i = 0; i < result.responses.length; i++) {
+          const r = result.responses[i];
+          if (!r.success && r.error) {
+            console.error(
+              `[notifyClinicians] Token ${i} fail: ${r.error.code} - ${r.error.message}`,
+            );
+            if (FCM_TOKEN_CLEANUP_CODES.has(r.error.code)) {
+              const deadToken = tokens[i];
+              try {
+                await db
+                  .collection('clinicians')
+                  .doc(clinicianId)
+                  .collection('notification_tokens')
+                  .doc(deadToken)
+                  .delete();
+                console.log(
+                  `[notifyClinicians] Removed dead notification_tokens doc for clinician ${clinicianId} (${r.error.code})`,
+                );
+              } catch (delErr) {
+                console.error(
+                  '[notifyClinicians] Failed to delete dead token doc:',
+                  delErr,
+                );
+              }
             }
-          });
+          }
         }
       }
     } catch (error) {

@@ -4,10 +4,13 @@ import 'dart:io';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 /// Gerencia permissões, token FCM e limpeza de registro ao trocar a sessão.
+///
+/// [start] deve ser chamado só depois do utilizador estar na home com tabs
+/// (shell principal); não há registo de token na tela de login.
 class ClinicianNotificationService {
   ClinicianNotificationService({
     AuthRepository? authRepository,
@@ -30,12 +33,17 @@ class ClinicianNotificationService {
   String? _registeredToken;
   GoRouter? _router;
   int _retryCount = 0;
-  static const _maxRetries = 3;
+  static const _maxRetries = 8;
+  _NotificationLifecycleObserver? _lifecycleObserver;
 
   Future<void> start() async {
-    if (_started) return;
-    _started = true;
-    _authSub ??= _auth?.authStateChanges.listen(_onAuthChanged);
+    if (!_started) {
+      _started = true;
+      _authSub ??= _auth?.authStateChanges.listen(_onAuthChanged);
+      _lifecycleObserver ??= _NotificationLifecycleObserver(_onAppBecameActive);
+      WidgetsBinding.instance.addObserver(_lifecycleObserver!);
+    }
+    // Sync ao entrar no shell (2º login: _started true, tenta token de novo).
     unawaited(_syncCurrentUserToken());
   }
 
@@ -55,7 +63,13 @@ class ClinicianNotificationService {
       await clearCurrentToken();
       return;
     }
+    _retryCount = 0;
     await _syncTokenForUser(user.uid);
+  }
+
+  void _onAppBecameActive() {
+    _retryCount = 0;
+    unawaited(_syncCurrentUserToken());
   }
 
   Future<void> _syncCurrentUserToken() async {
@@ -152,7 +166,7 @@ class ClinicianNotificationService {
 
     _retryTimer?.cancel();
     _retryCount++;
-    final delay = Duration(seconds: 2 * _retryCount);
+    final delay = Duration(seconds: 1 + 2 * _retryCount);
     _retryTimer = Timer(delay, () {
       final currentUser = _auth?.currentUser;
       if (currentUser?.uid == userId) {
@@ -203,6 +217,7 @@ class ClinicianNotificationService {
     final token = _registeredToken;
     _registeredUserId = null;
     _registeredToken = null;
+    _retryCount = 0;
     await _tokenRefreshSub?.cancel();
     _tokenRefreshSub = null;
 
@@ -223,11 +238,33 @@ class ClinicianNotificationService {
   }
 
   Future<void> dispose() async {
+    if (_lifecycleObserver != null) {
+      WidgetsBinding.instance.removeObserver(_lifecycleObserver!);
+      _lifecycleObserver = null;
+    }
     await _authSub?.cancel();
     await _messageOpenedSub?.cancel();
     _retryTimer?.cancel();
     _authSub = null;
     _messageOpenedSub = null;
+    _started = false;
     await clearCurrentToken();
+  }
+}
+
+class _NotificationLifecycleObserver extends WidgetsBindingObserver {
+  _NotificationLifecycleObserver(this._onResumed);
+  final VoidCallback _onResumed;
+  bool _wasPaused = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _wasPaused = true;
+    } else if (state == AppLifecycleState.resumed && _wasPaused) {
+      _wasPaused = false;
+      _onResumed();
+    }
   }
 }

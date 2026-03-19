@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
+export 'app_build_flavor.dart';
+
 /// Contrato que cada feature package implementa para ser registrado no app.
 abstract class YummyLogFeature {
   /// Nome da feature (para debug/log).

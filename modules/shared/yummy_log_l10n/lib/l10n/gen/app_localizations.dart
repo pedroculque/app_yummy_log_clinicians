@@ -2384,6 +2384,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No changes recorded yet.'**
   String get formConfigNoChangesYet;
+
+  /// No description provided for @settingsDebugApnsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'APNS token (debug)'**
+  String get settingsDebugApnsTitle;
+
+  /// No description provided for @settingsDebugApnsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary — iOS push diagnostics'**
+  String get settingsDebugApnsSubtitle;
+
+  /// No description provided for @settingsDebugApnsShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show APNS token'**
+  String get settingsDebugApnsShow;
+
+  /// No description provided for @settingsDebugApnsCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get settingsDebugApnsCopy;
+
+  /// No description provided for @settingsDebugApnsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'APNS token not available yet. Reopen the app or wait a few seconds.'**
+  String get settingsDebugApnsUnavailable;
+
+  /// No description provided for @settingsDebugApnsCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'APNS token copied'**
+  String get settingsDebugApnsCopied;
+
+  /// No description provided for @settingsDebugApnsRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get settingsDebugApnsRefresh;
+
+  /// No description provided for @settingsDebugFcmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FCM token (debug)'**
+  String get settingsDebugFcmTitle;
+
+  /// No description provided for @settingsDebugFcmSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Same value stored in Firestore for push'**
+  String get settingsDebugFcmSubtitle;
+
+  /// No description provided for @settingsDebugFcmShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show FCM token'**
+  String get settingsDebugFcmShow;
+
+  /// No description provided for @settingsDebugFcmCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get settingsDebugFcmCopy;
+
+  /// No description provided for @settingsDebugFcmUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'FCM token unavailable. Check notification permission and network.'**
+  String get settingsDebugFcmUnavailable;
+
+  /// No description provided for @settingsDebugFcmCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'FCM token copied'**
+  String get settingsDebugFcmCopied;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

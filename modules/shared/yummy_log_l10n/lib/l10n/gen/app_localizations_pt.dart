@@ -1217,4 +1217,43 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get formConfigNoChangesYet => 'Nenhuma alteração registrada ainda.';
+
+  @override
+  String get settingsDebugApnsTitle => 'Token APNS (debug)';
+
+  @override
+  String get settingsDebugApnsSubtitle => 'Temporário — para diagnóstico de push no iOS';
+
+  @override
+  String get settingsDebugApnsShow => 'Ver token APNS';
+
+  @override
+  String get settingsDebugApnsCopy => 'Copiar';
+
+  @override
+  String get settingsDebugApnsUnavailable => 'Token APNS ainda não disponível. Abra o app de novo ou aguarde alguns segundos.';
+
+  @override
+  String get settingsDebugApnsCopied => 'Token APNS copiado';
+
+  @override
+  String get settingsDebugApnsRefresh => 'Atualizar';
+
+  @override
+  String get settingsDebugFcmTitle => 'Token FCM (debug)';
+
+  @override
+  String get settingsDebugFcmSubtitle => 'Mesmo valor gravado no Firestore para push';
+
+  @override
+  String get settingsDebugFcmShow => 'Ver token FCM';
+
+  @override
+  String get settingsDebugFcmCopy => 'Copiar';
+
+  @override
+  String get settingsDebugFcmUnavailable => 'Token FCM indisponível. Verifique permissão de notificação e rede.';
+
+  @override
+  String get settingsDebugFcmCopied => 'Token FCM copiado';
 }

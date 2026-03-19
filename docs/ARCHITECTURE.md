@@ -42,7 +42,8 @@ Login **NÃO é obrigatório** para navegar pelo app. Quando o usuário tenta co
 ## get_it (injeção de dependências)
 
 - **Instância global:** `getIt` em `lib/core/di/injection.dart`.
-- **Configuração no startup:** `configureDependencies()` registra:
+- **Configuração no startup:** `await configureDependencies(flavor: …)` registra:
+  - `AppBuildFlavorConfig` (development / staging / production) — ex.: debug de tokens push só fora de prod
   - `PatientsFeature` → `PatientsRepository`, `PatientsCubit`, `FormConfigCubit`, `PatientDiaryCubit`
   - `InsightsFeature` → `InsightsCubit`, repositórios de métricas
   - `SettingsFeature` → `AuthCubit`
@@ -102,7 +103,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initPersistence(getIt);      // Sembast
   await initAuth(getIt);             // Firebase Auth
-  configureDependencies();           // Features + cubits globais
+  await configureDependencies();     // Features + cubits globais (+ flavor)
   await getIt<ThemeModeCubit>().init();
   await getIt<LocaleCubit>().init();
   final router = createAppRouter();

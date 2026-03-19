@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
+import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -25,8 +26,16 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
+    // Token FCM só após a home (tabs). No iOS, pequeno delay p/ APNS antes do getToken.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(GetIt.I<ClinicianNotificationService>().start());
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        Future<void>.delayed(
+          const Duration(milliseconds: 800),
+          () => unawaited(GetIt.I<ClinicianNotificationService>().start()),
+        );
+      } else {
+        unawaited(GetIt.I<ClinicianNotificationService>().start());
+      }
     });
   }
 

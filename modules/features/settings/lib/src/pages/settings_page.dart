@@ -3,6 +3,10 @@ import 'dart:ui' as ui;
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:feature_contract/app_build_flavor.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +23,13 @@ class SettingsPage extends StatelessWidget {
 
   static const String _supportId = 'GsV6wVJe89UQajUpAZJELaEYn733';
   static const String _appVersion = '1.0.0';
+
+  /// Dev/staging apenas ([AppBuildFlavorConfig] no GetIt).
+  static bool _showPushTokenDebug() {
+    final g = GetIt.instance;
+    return g.isRegistered<AppBuildFlavorConfig>() &&
+        g<AppBuildFlavorConfig>().showPushTokenDebug;
+  }
 
   void _showSetDisplayNameDialog(BuildContext context) {
     final l10n = context.l10n;
@@ -129,6 +140,53 @@ class SettingsPage extends StatelessWidget {
                           _NotificationPushPreferencesSection(
                             userId: state.user!.uid,
                           ),
+                          if (_showPushTokenDebug()) ...[
+                            if (defaultTargetPlatform ==
+                                TargetPlatform.iOS) ...[
+                              const SizedBox(height: 32),
+                              _SectionTitle(
+                                title: l10n.settingsDebugApnsTitle,
+                                icon: Icons.bug_report_outlined,
+                              ),
+                              const SizedBox(height: 8),
+                              UiCard(
+                                padding: EdgeInsets.zero,
+                                child: _SettingsTile(
+                                  icon: Icons.vpn_key_outlined,
+                                  label: l10n.settingsDebugApnsShow,
+                                  subtitle: l10n.settingsDebugApnsSubtitle,
+                                  trailing: Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: appColors.gray,
+                                  ),
+                                  onTap: () => unawaited(
+                                    _showApnsDebugDialog(context, l10n),
+                                  ),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 32),
+                            _SectionTitle(
+                              title: l10n.settingsDebugFcmTitle,
+                              icon: Icons.cloud_outlined,
+                            ),
+                            const SizedBox(height: 8),
+                            UiCard(
+                              padding: EdgeInsets.zero,
+                              child: _SettingsTile(
+                                icon: Icons.token_outlined,
+                                label: l10n.settingsDebugFcmShow,
+                                subtitle: l10n.settingsDebugFcmSubtitle,
+                                trailing: Icon(
+                                  Icons.chevron_right_rounded,
+                                  color: appColors.gray,
+                                ),
+                                onTap: () => unawaited(
+                                  _showFcmDebugDialog(context, l10n),
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       );
                     }
@@ -244,6 +302,228 @@ class SettingsPage extends StatelessWidget {
     uiSnackBar(
       context: context,
       message: context.l10n.copySupportId,
+    );
+  }
+
+  /// Debug iOS — remover no futuro.
+  static Future<void> _showApnsDebugDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    final snackContext = context;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => _ApnsTokenDebugDialog(
+        l10n: l10n,
+        snackbarContext: snackContext,
+      ),
+    );
+  }
+
+  static Future<void> _showFcmDebugDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    final snackContext = context;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => _FcmTokenDebugDialog(
+        l10n: l10n,
+        snackbarContext: snackContext,
+      ),
+    );
+  }
+}
+
+class _ApnsTokenDebugDialog extends StatefulWidget {
+  const _ApnsTokenDebugDialog({
+    required this.l10n,
+    required this.snackbarContext,
+  });
+
+  final AppLocalizations l10n;
+  final BuildContext snackbarContext;
+
+  @override
+  State<_ApnsTokenDebugDialog> createState() => _ApnsTokenDebugDialogState();
+}
+
+class _ApnsTokenDebugDialogState extends State<_ApnsTokenDebugDialog> {
+  String? _token;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_load());
+  }
+
+  Future<void> _load() async {
+    final t = await FirebaseMessaging.instance.getAPNSToken();
+    if (!mounted) return;
+    setState(() {
+      _token = t;
+      _loading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    return AlertDialog(
+      title: Text(l10n.settingsDebugApnsTitle),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: _loading
+            ? const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : _token == null || _token!.isEmpty
+                ? Text(l10n.settingsDebugApnsUnavailable)
+                : SelectableText(
+                    _token!,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _loading
+              ? null
+              : () {
+                  setState(() => _loading = true);
+                  unawaited(_load());
+                },
+          child: Text(l10n.settingsDebugApnsRefresh),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+        ),
+        FilledButton(
+          onPressed: _loading || _token == null || _token!.isEmpty
+              ? null
+              : () {
+                  unawaited(
+                    Clipboard.setData(ClipboardData(text: _token!)),
+                  );
+                  Navigator.of(context).pop();
+                  final ctx = widget.snackbarContext;
+                  if (ctx.mounted) {
+                    uiSnackBar(
+                      context: ctx,
+                      message: l10n.settingsDebugApnsCopied,
+                    );
+                  }
+                },
+          child: Text(l10n.settingsDebugApnsCopy),
+        ),
+      ],
+    );
+  }
+}
+
+class _FcmTokenDebugDialog extends StatefulWidget {
+  const _FcmTokenDebugDialog({
+    required this.l10n,
+    required this.snackbarContext,
+  });
+
+  final AppLocalizations l10n;
+  final BuildContext snackbarContext;
+
+  @override
+  State<_FcmTokenDebugDialog> createState() => _FcmTokenDebugDialogState();
+}
+
+class _FcmTokenDebugDialogState extends State<_FcmTokenDebugDialog> {
+  String? _token;
+  bool _loading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_load());
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _error = null;
+    });
+    try {
+      final t = await FirebaseMessaging.instance.getToken();
+      if (!mounted) return;
+      setState(() {
+        _token = t;
+        _loading = false;
+      });
+    } on Object catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _token = null;
+        _loading = false;
+        _error = e.toString();
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    return AlertDialog(
+      title: Text(l10n.settingsDebugFcmTitle),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: _loading
+            ? const Padding(
+                padding: EdgeInsets.symmetric(vertical: 24),
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : _token != null && _token!.isNotEmpty
+                ? SelectableText(
+                    _token!,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  )
+                : Text(
+                    _error != null
+                        ? '${l10n.settingsDebugFcmUnavailable}\n($_error)'
+                        : l10n.settingsDebugFcmUnavailable,
+                  ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _loading
+              ? null
+              : () {
+                  setState(() => _loading = true);
+                  unawaited(_load());
+                },
+          child: Text(l10n.settingsDebugApnsRefresh),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(MaterialLocalizations.of(context).closeButtonLabel),
+        ),
+        FilledButton(
+          onPressed: _loading || _token == null || _token!.isEmpty
+              ? null
+              : () {
+                  unawaited(
+                    Clipboard.setData(ClipboardData(text: _token!)),
+                  );
+                  Navigator.of(context).pop();
+                  final ctx = widget.snackbarContext;
+                  if (ctx.mounted) {
+                    uiSnackBar(
+                      context: ctx,
+                      message: l10n.settingsDebugFcmCopied,
+                    );
+                  }
+                },
+          child: Text(l10n.settingsDebugFcmCopy),
+        ),
+      ],
     );
   }
 }

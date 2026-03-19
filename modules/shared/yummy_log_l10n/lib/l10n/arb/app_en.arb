@@ -548,5 +548,18 @@
       "name": {"type": "String"},
       "date": {"type": "String"}
     }
-  }
+  },
+  "settingsDebugApnsTitle": "APNS token (debug)",
+  "settingsDebugApnsSubtitle": "Temporary — iOS push diagnostics",
+  "settingsDebugApnsShow": "Show APNS token",
+  "settingsDebugApnsCopy": "Copy",
+  "settingsDebugApnsUnavailable": "APNS token not available yet. Reopen the app or wait a few seconds.",
+  "settingsDebugApnsCopied": "APNS token copied",
+  "settingsDebugApnsRefresh": "Refresh",
+  "settingsDebugFcmTitle": "FCM token (debug)",
+  "settingsDebugFcmSubtitle": "Same value stored in Firestore for push",
+  "settingsDebugFcmShow": "Show FCM token",
+  "settingsDebugFcmCopy": "Copy",
+  "settingsDebugFcmUnavailable": "FCM token unavailable. Check notification permission and network.",
+  "settingsDebugFcmCopied": "FCM token copied"
 }

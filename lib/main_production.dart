@@ -15,7 +15,7 @@ Future<void> main() async {
   await initPersistence(getIt);
   await initAuth(getIt);
   initSync(getIt, config: const SyncConfig(watchersEnabled: false));
-  configureDependencies();
+  await configureDependencies();
   await getIt<ThemeModeCubit>().init();
   await getIt<LocaleCubit>().init();
   final router = createAppRouter();

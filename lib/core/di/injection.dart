@@ -1,6 +1,7 @@
 import 'package:app_yummy_log_clinicians/app/app.dart';
 import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
 import 'package:auth_foundation/auth_foundation.dart';
+import 'package:feature_contract/app_build_flavor.dart';
 import 'package:get_it/get_it.dart';
 import 'package:insights_feature/insights_feature.dart';
 import 'package:patients_feature/patients_feature.dart';
@@ -12,7 +13,14 @@ final GetIt getIt = GetIt.instance;
 
 /// Configura todas as dependências do app (foundation + features).
 /// Chamar no startup, depois de initPersistence(getIt) e initAuth(getIt).
-void configureDependencies() {
+Future<void> configureDependencies({
+  AppBuildFlavor flavor = AppBuildFlavor.production,
+}) async {
+  if (getIt.isRegistered<AppBuildFlavorConfig>()) {
+    await getIt.unregister<AppBuildFlavorConfig>();
+  }
+  getIt.registerSingleton<AppBuildFlavorConfig>(AppBuildFlavorConfig(flavor));
+
   PatientsFeature().registerDependencies(getIt);
   InsightsFeature().registerDependencies(getIt);
   SettingsFeature().registerDependencies(getIt);

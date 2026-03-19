@@ -542,5 +542,18 @@
       "name": {"type": "String"},
       "date": {"type": "String"}
     }
-  }
+  },
+  "settingsDebugApnsTitle": "Token APNS (debug)",
+  "settingsDebugApnsSubtitle": "Temporário — para diagnóstico de push no iOS",
+  "settingsDebugApnsShow": "Ver token APNS",
+  "settingsDebugApnsCopy": "Copiar",
+  "settingsDebugApnsUnavailable": "Token APNS ainda não disponível. Abra o app de novo ou aguarde alguns segundos.",
+  "settingsDebugApnsCopied": "Token APNS copiado",
+  "settingsDebugApnsRefresh": "Atualizar",
+  "settingsDebugFcmTitle": "Token FCM (debug)",
+  "settingsDebugFcmSubtitle": "Mesmo valor gravado no Firestore para push",
+  "settingsDebugFcmShow": "Ver token FCM",
+  "settingsDebugFcmCopy": "Copiar",
+  "settingsDebugFcmUnavailable": "Token FCM indisponível. Verifique permissão de notificação e rede.",
+  "settingsDebugFcmCopied": "Token FCM copiado"
 }

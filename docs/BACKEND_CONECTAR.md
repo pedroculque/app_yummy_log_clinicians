@@ -68,6 +68,7 @@ Documento que descreve a estrutura Firestore e o fluxo de vínculo entre pacient
   - `createdAt` / `updatedAt` (timestamp): controle do registro.
 - **Quem escreve:** o app do clínico ao autenticar e obter permissão de notificação.
 - **Quem lê:** Cloud Function de notificação para enviar push quando houver nova entrada.
+- **Limpeza:** se o FCM responder `registration-token-not-registered` ou `invalid-registration-token`, a function **apaga** o documento desse token (evita multicast para registro morto; o device válido volta a receber após reabrir o app e registrar token de novo).
 
 ### `clinicians/{clinicianUid}/preferences/notification`
 
@@ -101,7 +102,7 @@ Quando um paciente registra uma nova refeição, cada clínico vinculado pode re
 
 O app do clínico é responsável por:
 - **Configurações:** `NotificationPushPreferencesRepository` grava `pushEnabled` e `pushMode` em `preferences/notification` (aba Alertas).
-- **`ClinicianNotificationService`:** permissão, token FCM, logout remove token, deep link ao diário.
+- **`ClinicianNotificationService`:** permissão, token FCM, logout remove token, deep link ao diário. Re-sync ao voltar ao foreground e ao reabrir o shell após login; evita ficar preso após APNS atrasado no iOS (contador de retries reiniciado no login e no resume).
 
 ---
 
