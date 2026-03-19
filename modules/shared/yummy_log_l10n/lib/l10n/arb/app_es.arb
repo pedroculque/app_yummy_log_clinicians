@@ -327,8 +327,9 @@
   "insightsPatientAnalyticsSubtitle": "Casos principales que merecen lectura rápida",
   "insightsPatientAnalyticsEmpty": "Todavía no hay suficientes pacientes para comparar análisis individuales.",
   "insightsTrendComparison": "{current} comidas en la última semana vs {previous} en la semana anterior, {trend}",
+  "insightsAlertsTrendComparison": "{current} alertas en la última semana vs {previous} en la semana anterior, {trend}",
   "insightsScoreValue": "Puntuación {score}",
-  "insightsMealsTrend": "{current} comidas en 7d vs {previous} en 30d",
+  "insightsMealsTrend": "{current} comidas en la última semana vs {previous} en la semana anterior",
   "insightsNegativeFeelings": "{percent}% sentimientos negativos",
   "insightsRestrictionRate": "{percent}% baja ingesta",
   "insightsHighPriorityAlerts": "alertas críticas",
@@ -410,6 +411,8 @@
     }
   },
   "insightsPeriod7Days": "7 días",
+  "insightsPeriodPreviousWeek": "Semana anterior",
+  "insightsPeriodThisWeek": "Esta semana",
   "insightsPeriod30Days": "30 días",
   "insightsPeriod90Days": "90 días",
   "insightsViewAnalytics": "Ver análisis",
@@ -423,6 +426,26 @@
   "insightsAnalyticsEmpty": "Sin registros en el período seleccionado",
   "insightsAnalyticsHeatMapMin": "Ninguno",
   "insightsAnalyticsHeatMapMax": "Muchos",
+  "insightsAnalyticsTrendTitle": "Tendencias agregadas",
+  "insightsAnalyticsTrendSubtitle": "Comparativo: período actual vs anterior",
+  "insightsAnalyticsTrendCurrent": "Actual",
+  "insightsAnalyticsTrendPrevious": "Anterior",
+  "insightsAnalyticsTrendDeltaUp": "+{delta}",
+  "@insightsAnalyticsTrendDeltaUp": {
+    "placeholders": {
+      "delta": {"type": "int"}
+    }
+  },
+  "insightsAnalyticsTrendDeltaDown": "{delta}",
+  "@insightsAnalyticsTrendDeltaDown": {
+    "placeholders": {
+      "delta": {"type": "int"}
+    }
+  },
+  "insightsAnalyticsSkippedTitle": "Comidas saltadas",
+  "insightsAnalyticsSkippedSubtitle": "Registros marcados como saltados o sin consumo, por tipo",
+  "insightsAnalyticsSkippedFeelingTitle": "Sentimientos al saltar comidas",
+  "insightsAnalyticsSkippedFeelingSubtitle": "Cómo se sintió el paciente al saltar o no comer",
   "insightsUpdatedAt": "Actualizado a las {time}",
   "insightsMealsPeriod": "Registros en el período",
   "@insightsUpdatedAt": {
@@ -451,6 +474,13 @@
     }
   },
   "@insightsTrendComparison": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "previous": {"type": "int"},
+      "trend": {"type": "String"}
+    }
+  },
+  "@insightsAlertsTrendComparison": {
     "placeholders": {
       "current": {"type": "int"},
       "previous": {"type": "int"},

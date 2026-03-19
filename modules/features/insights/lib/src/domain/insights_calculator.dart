@@ -225,6 +225,59 @@ class InsightsCalculator {
     return distribution;
   }
 
+  /// Distribuição por tipo de refeição (Fase 3.3).
+  static Map<MealType, int> calculateMealTypeDistribution(
+    List<MealEntry> meals,
+  ) {
+    final distribution = <MealType, int>{};
+    for (final type in MealType.values) {
+      distribution[type] = 0;
+    }
+    for (final meal in meals) {
+      distribution[meal.mealType] =
+          (distribution[meal.mealType] ?? 0) + 1;
+    }
+    return distribution;
+  }
+
+  /// Refeições "puladas" por tipo: skipMeal==true ou amountEaten==nothing.
+  static Map<MealType, int> calculateSkippedMealsByType(
+    List<MealEntry> meals,
+  ) {
+    final distribution = <MealType, int>{};
+    for (final type in MealType.values) {
+      distribution[type] = 0;
+    }
+    for (final meal in meals) {
+      final isSkipped = meal.skipMeal == true ||
+          meal.amountEaten == AmountEaten.nothing;
+      if (isSkipped) {
+        distribution[meal.mealType] =
+            (distribution[meal.mealType] ?? 0) + 1;
+      }
+    }
+    return distribution;
+  }
+
+  /// Correlação sentimento x refeição pulada: quando pulou, qual sentimento?
+  static Map<FeelingLabel, int> calculateSkippedMealsFeelingCorrelation(
+    List<MealEntry> meals,
+  ) {
+    final distribution = <FeelingLabel, int>{};
+    for (final feeling in FeelingLabel.values) {
+      distribution[feeling] = 0;
+    }
+    for (final meal in meals) {
+      final isSkipped = meal.skipMeal == true ||
+          meal.amountEaten == AmountEaten.nothing;
+      if (isSkipped && meal.feelingLabel != null) {
+        distribution[meal.feelingLabel!] =
+            (distribution[meal.feelingLabel!] ?? 0) + 1;
+      }
+    }
+    return distribution;
+  }
+
   static int _calculateAttentionScore({
     required List<MealEntry> mealsInPeriod,
     required List<RiskAlert> alerts,

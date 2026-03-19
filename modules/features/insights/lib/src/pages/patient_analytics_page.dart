@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insights_feature/src/cubit/patient_analytics_cubit.dart';
+import 'package:insights_feature/src/domain/patient_analytics_data.dart';
 import 'package:meal_domain/meal_domain.dart';
 import 'package:patients_feature/patients_feature.dart';
 import 'package:ui_kit/ui_kit.dart';
@@ -180,6 +181,16 @@ class _PatientAnalyticsPageState extends State<PatientAnalyticsPage> {
               l10n: l10n,
             ),
             const SizedBox(height: 20),
+            if (data.hasTrendData) ...[
+              _TrendComparisonSection(
+                trend: data.trendComparison!,
+                appColors: appColors,
+                l10n: l10n,
+                isDark: isDark,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(height: 20),
+            ],
             if (data.hasFeelingData) ...[
               _FeelingDistributionSection(
                 distribution: data.feelingDistribution,
@@ -193,6 +204,27 @@ class _PatientAnalyticsPageState extends State<PatientAnalyticsPage> {
             if (data.hasAmountData) ...[
               _AmountDistributionSection(
                 distribution: data.amountDistribution,
+                appColors: appColors,
+                l10n: l10n,
+                isDark: isDark,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(height: 20),
+            ],
+            if (data.hasSkippedMealsData) ...[
+              _SkippedMealsSection(
+                skippedByType: data.skippedMealsByType,
+                mealTypeDistribution: data.mealTypeDistribution,
+                appColors: appColors,
+                l10n: l10n,
+                isDark: isDark,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(height: 20),
+            ],
+            if (data.hasSkippedFeelingCorrelation) ...[
+              _SkippedFeelingCorrelationSection(
+                distribution: data.skippedMealsFeelingCorrelation,
                 appColors: appColors,
                 l10n: l10n,
                 isDark: isDark,
@@ -376,6 +408,245 @@ class _SummaryCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _TrendComparisonSection extends StatelessWidget {
+  const _TrendComparisonSection({
+    required this.trend,
+    required this.appColors,
+    required this.l10n,
+    required this.isDark,
+    required this.colorScheme,
+  });
+
+  final TrendComparison trend;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+  final bool isDark;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final delta = trend.totalDelta;
+    final deltaLabel = delta > 0
+        ? l10n.insightsAnalyticsTrendDeltaUp(delta)
+        : delta < 0
+            ? l10n.insightsAnalyticsTrendDeltaDown(delta)
+            : '0';
+
+    return _AnalyticsSection(
+      title: l10n.insightsAnalyticsTrendTitle,
+      subtitle: l10n.insightsAnalyticsTrendSubtitle,
+      icon: Icons.trending_up_outlined,
+      appColors: appColors,
+      isDark: isDark,
+      colorScheme: colorScheme,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                Text(
+                  '${trend.previousTotal}',
+                  style: AppTextStyles.h2.copyWith(
+                    color: appColors.gray.withValues(alpha: 0.8),
+                  ),
+                ),
+                Text(
+                  l10n.insightsAnalyticsTrendPrevious,
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.grayDark,
+                  ),
+                ),
+                Text(
+                  trend.previousAvgPerDay.toStringAsFixed(1),
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.grayDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            Icons.arrow_forward,
+            color: appColors.primary,
+            size: 24,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Text(
+                  '${trend.currentTotal}',
+                  style: AppTextStyles.h2.copyWith(
+                    color: appColors.primary,
+                  ),
+                ),
+                Text(
+                  l10n.insightsAnalyticsTrendCurrent,
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.grayDark,
+                  ),
+                ),
+                Text(
+                  trend.currentAvgPerDay.toStringAsFixed(1),
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.grayDark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: trend.isImproving
+                  ? appColors.success.withValues(alpha: 0.15)
+                  : trend.isWorsening
+                      ? appColors.error.withValues(alpha: 0.15)
+                      : appColors.gray.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              deltaLabel,
+              style: AppTextStyles.body1.copyWith(
+                color: trend.isImproving
+                    ? appColors.success
+                    : trend.isWorsening
+                        ? appColors.error
+                        : appColors.gray,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SkippedMealsSection extends StatelessWidget {
+  const _SkippedMealsSection({
+    required this.skippedByType,
+    required this.mealTypeDistribution,
+    required this.appColors,
+    required this.l10n,
+    required this.isDark,
+    required this.colorScheme,
+  });
+
+  final Map<MealType, int> skippedByType;
+  final Map<MealType, int> mealTypeDistribution;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+  final bool isDark;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final entries = MealType.values
+        .map((t) => MapEntry(t, skippedByType[t] ?? 0))
+        .where((e) => e.value > 0)
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    if (entries.isEmpty) return const SizedBox.shrink();
+
+    return _AnalyticsSection(
+      title: l10n.insightsAnalyticsSkippedTitle,
+      subtitle: l10n.insightsAnalyticsSkippedSubtitle,
+      icon: Icons.skip_next_outlined,
+      appColors: appColors,
+      isDark: isDark,
+      colorScheme: colorScheme,
+      child: Column(
+        children: entries.map((e) {
+          final total = mealTypeDistribution[e.key] ?? 0;
+          final pct = total > 0
+              ? ((e.value / total) * 100).toStringAsFixed(0)
+              : '0';
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _DistributionBar(
+              label: mealTypeLabel(e.key, l10n),
+              value: e.value,
+              percent: pct,
+              color: appColors.error.withValues(alpha: 0.8),
+              appColors: appColors,
+              total: entries.fold(0, (a, x) => a + x.value),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _SkippedFeelingCorrelationSection extends StatelessWidget {
+  const _SkippedFeelingCorrelationSection({
+    required this.distribution,
+    required this.appColors,
+    required this.l10n,
+    required this.isDark,
+    required this.colorScheme,
+  });
+
+  final Map<FeelingLabel, int> distribution;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+  final bool isDark;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = distribution.values.fold(0, (a, b) => a + b);
+    if (total == 0) return const SizedBox.shrink();
+
+    final entries = FeelingLabel.values
+        .map((f) => MapEntry(f, distribution[f] ?? 0))
+        .where((e) => e.value > 0)
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return _AnalyticsSection(
+      title: l10n.insightsAnalyticsSkippedFeelingTitle,
+      subtitle: l10n.insightsAnalyticsSkippedFeelingSubtitle,
+      icon: Icons.psychology_outlined,
+      appColors: appColors,
+      isDark: isDark,
+      colorScheme: colorScheme,
+      child: Column(
+        children: entries.map((e) {
+          final pct = (e.value / total * 100).toStringAsFixed(0);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _DistributionBar(
+              label: feelingLabel(e.key, l10n),
+              value: e.value,
+              percent: pct,
+              color: _feelingColor(e.key),
+              appColors: appColors,
+              total: total,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Color _feelingColor(FeelingLabel f) {
+    switch (f) {
+      case FeelingLabel.sad:
+        return Colors.indigo;
+      case FeelingLabel.angry:
+        return Colors.red;
+      case FeelingLabel.happy:
+        return Colors.green;
+      case FeelingLabel.proud:
+        return Colors.amber.shade700;
+      case FeelingLabel.nothing:
+        return appColors.gray;
+    }
   }
 }
 

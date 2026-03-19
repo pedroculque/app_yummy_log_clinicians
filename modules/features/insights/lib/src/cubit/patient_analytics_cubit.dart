@@ -49,11 +49,20 @@ class PatientAnalyticsCubit {
       final meals = await _mealsRepository.getMeals(_patientId);
       final now = DateTime.now();
       final periodStart = now.subtract(Duration(days: period));
+      final previousPeriodStart = now.subtract(Duration(days: period * 2));
+
       final mealsInPeriod = meals
           .where((m) =>
               m.deletedAt == null &&
               m.dateTime.isAfter(periodStart) &&
               m.dateTime.isBefore(now.add(const Duration(days: 1))))
+          .toList();
+
+      final mealsPreviousPeriod = meals
+          .where((m) =>
+              m.deletedAt == null &&
+              m.dateTime.isAfter(previousPeriodStart) &&
+              m.dateTime.isBefore(periodStart))
           .toList();
 
       final feelingDist =
@@ -64,6 +73,26 @@ class PatientAnalyticsCubit {
       final avg = mealsInPeriod.isEmpty
           ? 0.0
           : mealsInPeriod.length / period;
+      final prevAvg = mealsPreviousPeriod.isEmpty
+          ? 0.0
+          : mealsPreviousPeriod.length / period;
+
+      final mealTypeDist =
+          InsightsCalculator.calculateMealTypeDistribution(mealsInPeriod);
+      final skippedByType =
+          InsightsCalculator.calculateSkippedMealsByType(mealsInPeriod);
+      final skippedFeelingCorr =
+          InsightsCalculator.calculateSkippedMealsFeelingCorrelation(
+            mealsInPeriod,
+          );
+
+      final trend = TrendComparison(
+        currentTotal: mealsInPeriod.length,
+        previousTotal: mealsPreviousPeriod.length,
+        currentAvgPerDay: double.parse(avg.toStringAsFixed(1)),
+        previousAvgPerDay: double.parse(prevAvg.toStringAsFixed(1)),
+        periodDays: period,
+      );
 
       _state = PatientAnalyticsState(
         periodDays: period,
@@ -74,6 +103,10 @@ class PatientAnalyticsCubit {
           mealsPerDayAverage: double.parse(avg.toStringAsFixed(1)),
           periodDays: period,
           totalMeals: mealsInPeriod.length,
+          mealTypeDistribution: mealTypeDist,
+          skippedMealsByType: skippedByType,
+          skippedMealsFeelingCorrelation: skippedFeelingCorr,
+          trendComparison: trend,
         ),
       );
     } on Object catch (e, st) {

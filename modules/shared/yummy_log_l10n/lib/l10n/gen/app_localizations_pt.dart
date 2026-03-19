@@ -898,13 +898,18 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String insightsAlertsTrendComparison(int current, int previous, String trend) {
+    return '$current alertas na última semana vs $previous na semana anterior, $trend';
+  }
+
+  @override
   String insightsScoreValue(int score) {
     return 'Score $score';
   }
 
   @override
   String insightsMealsTrend(int current, int previous) {
-    return '$current refeições em 7d vs $previous em 30d';
+    return '$current refeições na última semana vs $previous na semana anterior';
   }
 
   @override
@@ -1102,6 +1107,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsPeriod7Days => '7 dias';
 
   @override
+  String get insightsPeriodPreviousWeek => 'Semana anterior';
+
+  @override
+  String get insightsPeriodThisWeek => 'Esta semana';
+
+  @override
   String get insightsPeriod30Days => '30 dias';
 
   @override
@@ -1139,6 +1150,40 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get insightsAnalyticsHeatMapMax => 'Muitos';
+
+  @override
+  String get insightsAnalyticsTrendTitle => 'Tendências agregadas';
+
+  @override
+  String get insightsAnalyticsTrendSubtitle => 'Comparativo: período atual vs anterior';
+
+  @override
+  String get insightsAnalyticsTrendCurrent => 'Atual';
+
+  @override
+  String get insightsAnalyticsTrendPrevious => 'Anterior';
+
+  @override
+  String insightsAnalyticsTrendDeltaUp(int delta) {
+    return '+$delta';
+  }
+
+  @override
+  String insightsAnalyticsTrendDeltaDown(int delta) {
+    return '$delta';
+  }
+
+  @override
+  String get insightsAnalyticsSkippedTitle => 'Refeições puladas';
+
+  @override
+  String get insightsAnalyticsSkippedSubtitle => 'Registros marcados como pulados ou sem consumo, por tipo';
+
+  @override
+  String get insightsAnalyticsSkippedFeelingTitle => 'Sentimentos em refeições puladas';
+
+  @override
+  String get insightsAnalyticsSkippedFeelingSubtitle => 'Como o paciente se sentiu quando pulou ou não comeu';
 
   @override
   String insightsUpdatedAt(String time) {

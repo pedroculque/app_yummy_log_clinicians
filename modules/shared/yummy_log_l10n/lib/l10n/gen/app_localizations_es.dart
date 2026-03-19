@@ -898,13 +898,18 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String insightsAlertsTrendComparison(int current, int previous, String trend) {
+    return '$current alertas en la última semana vs $previous en la semana anterior, $trend';
+  }
+
+  @override
   String insightsScoreValue(int score) {
     return 'Puntuación $score';
   }
 
   @override
   String insightsMealsTrend(int current, int previous) {
-    return '$current comidas en 7d vs $previous en 30d';
+    return '$current comidas en la última semana vs $previous en la semana anterior';
   }
 
   @override
@@ -1102,6 +1107,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get insightsPeriod7Days => '7 días';
 
   @override
+  String get insightsPeriodPreviousWeek => 'Semana anterior';
+
+  @override
+  String get insightsPeriodThisWeek => 'Esta semana';
+
+  @override
   String get insightsPeriod30Days => '30 días';
 
   @override
@@ -1139,6 +1150,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get insightsAnalyticsHeatMapMax => 'Muchos';
+
+  @override
+  String get insightsAnalyticsTrendTitle => 'Tendencias agregadas';
+
+  @override
+  String get insightsAnalyticsTrendSubtitle => 'Comparativo: período actual vs anterior';
+
+  @override
+  String get insightsAnalyticsTrendCurrent => 'Actual';
+
+  @override
+  String get insightsAnalyticsTrendPrevious => 'Anterior';
+
+  @override
+  String insightsAnalyticsTrendDeltaUp(int delta) {
+    return '+$delta';
+  }
+
+  @override
+  String insightsAnalyticsTrendDeltaDown(int delta) {
+    return '$delta';
+  }
+
+  @override
+  String get insightsAnalyticsSkippedTitle => 'Comidas saltadas';
+
+  @override
+  String get insightsAnalyticsSkippedSubtitle => 'Registros marcados como saltados o sin consumo, por tipo';
+
+  @override
+  String get insightsAnalyticsSkippedFeelingTitle => 'Sentimientos al saltar comidas';
+
+  @override
+  String get insightsAnalyticsSkippedFeelingSubtitle => 'Cómo se sintió el paciente al saltar o no comer';
 
   @override
   String insightsUpdatedAt(String time) {

@@ -44,6 +44,8 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Alertas de comportamentos de risco (vômito forçado, laxantes, regurgitação, etc.)
   - Ranking de pacientes por necessidade de atenção (score baseado em comportamentos)
   - Navegação direta para o diário do paciente
+  - **Análises por paciente (Fase 3.2):** Sentimentos, quantidade consumida, calendário de frequência
+  - **Análises avançadas (Fase 3.3):** Tendências agregadas (atual vs anterior), refeições puladas por tipo, correlação sentimentos em refeições puladas
 - **Configurações:** Adaptado do app paciente + seção de Assinatura.
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`.
@@ -82,7 +84,8 @@ Nenhum no momento.
 
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
 2. ~~**Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.~~ ✅ Implementado.
-3. **Exportar relatórios:** PDF com resumo do paciente para consultas.
+3. ~~**Insights Fase 3.3:** Análise por refeição (puladas + correlação sentimentos), tendências agregadas.~~ ✅ Implementado.
+4. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 
 ---
 

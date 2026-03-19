@@ -898,13 +898,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String insightsAlertsTrendComparison(int current, int previous, String trend) {
+    return '$current alerts in the last week vs $previous in the previous week, $trend';
+  }
+
+  @override
   String insightsScoreValue(int score) {
     return 'Score $score';
   }
 
   @override
   String insightsMealsTrend(int current, int previous) {
-    return '$current meals in 7d vs $previous in 30d';
+    return '$current meals in the last week vs $previous in the previous week';
   }
 
   @override
@@ -1102,6 +1107,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insightsPeriod7Days => '7 days';
 
   @override
+  String get insightsPeriodPreviousWeek => 'Previous week';
+
+  @override
+  String get insightsPeriodThisWeek => 'This week';
+
+  @override
   String get insightsPeriod30Days => '30 days';
 
   @override
@@ -1139,6 +1150,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get insightsAnalyticsHeatMapMax => 'Many';
+
+  @override
+  String get insightsAnalyticsTrendTitle => 'Aggregate trends';
+
+  @override
+  String get insightsAnalyticsTrendSubtitle => 'Comparison: current vs previous period';
+
+  @override
+  String get insightsAnalyticsTrendCurrent => 'Current';
+
+  @override
+  String get insightsAnalyticsTrendPrevious => 'Previous';
+
+  @override
+  String insightsAnalyticsTrendDeltaUp(int delta) {
+    return '+$delta';
+  }
+
+  @override
+  String insightsAnalyticsTrendDeltaDown(int delta) {
+    return '$delta';
+  }
+
+  @override
+  String get insightsAnalyticsSkippedTitle => 'Skipped meals';
+
+  @override
+  String get insightsAnalyticsSkippedSubtitle => 'Records marked as skipped or no consumption, by type';
+
+  @override
+  String get insightsAnalyticsSkippedFeelingTitle => 'Feelings when skipping meals';
+
+  @override
+  String get insightsAnalyticsSkippedFeelingSubtitle => 'How the patient felt when skipping or not eating';
 
   @override
   String insightsUpdatedAt(String time) {

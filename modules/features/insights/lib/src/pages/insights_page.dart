@@ -553,7 +553,7 @@ class _PatientAnalyticsCard extends StatelessWidget {
                 _MetricChip(
                   label: l10n.insightsMealsTrend(
                     insight.mealsLast7Days,
-                    insight.mealsLast30Days,
+                    insight.mealsPrevious7Days,
                   ),
                   icon: Icons.restaurant_outlined,
                   color: appColors.secondary,
@@ -697,25 +697,33 @@ class _MetricChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: color),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: AppTextStyles.body3.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
+    final maxWidth = MediaQuery.sizeOf(context).width - 48;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                style: AppTextStyles.body3.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -919,6 +927,8 @@ class PatientDetailPage extends StatelessWidget {
                 previousValue: safeInsight.mealsPrevious7Days.toDouble(),
                 currentColor: appColors.primary,
                 previousColor: appColors.gray.withValues(alpha: 0.55),
+                previousLabel: l10n.insightsPeriodPreviousWeek,
+                currentLabel: l10n.insightsPeriodThisWeek,
                 caption: l10n.insightsMealsTrend(
                   safeInsight.mealsLast7Days,
                   safeInsight.mealsPrevious7Days,
@@ -931,7 +941,9 @@ class PatientDetailPage extends StatelessWidget {
                 previousValue: safeInsight.alertsPrevious7Days.toDouble(),
                 currentColor: appColors.error,
                 previousColor: appColors.gray.withValues(alpha: 0.55),
-                caption: l10n.insightsTrendComparison(
+                previousLabel: l10n.insightsPeriodPreviousWeek,
+                currentLabel: l10n.insightsPeriodThisWeek,
+                caption: l10n.insightsAlertsTrendComparison(
                   safeInsight.alertsLast7Days,
                   safeInsight.alertsPrevious7Days,
                   safeInsight.alertsTrendDelta > 0
@@ -956,7 +968,7 @@ class PatientDetailPage extends StatelessWidget {
                 ],
                 labels: [
                   l10n.insightsPeriod7Days,
-                  l10n.insightsTrendSame,
+                  l10n.insightsPeriodPreviousWeek,
                   l10n.insightsPeriod30Days,
                 ],
               ),
@@ -1276,6 +1288,8 @@ class _MiniTrendChart extends StatelessWidget {
     required this.currentColor,
     required this.previousColor,
     required this.caption,
+    this.previousLabel = 'Semana anterior',
+    this.currentLabel = 'Esta semana',
   });
 
   final String label;
@@ -1284,6 +1298,8 @@ class _MiniTrendChart extends StatelessWidget {
   final Color currentColor;
   final Color previousColor;
   final String caption;
+  final String previousLabel;
+  final String currentLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -1312,7 +1328,7 @@ class _MiniTrendChart extends StatelessWidget {
               child: _MiniBar(
                 value: previousValue / safeMax,
                 color: previousColor,
-                title: 'D-7',
+                title: previousLabel,
               ),
             ),
             const SizedBox(width: 10),
@@ -1320,7 +1336,7 @@ class _MiniTrendChart extends StatelessWidget {
               child: _MiniBar(
                 value: currentValue / safeMax,
                 color: currentColor,
-                title: 'Agora',
+                title: currentLabel,
                 emphasized: true,
               ),
             ),
@@ -1352,7 +1368,8 @@ class _MiniBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const height = 72.0;
-    final barHeight = (height * value).clamp(8.0, height);
+    const minBarHeight = 12.0;
+    final barHeight = (height * value).clamp(minBarHeight, height);
     final appColors = AppColors.fromContext(context);
 
     return Column(
@@ -1431,7 +1448,7 @@ class _MiniDistributionChart extends StatelessWidget {
                         alignment: Alignment.bottomCenter,
                         child: Container(
                           width: 24,
-                          height: (72 * value).clamp(8.0, 72.0),
+                          height: (72 * value).clamp(12.0, 72.0),
                           decoration: BoxDecoration(
                             color: colors[index].withValues(alpha: 0.7),
                             borderRadius: BorderRadius.circular(999),

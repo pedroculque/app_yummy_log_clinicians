@@ -333,8 +333,9 @@
   "insightsPatientAnalyticsSubtitle": "Top cases that deserve a quick read",
   "insightsPatientAnalyticsEmpty": "There are not enough patients yet to compare individual analysis.",
   "insightsTrendComparison": "{current} meals in the last week vs {previous} in the previous week, {trend}",
+  "insightsAlertsTrendComparison": "{current} alerts in the last week vs {previous} in the previous week, {trend}",
   "insightsScoreValue": "Score {score}",
-  "insightsMealsTrend": "{current} meals in 7d vs {previous} in 30d",
+  "insightsMealsTrend": "{current} meals in the last week vs {previous} in the previous week",
   "insightsNegativeFeelings": "{percent}% negative feelings",
   "insightsRestrictionRate": "{percent}% low intake",
   "insightsHighPriorityAlerts": "critical alerts",
@@ -416,6 +417,8 @@
     }
   },
   "insightsPeriod7Days": "7 days",
+  "insightsPeriodPreviousWeek": "Previous week",
+  "insightsPeriodThisWeek": "This week",
   "insightsPeriod30Days": "30 days",
   "insightsPeriod90Days": "90 days",
   "insightsViewAnalytics": "View analytics",
@@ -429,6 +432,26 @@
   "insightsAnalyticsEmpty": "No records in the selected period",
   "insightsAnalyticsHeatMapMin": "None",
   "insightsAnalyticsHeatMapMax": "Many",
+  "insightsAnalyticsTrendTitle": "Aggregate trends",
+  "insightsAnalyticsTrendSubtitle": "Comparison: current vs previous period",
+  "insightsAnalyticsTrendCurrent": "Current",
+  "insightsAnalyticsTrendPrevious": "Previous",
+  "insightsAnalyticsTrendDeltaUp": "+{delta}",
+  "@insightsAnalyticsTrendDeltaUp": {
+    "placeholders": {
+      "delta": {"type": "int"}
+    }
+  },
+  "insightsAnalyticsTrendDeltaDown": "{delta}",
+  "@insightsAnalyticsTrendDeltaDown": {
+    "placeholders": {
+      "delta": {"type": "int"}
+    }
+  },
+  "insightsAnalyticsSkippedTitle": "Skipped meals",
+  "insightsAnalyticsSkippedSubtitle": "Records marked as skipped or no consumption, by type",
+  "insightsAnalyticsSkippedFeelingTitle": "Feelings when skipping meals",
+  "insightsAnalyticsSkippedFeelingSubtitle": "How the patient felt when skipping or not eating",
   "insightsUpdatedAt": "Updated at {time}",
   "insightsMealsPeriod": "Records in period",
   "@insightsUpdatedAt": {
@@ -457,6 +480,13 @@
     }
   },
   "@insightsTrendComparison": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "previous": {"type": "int"},
+      "trend": {"type": "String"}
+    }
+  },
+  "@insightsAlertsTrendComparison": {
     "placeholders": {
       "current": {"type": "int"},
       "previous": {"type": "int"},

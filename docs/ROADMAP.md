@@ -149,12 +149,12 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Frequência de registros | Calendário de calor, média refeições/dia | ✅ |
 | Quantidade consumida | Distribuição de `amountEaten` | ✅ |
 
-#### Fase 3.3 - Análises Avançadas (Baixa prioridade)
+#### Fase 3.3 - Análises Avançadas (Baixa prioridade) ✅
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Análise por refeição | Refeições puladas, correlação com sentimentos | Pendente |
-| Tendências agregadas | Comparativo temporal (semana atual vs anterior) | Pendente |
+| Análise por refeição | Refeições puladas (skipMeal/amountEaten=nothing) por tipo, correlação com sentimentos | ✅ |
+| Tendências agregadas | Comparativo temporal (período atual vs anterior: total, média/dia, delta) | ✅ |
 
 #### Fase 3.4 - Notificações Push ✅
 

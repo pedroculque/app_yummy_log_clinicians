@@ -1815,6 +1815,12 @@ abstract class AppLocalizations {
   /// **'{current} meals in the last week vs {previous} in the previous week, {trend}'**
   String insightsTrendComparison(int current, int previous, String trend);
 
+  /// No description provided for @insightsAlertsTrendComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} alerts in the last week vs {previous} in the previous week, {trend}'**
+  String insightsAlertsTrendComparison(int current, int previous, String trend);
+
   /// No description provided for @insightsScoreValue.
   ///
   /// In en, this message translates to:
@@ -1824,7 +1830,7 @@ abstract class AppLocalizations {
   /// No description provided for @insightsMealsTrend.
   ///
   /// In en, this message translates to:
-  /// **'{current} meals in 7d vs {previous} in 30d'**
+  /// **'{current} meals in the last week vs {previous} in the previous week'**
   String insightsMealsTrend(int current, int previous);
 
   /// No description provided for @insightsNegativeFeelings.
@@ -2163,6 +2169,18 @@ abstract class AppLocalizations {
   /// **'7 days'**
   String get insightsPeriod7Days;
 
+  /// No description provided for @insightsPeriodPreviousWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous week'**
+  String get insightsPeriodPreviousWeek;
+
+  /// No description provided for @insightsPeriodThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get insightsPeriodThisWeek;
+
   /// No description provided for @insightsPeriod30Days.
   ///
   /// In en, this message translates to:
@@ -2240,6 +2258,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Many'**
   String get insightsAnalyticsHeatMapMax;
+
+  /// No description provided for @insightsAnalyticsTrendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Aggregate trends'**
+  String get insightsAnalyticsTrendTitle;
+
+  /// No description provided for @insightsAnalyticsTrendSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparison: current vs previous period'**
+  String get insightsAnalyticsTrendSubtitle;
+
+  /// No description provided for @insightsAnalyticsTrendCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get insightsAnalyticsTrendCurrent;
+
+  /// No description provided for @insightsAnalyticsTrendPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get insightsAnalyticsTrendPrevious;
+
+  /// No description provided for @insightsAnalyticsTrendDeltaUp.
+  ///
+  /// In en, this message translates to:
+  /// **'+{delta}'**
+  String insightsAnalyticsTrendDeltaUp(int delta);
+
+  /// No description provided for @insightsAnalyticsTrendDeltaDown.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta}'**
+  String insightsAnalyticsTrendDeltaDown(int delta);
+
+  /// No description provided for @insightsAnalyticsSkippedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped meals'**
+  String get insightsAnalyticsSkippedTitle;
+
+  /// No description provided for @insightsAnalyticsSkippedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Records marked as skipped or no consumption, by type'**
+  String get insightsAnalyticsSkippedSubtitle;
+
+  /// No description provided for @insightsAnalyticsSkippedFeelingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feelings when skipping meals'**
+  String get insightsAnalyticsSkippedFeelingTitle;
+
+  /// No description provided for @insightsAnalyticsSkippedFeelingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How the patient felt when skipping or not eating'**
+  String get insightsAnalyticsSkippedFeelingSubtitle;
 
   /// No description provided for @insightsUpdatedAt.
   ///
