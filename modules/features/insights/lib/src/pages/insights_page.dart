@@ -801,6 +801,11 @@ class PatientDetailPage extends StatelessWidget {
         title: Text(l10n.insightsPatientDetailTitle),
         actions: [
           TextButton.icon(
+            onPressed: () => _openAnalytics(context, safeInsight),
+            icon: const Icon(Icons.bar_chart_outlined, size: 18),
+            label: Text(l10n.insightsViewAnalytics),
+          ),
+          TextButton.icon(
             onPressed: () => _openDiary(context, safeInsight),
             icon: const Icon(Icons.menu_book_outlined, size: 18),
             label: Text(l10n.insightsViewDiary),
@@ -1030,6 +1035,15 @@ class PatientDetailPage extends StatelessWidget {
       case ClinicalAction.stable:
         return l10n.insightsActionStable;
     }
+  }
+
+  void _openAnalytics(BuildContext context, PatientInsight insight) {
+    unawaited(
+      context.push(
+        '/patients/${insight.patient.id}/analytics'
+        '?name=${Uri.encodeComponent(insight.patient.name)}',
+      ),
+    );
   }
 
   void _openDiary(BuildContext context, PatientInsight insight) {

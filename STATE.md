@@ -81,7 +81,7 @@ Nenhum no momento.
 ## Próximos passos (prioridade)
 
 1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
-2. **Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.
+2. ~~**Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.~~ ✅ Implementado.
 3. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 4. **App do paciente:** Ler config em `form_config` e exibir seção/comportamentos conforme config (escopo em outro repo).
 

@@ -2175,6 +2175,72 @@ abstract class AppLocalizations {
   /// **'90 days'**
   String get insightsPeriod90Days;
 
+  /// No description provided for @insightsViewAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'View analytics'**
+  String get insightsViewAnalytics;
+
+  /// No description provided for @insightsAnalyticsMealsPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'avg meals/day'**
+  String get insightsAnalyticsMealsPerDay;
+
+  /// No description provided for @insightsAnalyticsFeelingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feelings'**
+  String get insightsAnalyticsFeelingsTitle;
+
+  /// No description provided for @insightsAnalyticsFeelingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribution of how the patient felt during meals'**
+  String get insightsAnalyticsFeelingsSubtitle;
+
+  /// No description provided for @insightsAnalyticsAmountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount consumed'**
+  String get insightsAnalyticsAmountTitle;
+
+  /// No description provided for @insightsAnalyticsAmountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribution of how much the patient ate'**
+  String get insightsAnalyticsAmountSubtitle;
+
+  /// No description provided for @insightsAnalyticsFrequencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording frequency'**
+  String get insightsAnalyticsFrequencyTitle;
+
+  /// No description provided for @insightsAnalyticsFrequencySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Heat map of the last days'**
+  String get insightsAnalyticsFrequencySubtitle;
+
+  /// No description provided for @insightsAnalyticsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No records in the selected period'**
+  String get insightsAnalyticsEmpty;
+
+  /// No description provided for @insightsAnalyticsHeatMapMin.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get insightsAnalyticsHeatMapMin;
+
+  /// No description provided for @insightsAnalyticsHeatMapMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Many'**
+  String get insightsAnalyticsHeatMapMax;
+
   /// No description provided for @insightsUpdatedAt.
   ///
   /// In en, this message translates to:

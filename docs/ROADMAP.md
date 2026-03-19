@@ -141,13 +141,13 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Tags no diário | Cards de refeição com tags de comportamentos de risco | ✅ |
 | Detalhes da refeição | Bottom sheet com todos os dados (read-only) | ✅ |
 
-#### Fase 3.2 - Análises por Paciente (Média prioridade)
+#### Fase 3.2 - Análises por Paciente (Média prioridade) ✅
 
 | Feature | Descrição | Status |
 |---------|-----------|--------|
-| Análise de sentimentos | Gráfico de distribuição de sentimentos | Pendente |
-| Frequência de registros | Calendário de calor, média refeições/dia | Pendente |
-| Quantidade consumida | Distribuição de `amountEaten` | Pendente |
+| Análise de sentimentos | Gráfico de distribuição de sentimentos | ✅ |
+| Frequência de registros | Calendário de calor, média refeições/dia | ✅ |
+| Quantidade consumida | Distribuição de `amountEaten` | ✅ |
 
 #### Fase 3.3 - Análises Avançadas (Baixa prioridade)
 

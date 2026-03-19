@@ -6,3 +6,4 @@ export 'src/data/patient_meals_repository.dart';
 export 'src/data/patients_repository.dart';
 export 'src/pages/patients_page.dart';
 export 'src/patients_feature.dart';
+export 'src/utils/meal_entry_display.dart';

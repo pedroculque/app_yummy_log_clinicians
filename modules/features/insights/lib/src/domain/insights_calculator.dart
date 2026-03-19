@@ -51,8 +51,8 @@ class InsightsCalculator {
       final previousAlerts = _extractAlerts(patient, previousMealsInPeriod);
       allAlerts.addAll(alerts);
 
-      final feelingDist = _calculateFeelingDistribution(mealsInPeriod);
-      final amountDist = _calculateAmountDistribution(mealsInPeriod);
+      final feelingDist = calculateFeelingDistribution(mealsInPeriod);
+      final amountDist = calculateAmountDistribution(mealsInPeriod);
 
       final lastMealDate = meals.isNotEmpty ? meals.first.dateTime : null;
       final daysWithoutMeal = lastMealDate != null
@@ -187,7 +187,8 @@ class InsightsCalculator {
     return alerts;
   }
 
-  static Map<FeelingLabel, int> _calculateFeelingDistribution(
+  /// Distribuição de sentimentos (público para PatientAnalytics).
+  static Map<FeelingLabel, int> calculateFeelingDistribution(
     List<MealEntry> meals,
   ) {
     final distribution = <FeelingLabel, int>{};
@@ -205,7 +206,8 @@ class InsightsCalculator {
     return distribution;
   }
 
-  static Map<AmountEaten, int> _calculateAmountDistribution(
+  /// Distribuição de quantidade consumida (público para PatientAnalytics).
+  static Map<AmountEaten, int> calculateAmountDistribution(
     List<MealEntry> meals,
   ) {
     final distribution = <AmountEaten, int>{};

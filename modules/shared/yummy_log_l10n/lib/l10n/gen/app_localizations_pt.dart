@@ -1108,6 +1108,39 @@ class AppLocalizationsPt extends AppLocalizations {
   String get insightsPeriod90Days => '90 dias';
 
   @override
+  String get insightsViewAnalytics => 'Ver análises';
+
+  @override
+  String get insightsAnalyticsMealsPerDay => 'média refeições/dia';
+
+  @override
+  String get insightsAnalyticsFeelingsTitle => 'Sentimentos';
+
+  @override
+  String get insightsAnalyticsFeelingsSubtitle => 'Distribuição de como o paciente se sentiu nas refeições';
+
+  @override
+  String get insightsAnalyticsAmountTitle => 'Quantidade consumida';
+
+  @override
+  String get insightsAnalyticsAmountSubtitle => 'Distribuição do quanto o paciente comeu';
+
+  @override
+  String get insightsAnalyticsFrequencyTitle => 'Frequência de registros';
+
+  @override
+  String get insightsAnalyticsFrequencySubtitle => 'Calendário de calor dos últimos dias';
+
+  @override
+  String get insightsAnalyticsEmpty => 'Sem registros no período selecionado';
+
+  @override
+  String get insightsAnalyticsHeatMapMin => 'Nenhum';
+
+  @override
+  String get insightsAnalyticsHeatMapMax => 'Muitos';
+
+  @override
   String insightsUpdatedAt(String time) {
     return 'Atualizado às $time';
   }

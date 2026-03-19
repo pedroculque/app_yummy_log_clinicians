@@ -1108,6 +1108,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insightsPeriod90Days => '90 days';
 
   @override
+  String get insightsViewAnalytics => 'View analytics';
+
+  @override
+  String get insightsAnalyticsMealsPerDay => 'avg meals/day';
+
+  @override
+  String get insightsAnalyticsFeelingsTitle => 'Feelings';
+
+  @override
+  String get insightsAnalyticsFeelingsSubtitle => 'Distribution of how the patient felt during meals';
+
+  @override
+  String get insightsAnalyticsAmountTitle => 'Amount consumed';
+
+  @override
+  String get insightsAnalyticsAmountSubtitle => 'Distribution of how much the patient ate';
+
+  @override
+  String get insightsAnalyticsFrequencyTitle => 'Recording frequency';
+
+  @override
+  String get insightsAnalyticsFrequencySubtitle => 'Heat map of the last days';
+
+  @override
+  String get insightsAnalyticsEmpty => 'No records in the selected period';
+
+  @override
+  String get insightsAnalyticsHeatMapMin => 'None';
+
+  @override
+  String get insightsAnalyticsHeatMapMax => 'Many';
+
+  @override
   String insightsUpdatedAt(String time) {
     return 'Updated at $time';
   }

@@ -5,9 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insights_feature/src/cubit/insights_cubit.dart';
+import 'package:insights_feature/src/cubit/patient_analytics_cubit.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
 import 'package:insights_feature/src/domain/patient_insight.dart';
 import 'package:insights_feature/src/pages/insights_page.dart';
+import 'package:insights_feature/src/pages/patient_analytics_page.dart';
 import 'package:patients_feature/patients_feature.dart';
 
 class InsightsFeature implements YummyLogFeature {
@@ -69,6 +71,24 @@ class InsightsFeature implements YummyLogFeature {
         builder: (context, state) {
           final insight = state.extra as PatientInsight?;
           return _PatientDetailRoutePage(insight: insight);
+        },
+      ),
+      GoRoute(
+        path: '/patients/:patientId/analytics',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final patientId = state.pathParameters['patientId']!;
+          final patientName =
+              state.uri.queryParameters['name'] ?? '';
+          final cubit = PatientAnalyticsCubit(
+            patientId: patientId,
+            mealsRepository: getIt<PatientMealsRepository>(),
+          );
+          return PatientAnalyticsPage(
+            patientId: patientId,
+            patientName: patientName,
+            cubit: cubit,
+          );
         },
       ),
     ];
