@@ -119,7 +119,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 - [x] Tela "Comportamentos para o formulário" com categorias e toggles
 - [x] Repositório/serviço para ler e gravar `users/{patientId}/form_config`
 - [x] Documento de especificação: [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md)
-- [ ] App do paciente: ler config e exibir seção/comportamentos conforme config (escopo em outro repo)
+- [x] App do paciente: ler config e exibir seção/comportamentos conforme config (escopo em outro repo)
 
 ---
 

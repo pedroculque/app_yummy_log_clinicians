@@ -132,7 +132,7 @@ Se o documento não existir, o app do paciente **não exibe** a seção de compo
 
 ## App do paciente (escopo no outro repo – app_yummy_log)
 
-A lógica será implementada no app do paciente em breve.
+A lógica foi implementada no app do paciente.
 
 - **Regra central:** o paciente **não vê** a seção de comportamento se o clínico **não tiver configurado** (documento `form_config` inexistente ou `sectionEnabled != true`).
 - Ao abrir o formulário "Adicionar comida", o app do paciente:

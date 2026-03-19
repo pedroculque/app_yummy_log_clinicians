@@ -1,6 +1,6 @@
 # Especificação: Leitura da config do formulário de comportamento (app do paciente)
 
-**Status:** App do clínico ✅ implementado (grava em Firestore). App do paciente 🔴 pendente (ler e exibir conforme config).
+**Status:** App do clínico ✅ implementado (grava em Firestore). App do paciente ✅ implementado (ler e exibir conforme config).
 
 Documento para implementação no **app do paciente** (`app_yummy_log`). O **app do clínico** já grava a configuração em Firestore; o app do paciente deve **apenas ler** e usar para exibir (ou ocultar) a seção "Comportamento" no formulário "Adicionar comida".
 
