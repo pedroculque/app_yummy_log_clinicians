@@ -31,6 +31,10 @@ class AdaptivePhoto extends StatefulWidget {
   State<AdaptivePhoto> createState() => _AdaptivePhotoState();
 }
 
+/// Cache de dimensões por URL/path para evitar refetch ao reabrir a tela.
+final Map<String, Size> _dimensionCache = {};
+const int _maxCacheEntries = 100;
+
 class _AdaptivePhotoState extends State<AdaptivePhoto> {
   Size? _imageSize;
   String? _resolvedPath;
@@ -67,6 +71,26 @@ class _AdaptivePhotoState extends State<AdaptivePhoto> {
       return;
     }
 
+    final cacheKey = _hasLocal ? widget.photoPath! : widget.photoUrl!;
+    final cached = _dimensionCache[cacheKey];
+    if (cached != null) {
+      String? resolved;
+      if (_hasLocal) {
+        await getDocsDir();
+        resolved = cachedDocsDir != null
+            ? resolvePhotoPathSync(widget.photoPath!, cachedDocsDir!)
+            : await resolvePhotoPath(widget.photoPath!);
+      }
+      if (mounted) {
+        setState(() {
+          _imageSize = cached;
+          _resolvedPath = resolved;
+          _loading = false;
+        });
+      }
+      return;
+    }
+
     Size? size;
     String? resolved;
 
@@ -94,6 +118,13 @@ class _AdaptivePhotoState extends State<AdaptivePhoto> {
       } on Object catch (e) {
         _error = e.toString();
       }
+    }
+
+    if (size != null) {
+      if (_dimensionCache.length >= _maxCacheEntries) {
+        _dimensionCache.remove(_dimensionCache.keys.first);
+      }
+      _dimensionCache[cacheKey] = size;
     }
 
     if (mounted) {
