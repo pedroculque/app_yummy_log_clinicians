@@ -8,6 +8,7 @@ import 'package:settings_feature/src/cubit/auth_cubit.dart';
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:settings_feature/src/pages/plans_page.dart';
 import 'package:settings_feature/src/pages/settings_page.dart';
+import 'package:sync_foundation/sync_foundation.dart';
 
 /// Feature Configurações: Login, idioma, aparência, etc.
 class SettingsFeature implements YummyLogFeature {
@@ -23,6 +24,9 @@ class SettingsFeature implements YummyLogFeature {
       ..registerSingleton<AuthCubit>(
         AuthCubit(
           authRepository: getIt<AuthRepository>(),
+          photoUploadService: getIt<PhotoUploadService>(),
+          userDocumentWriter: getIt<UserDocumentWriter>(),
+          userProfileReader: getIt<UserProfileReader>(),
         ),
       );
   }
@@ -37,7 +41,9 @@ class SettingsFeature implements YummyLogFeature {
           path: '/settings',
           builder: (context, state) => BlocProvider.value(
             value: getIt<AuthCubit>(),
-            child: const SettingsPage(),
+            child: SettingsPage(
+              profilePhotoSheet: getIt<ProfilePhotoSheet>(),
+            ),
           ),
         ),
       ];

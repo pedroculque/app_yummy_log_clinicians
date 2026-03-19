@@ -6,4 +6,5 @@ export 'src/data/notification_push_preferences_repository.dart'
         NotificationPushPrefs;
 export 'src/pages/plans_page.dart';
 export 'src/pages/settings_page.dart';
+export 'src/profile_photo_sheet.dart';
 export 'src/settings_feature.dart';

@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 
 export 'app_build_flavor.dart';
 
+/// Callback para exibir o sheet de foto de perfil (câmera/galeria).
+typedef ProfilePhotoSheet = void Function(BuildContext context);
+
 /// Contrato que cada feature package implementa para ser registrado no app.
 abstract class YummyLogFeature {
   /// Nome da feature (para debug/log).

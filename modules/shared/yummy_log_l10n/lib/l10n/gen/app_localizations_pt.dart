@@ -197,6 +197,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get chooseFromGallery => 'Escolher da galeria';
 
   @override
+  String get profilePhotoSheetTitle => 'Foto do perfil';
+
+  @override
+  String get profilePhotoUpdated => 'Foto de perfil atualizada.';
+
+  @override
+  String get profilePhotoNeedSignIn => 'Faça login novamente para atualizar a foto.';
+
+  @override
+  String get profilePhotoWrongAccount => 'Conta diferente da logada.';
+
+  @override
+  String get profilePhotoTokenFailed => 'Erro de autenticação. Tente fazer login novamente.';
+
+  @override
+  String get profilePhotoUploadFailed => 'Falha ao enviar a foto.';
+
+  @override
   String get skipPhoto => 'Só anotar';
 
   @override

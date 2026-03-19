@@ -5,8 +5,10 @@ export 'src/connection_sync_remote.dart';
 export 'src/firestore_connection_remote.dart';
 export 'src/firestore_meal_remote.dart';
 export 'src/firestore_user_document_writer.dart';
+export 'src/firestore_user_profile_reader.dart';
 export 'src/meal_sync_remote.dart';
-export 'src/photo_upload_service.dart';
+export 'src/photo_upload_service.dart'
+    show PhotoUploadService, ProfilePhotoUploadResult;
 export 'src/presentation/cubit/sync_cubit.dart';
 export 'src/presentation/cubit/sync_state.dart';
 export 'src/presentation/widget/sync_indicator.dart';
@@ -19,3 +21,4 @@ export 'src/sync_result.dart';
 export 'src/sync_service.dart';
 export 'src/sync_status.dart';
 export 'src/user_document_writer.dart';
+export 'src/user_profile_reader.dart';

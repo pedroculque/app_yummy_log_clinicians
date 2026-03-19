@@ -12,6 +12,14 @@ class AuthUser {
   final String? displayName;
   final String? photoUrl;
 
+  /// Cópia com [photoUrl] sobrescrito (ex.: fallback do Firestore).
+  AuthUser copyWith({String? photoUrl}) => AuthUser(
+        uid: uid,
+        email: email,
+        displayName: displayName,
+        photoUrl: photoUrl ?? this.photoUrl,
+      );
+
   /// Iniciais do nome para avatar (ex.: "João Silva" → "JS").
   String get initials {
     if (displayName != null && displayName!.isNotEmpty) {
@@ -48,4 +56,7 @@ abstract class AuthRepository {
   /// Ex.: para saudação no diário.
   /// Só tem efeito se o usuário estiver logado.
   Future<void> updateDisplayName(String name);
+
+  /// Atualiza a URL da foto do perfil (ex.: após upload no Storage).
+  Future<void> updatePhotoUrl(String photoUrl);
 }

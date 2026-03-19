@@ -197,6 +197,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseFromGallery => 'Choose from gallery';
 
   @override
+  String get profilePhotoSheetTitle => 'Profile photo';
+
+  @override
+  String get profilePhotoUpdated => 'Profile photo updated.';
+
+  @override
+  String get profilePhotoNeedSignIn => 'Sign in again to update your photo.';
+
+  @override
+  String get profilePhotoWrongAccount => 'Different account from the one logged in.';
+
+  @override
+  String get profilePhotoTokenFailed => 'Authentication error. Try signing in again.';
+
+  @override
+  String get profilePhotoUploadFailed => 'Failed to upload photo.';
+
+  @override
   String get skipPhoto => 'Just note';
 
   @override

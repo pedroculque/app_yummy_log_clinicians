@@ -6,6 +6,7 @@ import 'package:sync_foundation/src/connection_sync_remote.dart';
 import 'package:sync_foundation/src/firestore_connection_remote.dart';
 import 'package:sync_foundation/src/firestore_meal_remote.dart';
 import 'package:sync_foundation/src/firestore_user_document_writer.dart';
+import 'package:sync_foundation/src/firestore_user_profile_reader.dart';
 import 'package:sync_foundation/src/meal_sync_remote.dart';
 import 'package:sync_foundation/src/photo_upload_service.dart';
 import 'package:sync_foundation/src/presentation/cubit/sync_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:sync_foundation/src/sync_config.dart';
 import 'package:sync_foundation/src/sync_queue.dart';
 import 'package:sync_foundation/src/sync_service.dart';
 import 'package:sync_foundation/src/user_document_writer.dart';
+import 'package:sync_foundation/src/user_profile_reader.dart';
 
 /// Registra o [SyncService] e suas dependências no [GetIt].
 /// Chamar após initPersistence e initAuth.
@@ -31,6 +33,7 @@ void initSync(GetIt getIt, {SyncConfig config = const SyncConfig()}) {
     )
     ..registerSingleton<ClinicianLinkService>(FirestoreClinicianLinkService())
     ..registerSingleton<UserDocumentWriter>(FirestoreUserDocumentWriter())
+    ..registerSingleton<UserProfileReader>(FirestoreUserProfileReader())
     ..registerSingleton<PhotoUploadService>(PhotoUploadService())
     ..registerSingleton<SyncService>(
       SyncService(

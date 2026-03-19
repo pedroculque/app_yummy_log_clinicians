@@ -465,6 +465,42 @@ abstract class AppLocalizations {
   /// **'Choose from gallery'**
   String get chooseFromGallery;
 
+  /// No description provided for @profilePhotoSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get profilePhotoSheetTitle;
+
+  /// No description provided for @profilePhotoUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo updated.'**
+  String get profilePhotoUpdated;
+
+  /// No description provided for @profilePhotoNeedSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to update your photo.'**
+  String get profilePhotoNeedSignIn;
+
+  /// No description provided for @profilePhotoWrongAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Different account from the one logged in.'**
+  String get profilePhotoWrongAccount;
+
+  /// No description provided for @profilePhotoTokenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication error. Try signing in again.'**
+  String get profilePhotoTokenFailed;
+
+  /// No description provided for @profilePhotoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload photo.'**
+  String get profilePhotoUploadFailed;
+
   /// No description provided for @skipPhoto.
   ///
   /// In en, this message translates to:

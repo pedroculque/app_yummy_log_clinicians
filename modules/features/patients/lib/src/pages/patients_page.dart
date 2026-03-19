@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
+import 'package:feature_contract/feature_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,12 @@ import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 class PatientsPage extends StatefulWidget {
-  const PatientsPage({super.key});
+  const PatientsPage({
+    required this.profilePhotoSheet,
+    super.key,
+  });
+
+  final ProfilePhotoSheet profilePhotoSheet;
 
   @override
   State<PatientsPage> createState() => _PatientsPageState();
@@ -61,14 +67,13 @@ class _PatientsPageState extends State<PatientsPage> {
       stream: context.read<AuthRepository>().authStateChanges,
       builder: (context, snapshot) {
         final user = snapshot.data;
-        final isLoggedIn = user != null;
 
         _onAuthUserChanged(user);
 
         return Scaffold(
           backgroundColor: appColors.backgroundDefault,
           body: SafeArea(
-            child: isLoggedIn
+            child: user != null
                 ? _buildLoggedInContent(user)
                 : _buildLoggedOutContent(),
           ),
@@ -128,6 +133,7 @@ class _PatientsPageState extends State<PatientsPage> {
                   && !state.isRefreshing,
               isSyncing: state.isRefreshing,
               onSyncTap: () => context.read<PatientsCubit>().load(),
+              onProfilePhotoTap: () => widget.profilePhotoSheet(context),
             ),
             Expanded(
               child: state.isEmpty
@@ -497,6 +503,7 @@ class _PageHeader extends StatelessWidget {
     this.isSynced = false,
     this.isSyncing = false,
     this.onSyncTap,
+    this.onProfilePhotoTap,
   });
 
   final int patientCount;
@@ -507,6 +514,7 @@ class _PageHeader extends StatelessWidget {
   final bool isSynced;
   final bool isSyncing;
   final VoidCallback? onSyncTap;
+  final VoidCallback? onProfilePhotoTap;
 
   @override
   Widget build(BuildContext context) {
@@ -525,9 +533,16 @@ class _PageHeader extends StatelessWidget {
             ? l10n.onePatientConnected
             : l10n.patientsConnectedCount(patientCount);
 
-    final leading = user != null
+    final avatar = user != null
         ? UserAvatar(user: user!, size: 48)
-        : Container(
+        : null;
+    final leading = avatar != null && onProfilePhotoTap != null
+        ? GestureDetector(
+            onTap: onProfilePhotoTap,
+            child: avatar,
+          )
+        : avatar ??
+            Container(
             width: 48,
             height: 48,
             decoration: BoxDecoration(

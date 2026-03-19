@@ -66,7 +66,9 @@ class PatientsFeature implements YummyLogFeature {
           ],
           child: BlocProvider(
             create: (_) => getIt<PatientsCubit>(),
-            child: const PatientsPage(),
+            child: PatientsPage(
+              profilePhotoSheet: getIt<ProfilePhotoSheet>(),
+            ),
           ),
         ),
       ),

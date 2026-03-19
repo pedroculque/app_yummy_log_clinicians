@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:feature_contract/app_build_flavor.dart';
+import 'package:feature_contract/feature_contract.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform;
@@ -13,13 +13,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
-import 'package:settings_feature/src/cubit/auth_cubit.dart';
+import 'package:settings_feature/src/cubit/auth_cubit.dart'
+    show
+        AuthCubit,
+        AuthState,
+        kProfilePhotoNeedSignIn,
+        kProfilePhotoTokenFailed,
+        kProfilePhotoUploadFailed,
+        kProfilePhotoWrongAccount;
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({
+    required this.profilePhotoSheet,
+    super.key,
+  });
+
+  final ProfilePhotoSheet profilePhotoSheet;
 
   static const String _supportId = 'GsV6wVJe89UQajUpAZJELaEYn733';
   static const String _appVersion = '1.0.0';
@@ -29,6 +41,17 @@ class SettingsPage extends StatelessWidget {
     final g = GetIt.instance;
     return g.isRegistered<AppBuildFlavorConfig>() &&
         g<AppBuildFlavorConfig>().showPushTokenDebug;
+  }
+
+  static String _resolveErrorMessage(BuildContext context, String code) {
+    final l10n = context.l10n;
+    return switch (code) {
+      kProfilePhotoNeedSignIn => l10n.profilePhotoNeedSignIn,
+      kProfilePhotoWrongAccount => l10n.profilePhotoWrongAccount,
+      kProfilePhotoTokenFailed => l10n.profilePhotoTokenFailed,
+      kProfilePhotoUploadFailed => l10n.profilePhotoUploadFailed,
+      _ => code,
+    };
   }
 
   void _showSetDisplayNameDialog(BuildContext context) {
@@ -108,9 +131,13 @@ class SettingsPage extends StatelessWidget {
                 BlocConsumer<AuthCubit, AuthState>(
                   listener: (context, state) {
                     if (state.errorMessage != null) {
+                      final msg = _resolveErrorMessage(
+                        context,
+                        state.errorMessage!,
+                      );
                       uiSnackBar(
                         context: context,
-                        message: state.errorMessage!,
+                        message: msg,
                         type: UiSnackbarType.error,
                       );
                     }
@@ -131,10 +158,13 @@ class SettingsPage extends StatelessWidget {
                             email: state.user!.email ?? state.user!.uid,
                             photoUrl: state.user!.photoUrl,
                             displayName: state.user!.displayName,
+                            profilePhotoUploading: state.profilePhotoUploading,
                             onLogout: () => unawaited(
                               context.read<AuthCubit>().signOut(),
                             ),
                             onSetDisplayName: _showSetDisplayNameDialog,
+                            onProfilePhotoTap: () =>
+                                profilePhotoSheet(context),
                           ),
                           const SizedBox(height: 32),
                           _NotificationPushPreferencesSection(
@@ -914,6 +944,74 @@ class _LoggedOutSection extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
+// AVATAR TOCÁVEL COM OVERLAY DE LOADING (foto de perfil)
+// ---------------------------------------------------------------------------
+
+class _ProfileAvatarTile extends StatelessWidget {
+  const _ProfileAvatarTile({
+    required this.userId,
+    required this.email,
+    this.authPhotoUrl,
+    this.displayName,
+    this.isUploading = false,
+    this.onTap,
+  });
+
+  final String userId;
+  final String email;
+  final String? authPhotoUrl;
+  final String? displayName;
+  final bool isUploading;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final appColors = AppColors.fromContext(context);
+    final child = _AccountAvatar(
+      userId: userId,
+      email: email,
+      authPhotoUrl: authPhotoUrl,
+      displayName: displayName,
+    );
+    final wrapped = onTap != null
+        ? Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(24),
+              child: child,
+            ),
+          )
+        : child;
+    if (!isUploading) return wrapped;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        wrapped,
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              color: appColors.neutralBlack.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: appColors.neutralWhite,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // AVATAR COM FALLBACK FIRESTORE (Auth às vezes não persiste photoURL)
 // ---------------------------------------------------------------------------
 
@@ -999,15 +1097,19 @@ class _LoggedInSection extends StatelessWidget {
     required this.onLogout,
     this.photoUrl,
     this.displayName,
+    this.profilePhotoUploading = false,
     this.onSetDisplayName,
+    this.onProfilePhotoTap,
   });
 
   final String userId;
   final String email;
   final String? photoUrl;
   final String? displayName;
+  final bool profilePhotoUploading;
   final VoidCallback onLogout;
   final void Function(BuildContext context)? onSetDisplayName;
+  final VoidCallback? onProfilePhotoTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1026,11 +1128,13 @@ class _LoggedInSection extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              _AccountAvatar(
+              _ProfileAvatarTile(
                 userId: userId,
                 email: email,
                 authPhotoUrl: photoUrl,
                 displayName: displayName,
+                isUploading: profilePhotoUploading,
+                onTap: onProfilePhotoTap,
               ),
               const SizedBox(width: 14),
               Expanded(

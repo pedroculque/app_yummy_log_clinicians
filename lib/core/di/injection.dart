@@ -1,7 +1,7 @@
 import 'package:app_yummy_log_clinicians/app/app.dart';
 import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
 import 'package:auth_foundation/auth_foundation.dart';
-import 'package:feature_contract/app_build_flavor.dart';
+import 'package:feature_contract/feature_contract.dart';
 import 'package:get_it/get_it.dart';
 import 'package:insights_feature/insights_feature.dart';
 import 'package:patients_feature/patients_feature.dart';
@@ -19,7 +19,11 @@ Future<void> configureDependencies({
   if (getIt.isRegistered<AppBuildFlavorConfig>()) {
     await getIt.unregister<AppBuildFlavorConfig>();
   }
-  getIt.registerSingleton<AppBuildFlavorConfig>(AppBuildFlavorConfig(flavor));
+  getIt
+    ..registerSingleton<AppBuildFlavorConfig>(AppBuildFlavorConfig(flavor))
+    ..registerSingleton<ProfilePhotoSheet>(
+      createProfilePhotoSheet(getIt),
+    );
 
   PatientsFeature().registerDependencies(getIt);
   InsightsFeature().registerDependencies(getIt);

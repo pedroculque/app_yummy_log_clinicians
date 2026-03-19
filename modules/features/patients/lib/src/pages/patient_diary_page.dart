@@ -11,6 +11,7 @@ import 'package:patients_feature/src/cubit/patient_diary_state.dart';
 import 'package:patients_feature/src/data/behavior_catalog.dart';
 import 'package:patients_feature/src/utils/meal_behavior_label.dart';
 import 'package:patients_feature/src/utils/meal_entry_display.dart';
+import 'package:patients_feature/src/widgets/adaptive_photo.dart';
 import 'package:patients_feature/src/widgets/patient_meal_photo.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
@@ -1588,15 +1589,12 @@ class _MealDetailSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (entry.photoPath != null || entry.photoUrl != null) ...[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: MealPhoto(
+                    SizedBox(
+                      width: double.infinity,
+                      child: AdaptivePhoto(
                         photoPath: entry.photoPath,
                         photoUrl: entry.photoUrl,
-                        width: double.infinity,
-                        height: 200,
                         borderRadius: BorderRadius.circular(16),
-                        errorWidget: const SizedBox.shrink(),
                       ),
                     ),
                     const SizedBox(height: 16),

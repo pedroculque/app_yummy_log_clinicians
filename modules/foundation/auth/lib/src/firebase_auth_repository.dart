@@ -207,4 +207,12 @@ class FirebaseAuthRepository implements AuthRepository {
     if (trimmed.isEmpty) return;
     await u.updateDisplayName(trimmed);
   }
+
+  @override
+  Future<void> updatePhotoUrl(String photoUrl) async {
+    final u = _auth.currentUser;
+    if (u == null) return;
+    if (photoUrl.trim().isEmpty) return;
+    await u.updatePhotoURL(photoUrl);
+  }
 }

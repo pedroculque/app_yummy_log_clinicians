@@ -1,9 +1,28 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
+enum _AuthUploadReady { ok, noUser, mismatch, tokenFailed }
+
+/// Resultado do upload da foto de perfil.
+class ProfilePhotoUploadResult {
+  const ProfilePhotoUploadResult._({this.url, this.failureCode});
+
+  const ProfilePhotoUploadResult.success(String downloadUrl)
+      : this._(url: downloadUrl);
+
+  const ProfilePhotoUploadResult.failure(this.failureCode) : url = null;
+
+  final String? url;
+  /// `unauthenticated` | `user_mismatch` | `token` | `storage`
+  final String? failureCode;
+
+  bool get isSuccess => url != null;
+}
 
 /// Serviço de upload/download de fotos de refeições para Cloud Storage.
 ///
@@ -158,6 +177,85 @@ class PhotoUploadService {
       debugPrint('[PhotoUploadService] HTTP download failed - $e');
       return null;
     }
+  }
+
+  /// Upload da foto de perfil. Path: `users/{userId}/profile/avatar{ext}`.
+  Future<ProfilePhotoUploadResult> uploadProfilePhoto({
+    required String userId,
+    required String localPath,
+  }) async {
+    try {
+      final absolutePath = await _resolveLocalPath(localPath);
+      if (absolutePath == null) {
+        debugPrint(
+          '[PhotoUploadService] profile: local file not found: $localPath',
+        );
+        return const ProfilePhotoUploadResult.failure('storage');
+      }
+      final file = File(absolutePath);
+      if (!file.existsSync()) {
+        debugPrint(
+          '[PhotoUploadService] profile: file missing: $absolutePath',
+        );
+        return const ProfilePhotoUploadResult.failure('storage');
+      }
+      final extension = p.extension(localPath).toLowerCase();
+      final ext = extension.isNotEmpty ? extension : '.jpg';
+      final storagePath = 'users/$userId/profile/avatar$ext';
+      debugPrint('[PhotoUploadService] profile upload → $storagePath');
+      switch (await _ensureAuthForUpload(userId)) {
+        case _AuthUploadReady.noUser:
+          return const ProfilePhotoUploadResult.failure('unauthenticated');
+        case _AuthUploadReady.mismatch:
+          return const ProfilePhotoUploadResult.failure('user_mismatch');
+        case _AuthUploadReady.tokenFailed:
+          return const ProfilePhotoUploadResult.failure('token');
+        case _AuthUploadReady.ok:
+          break;
+      }
+      final ref = _storage.ref(storagePath);
+      await ref.putFile(
+        file,
+        SettableMetadata(
+          contentType: _getContentType(ext),
+          customMetadata: {
+            'type': 'profile',
+            'uploadedAt': DateTime.now().toIso8601String(),
+          },
+        ),
+      );
+      final downloadUrl = await ref.getDownloadURL();
+      debugPrint('[PhotoUploadService] profile SUCCESS');
+      return ProfilePhotoUploadResult.success(downloadUrl);
+    } on FirebaseException catch (e) {
+      debugPrint(
+        '[PhotoUploadService] profile FirebaseException: ${e.code}',
+      );
+      return ProfilePhotoUploadResult.failure(
+        e.code == 'unauthenticated' ? 'unauthenticated' : 'storage',
+      );
+    } on Object catch (e) {
+      debugPrint('[PhotoUploadService] profile ERROR - $e');
+      return const ProfilePhotoUploadResult.failure('storage');
+    }
+  }
+
+  /// Verifica sessão ativa e UID correto.
+  static Future<_AuthUploadReady> _ensureAuthForUpload(
+    String expectedUserId,
+  ) async {
+    final u = firebase_auth.FirebaseAuth.instance.currentUser;
+    if (u == null) {
+      debugPrint('[PhotoUploadService] no Firebase user (sign in again)');
+      return _AuthUploadReady.noUser;
+    }
+    if (u.uid != expectedUserId) {
+      debugPrint(
+        '[PhotoUploadService] auth uid=${u.uid} != userId=$expectedUserId',
+      );
+      return _AuthUploadReady.mismatch;
+    }
+    return _AuthUploadReady.ok;
   }
 
   /// Remove uma foto do Storage.

@@ -29,4 +29,7 @@ class StubAuthRepository implements AuthRepository {
 
   @override
   Future<void> updateDisplayName(String name) async {}
+
+  @override
+  Future<void> updatePhotoUrl(String photoUrl) async {}
 }
