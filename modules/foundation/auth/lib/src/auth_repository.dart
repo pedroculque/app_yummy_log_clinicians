@@ -59,4 +59,11 @@ abstract class AuthRepository {
 
   /// Atualiza a URL da foto do perfil (ex.: após upload no Storage).
   Future<void> updatePhotoUrl(String photoUrl);
+
+  /// Remove o usuário do provedor de autenticação (após limpar dados no
+  /// backend).
+  ///
+  /// Pode exigir login recente; nesse caso o repositório lança a exceção
+  /// correspondente (ex.: credencial recente).
+  Future<void> deleteAccount();
 }

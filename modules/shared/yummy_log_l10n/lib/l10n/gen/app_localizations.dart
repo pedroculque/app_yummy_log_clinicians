@@ -771,6 +771,48 @@ abstract class AppLocalizations {
   /// **'Sign out'**
   String get logout;
 
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get deleteAccountConfirmTitle;
+
+  /// No description provided for @deleteAccountConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your clinician data in this app (links, invite code, preferences, and subscription) will be removed. Patients\' diary entries in their app are not deleted by this action. This cannot be undone.'**
+  String get deleteAccountConfirmMessage;
+
+  /// No description provided for @deleteAccountConfirmCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get deleteAccountConfirmCta;
+
+  /// No description provided for @deleteAccountCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get deleteAccountCancel;
+
+  /// No description provided for @deleteAccountRequiresRecentLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'For your security, sign out, sign in again, then try deleting your account again.'**
+  String get deleteAccountRequiresRecentLogin;
+
+  /// No description provided for @deleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the account. Try again or contact support.'**
+  String get deleteAccountFailed;
+
   /// No description provided for @loggedInAs.
   ///
   /// In en, this message translates to:
@@ -1068,7 +1110,7 @@ abstract class AppLocalizations {
   /// No description provided for @plansFeatureUnlimitedPatients.
   ///
   /// In en, this message translates to:
-  /// **'Unlimited patients'**
+  /// **'Unlimited patients in your practice'**
   String get plansFeatureUnlimitedPatients;
 
   /// No description provided for @plansFeatureFullHistory.
@@ -1092,8 +1134,26 @@ abstract class AppLocalizations {
   /// No description provided for @plansFeatureMealPushNotifications.
   ///
   /// In en, this message translates to:
-  /// **'Push notifications for meals'**
+  /// **'Real-time alerts when patients log meals'**
   String get plansFeatureMealPushNotifications;
+
+  /// No description provided for @plansFeatureClinicalDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard with metrics, risk alerts, and attention ranking'**
+  String get plansFeatureClinicalDashboard;
+
+  /// No description provided for @plansFeaturePatientDiaryInsight.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient diary: timeline, calendar, photos, and risk tags'**
+  String get plansFeaturePatientDiaryInsight;
+
+  /// No description provided for @plansFeatureBehaviorFormByPatient.
+  ///
+  /// In en, this message translates to:
+  /// **'Behavior questionnaire tailored to each patient'**
+  String get plansFeatureBehaviorFormByPatient;
 
   /// No description provided for @plansAnnual.
   ///

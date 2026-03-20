@@ -1,0 +1,71 @@
+{
+  "identifier" : "YummyLogClinicians",
+  "nonRenewingSubscriptions" : [],
+  "products" : [],
+  "settings" : {},
+  "subscriptionGroups" : [
+    {
+      "id" : "clinicians_pro",
+      "localizations" : [],
+      "name" : "YummyLog Clínicos Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "24.90",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "clinicians_monthly_storekit",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Pacientes ilimitados, dashboard clínico completo, diário, formulário e alertas.",
+              "displayName" : "Assinatura mensal clínicos",
+              "locale" : "pt_BR"
+            },
+            {
+              "description" : "Unlimited patients, full clinical dashboard, diary, behavior forms, and alerts.",
+              "displayName" : "Clinicians monthly subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "clinicians_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Assinatura mensal clínicos",
+          "subscriptionGroupID" : "clinicians_pro",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "179.90",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "clinicians_annual_storekit",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Pacientes ilimitados, dashboard clínico completo, diário, formulário e alertas.",
+              "displayName" : "Assinatura anual de clínicos",
+              "locale" : "pt_BR"
+            },
+            {
+              "description" : "Unlimited patients, full clinical dashboard, diary, behavior forms, and alerts.",
+              "displayName" : "Clinicians annual subscription",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "clinicians_annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Assinatura anual de clínicos",
+          "subscriptionGroupID" : "clinicians_pro",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

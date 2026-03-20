@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:patients_feature/patients_feature.dart';
 import 'package:sync_foundation/sync_foundation.dart';
 
 /// Chaves para mapear erros de upload nas strings localizadas.
@@ -10,6 +11,11 @@ const String kProfilePhotoUploadFailed = 'PROFILE_PHOTO_UPLOAD_FAILED';
 const String kProfilePhotoNeedSignIn = 'PROFILE_PHOTO_NEED_SIGN_IN';
 const String kProfilePhotoWrongAccount = 'PROFILE_PHOTO_WRONG_ACCOUNT';
 const String kProfilePhotoTokenFailed = 'PROFILE_PHOTO_TOKEN_FAILED';
+
+/// Exclusão de conta (mensagens localizadas na tela de configurações).
+const String kDeleteAccountRequiresRecentLogin =
+    'DELETE_ACCOUNT_REQUIRES_RECENT_LOGIN';
+const String kDeleteAccountFailed = 'DELETE_ACCOUNT_FAILED';
 
 /// Estado do auth na tela de configurações.
 class AuthState {
@@ -38,11 +44,15 @@ class AuthCubit extends Cubit<AuthState> {
     required PhotoUploadService photoUploadService,
     required UserDocumentWriter userDocumentWriter,
     required UserProfileReader userProfileReader,
+    required PatientsRepository patientsRepository,
+    Future<void> Function()? clearPushRegistration,
     this.onProfilePhotoUpdated,
   })  : _auth = authRepository,
         _photoUpload = photoUploadService,
         _userDoc = userDocumentWriter,
         _profileReader = userProfileReader,
+        _patients = patientsRepository,
+        _clearPushRegistration = clearPushRegistration,
         super(const AuthState()) {
     _subscription = _auth.authStateChanges.listen(_onAuthChanged);
     unawaited(_emitMergedFromAuth());
@@ -52,6 +62,8 @@ class AuthCubit extends Cubit<AuthState> {
   final PhotoUploadService _photoUpload;
   final UserDocumentWriter _userDoc;
   final UserProfileReader _profileReader;
+  final PatientsRepository _patients;
+  final Future<void> Function()? _clearPushRegistration;
   late final StreamSubscription<AuthUser?> _subscription;
 
   /// Chamado após upload bem-sucedido da foto de perfil.
@@ -158,6 +170,45 @@ class AuthCubit extends Cubit<AuthState> {
     } on Object catch (e, st) {
       debugPrint('signOut: $e $st');
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  /// Remove dados no Firestore/Storage e apaga o usuário no Firebase Auth.
+  ///
+  /// Pacientes podem manter entradas antigas em `connections` no app deles;
+  /// indique suporte se precisarem limpar vínculo manualmente.
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    emit(state.copyWith(isLoading: true));
+    try {
+      await _clearPushRegistration?.call();
+      await _patients.deleteClinicianAccountData(user.uid);
+      await _photoUpload.deleteProfilePhotos(userId: user.uid);
+      await _auth.deleteAccount();
+      emit(const AuthState());
+    } on AuthRequiresRecentLoginException {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: kDeleteAccountRequiresRecentLogin,
+        ),
+      );
+    } on AuthException catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: e.message,
+        ),
+      );
+    } on Object catch (e, st) {
+      debugPrint('deleteAccount: $e $st');
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: kDeleteAccountFailed,
+        ),
+      );
     }
   }
 

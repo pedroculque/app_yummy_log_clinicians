@@ -83,3 +83,12 @@ class AuthUnknownException extends AuthException {
   @override
   String get message => 'Erro ao fazer login. Tente novamente.';
 }
+
+/// Exclusão de conta exige login recente (reautenticar e tentar de novo).
+class AuthRequiresRecentLoginException extends AuthException {
+  const AuthRequiresRecentLoginException();
+
+  @override
+  String get message =>
+      'Por segurança, saia e entre novamente nesta conta e repita a exclusão.';
+}

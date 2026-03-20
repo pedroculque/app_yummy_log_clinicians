@@ -1,4 +1,3 @@
-import 'package:auth_foundation/auth_foundation.dart';
 import 'package:feature_contract/feature_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +8,6 @@ import 'package:settings_feature/src/data/notification_push_preferences_reposito
 import 'package:settings_feature/src/pages/plans_page.dart';
 import 'package:settings_feature/src/pages/settings_page.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
-import 'package:sync_foundation/sync_foundation.dart';
 
 /// Feature Configurações: Login, idioma, aparência, etc.
 class SettingsFeature implements YummyLogFeature {
@@ -18,18 +16,9 @@ class SettingsFeature implements YummyLogFeature {
 
   @override
   void registerDependencies(GetIt getIt) {
-    getIt
-      ..registerSingleton<NotificationPushPreferencesRepository>(
-        NotificationPushPreferencesRepository(),
-      )
-      ..registerSingleton<AuthCubit>(
-        AuthCubit(
-          authRepository: getIt<AuthRepository>(),
-          photoUploadService: getIt<PhotoUploadService>(),
-          userDocumentWriter: getIt<UserDocumentWriter>(),
-          userProfileReader: getIt<UserProfileReader>(),
-        ),
-      );
+    getIt.registerSingleton<NotificationPushPreferencesRepository>(
+      NotificationPushPreferencesRepository(),
+    );
   }
 
   @override

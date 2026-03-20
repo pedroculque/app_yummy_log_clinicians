@@ -200,6 +200,23 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount() async {
+    final u = _auth.currentUser;
+    if (u == null) {
+      throw const AuthUnknownException('No user signed in');
+    }
+    try {
+      await u.delete();
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw const AuthRequiresRecentLoginException();
+      }
+      throw _mapFirebaseException(e);
+    }
+    await _googleSignIn.signOut();
+  }
+
+  @override
   Future<void> updateDisplayName(String name) async {
     final u = _auth.currentUser;
     if (u == null) return;

@@ -2,13 +2,74 @@
 
 Integração com [RevenueCat](https://www.revenuecat.com/) via pacote `purchases_flutter` e módulo `modules/foundation/subscription`.
 
+Este documento junta **configuração técnica** (SDK, chaves, lojas) e **oferta comercial** acordada com o produto — para a equipa e para alinhar texto da App Store / Play com o que o app faz (ou vai fazer).
+
+---
+
+## Oferta: Grátis vs Pro (YummyLog Clínicos)
+
+### Nomes e preços (referência)
+
+| | Detalhe |
+|---|--------|
+| **Entitlement (RevenueCat + código)** | `clinicians_pro` |
+| **Preço na UI (l10n)** | R\$ 24,90/mês · R\$ 179,90/ano (trial 7 dias nos textos) |
+| **Preço cobrado** | O definido nos produtos da **App Store Connect** / **Google Play** (deve coincidir com a comunicação pública) |
+
+### Estado atual no **código** (março/2026)
+
+Hoje só existe **gate** explícito de assinatura para **limite de pacientes**:
+
+| Funcionalidade | Plano grátis | Pro (`isPro`) |
+|----------------|--------------|---------------|
+| **Número de pacientes vinculados** | Máx. **2** (`SubscriptionLimits.maxFreePatients`) | **Ilimitado** (sem verificação de teto no cliente) |
+| **Aba Pacientes** (lista, convite, diário read-only, swipe remover) | Sim (até 2) | Sim |
+| **Diário do paciente** (timeline, calendário, detalhes, tags de risco) | Sim (para os pacientes que tens) | Sim |
+| **Configurar formulário de comportamento** por paciente | Sim | Sim |
+| **Aba Insights** (dashboard, métricas, gráficos, ranking, 3.2 / 3.3) | **Sim** (mesmo conteúdo que Pro, com ≤2 pacientes) | Sim |
+| **Notificações push** (novas entradas / alertas de risco) | **Sim** (se login + prefs; não há `isPro` no fluxo) | Sim |
+| **Tela de planos + restaurar compras** | Sim | Sim |
+
+Ou seja: **tecnicamente**, o Pro compra sobretudo **escalar além de 2 pacientes**; o resto do valor é **percepção + paywall**, até haver mais gates no código (**Insights** — ver oferta alvo abaixo).
+
+---
+
+## Decisões tomadas (oferta) — 2026-03-20
+
+Decisões de produto acordadas (implementação no código **pendente** para Insights; ver tabela “Estado atual no código”).
+
+| Tema | Decisão |
+|------|---------|
+| **Insights** | **Pro:** dashboard completo (métricas, períodos longos, ranking de atenção, análises 3.2 / 3.3). **Grátis:** **teaser** — resumo limitado (ex.: janela curta tipo 7 dias, poucos KPIs), **sem** o painel completo; sempre com **CTA** para subscrever. Objetivo: prova de valor sem ecrã vazio nem dar tudo de borla. |
+| **Push** | Mantém-se para **todos os utilizadores com login** (grátis e Pro), com as preferências atuais. Rever no futuro se custo ou política de produto justificarem restringir ao Pro. |
+| **Formulário de comportamento** | Mantém-se no **plano grátis** (até 2 pacientes), como gancho de valor clínico; Pro continua a pagar sobretudo por **escala de pacientes** + **Insights completo**. |
+| **Preço** | Manter **R\$ 24,90/mês** e **R\$ 179,90/ano** (alinhado à UI e às lojas) ao introduzir os gates de Insights. **Rever** trimestralmente com métricas: conversão free→Pro, churn, custo médio Firebase/Functions por clínico ativo. |
+
+### Oferta alvo (após implementar gate de Insights)
+
+| Funcionalidade | Grátis | Pro |
+|----------------|--------|-----|
+| Pacientes | Máx. 2 | Ilimitado |
+| Pacientes, diário, convites | Sim | Sim |
+| Formulário de comportamento por paciente | Sim | Sim |
+| Insights | **Teaser** + CTA | **Completo** |
+| Push (com login) | Sim | Sim |
+
+**Implementação técnica (checklist):** `SubscriptionEntitlementCubit` na feature Insights ou no shell da aba; UX do teaser + strings (l10n); opcional: regras Firestore/backend se quiserem enforcement forte.
+
+### Mapa rápido: paywall vs código
+
+Os bullets da `PlansPage` mencionam dashboard completo — após o gate, isso fica **coerente** com Pro; no grátis, o teaser deve usar copy honesta (“resumo” / “experimente o dashboard completo no plano Clínicos”). Até lá, a tabela “Estado atual no código” descreve o comportamento real.
+
+---
+
 ## O que foi implementado
 
 - Configuração do SDK no startup (`configureRevenueCat`), após Firebase Auth.
 - Chaves públicas por loja via `--dart-define` (sem commit de secrets).
 - `SubscriptionEntitlementCubit` (singleton no `get_it`): sincroniza `Purchases.logIn` / `logOut` com o UID do Firebase Auth; expõe `isPro`.
 - Entitlement esperado: **`clinicians_pro`** (constante `kCliniciansProEntitlementId`).
-- Tela de planos: compra mensal/anual a partir do *offering* atual (`PackageType.monthly` / `annual`).
+- Tela de planos: compra mensal/anual a partir do *offering* atual (`PackageType.monthly` / `annual`); bullets de benefícios alinhados ao produto (dashboard, diário, formulário por paciente, push).
 - Limite gratuito: **2 pacientes** quando `isPro` é falso (`SubscriptionLimits.maxFreePatients`).
 - Restaurar compras nas Configurações.
 
@@ -91,14 +152,15 @@ A **chave RevenueCat já funciona**; o problema é a Apple **não devolver** os 
 
 ### Checklist RevenueCat
 
-- App **iOS** ligado ao **Bundle ID do build** que estás a correr (ex.: flavor **development** usa `.dev` — no RevenueCat tem de existir essa app ou os IAP têm de estar associados ao bundle correto).
+- App **iOS** ligado ao **Bundle ID do build** que estás a correr. O flavor **development** usa `com.yummylogdiaryforclinicians.app.dev`; **staging** usa `com.yummylogdiaryforclinicians.app.stg`. Se no projeto RC só existir a app com bundle de **produção** (`com.yummylogdiaryforclinicians.app`), o SDK pede produtos para o bundle **.dev** / **.stg** e o erro *None of the products… could be fetched* mantém-se mesmo com `.storekit` correto. **Solução:** em RevenueCat → *Project settings → Apps*, adiciona uma app iOS por bundle (dev / stg / prod) e associa os **mesmos** produtos App Store (`clinicians_monthly`, `clinicians_annual`) a cada uma; ou testa IAP com build **production** no simulador até a app `.dev` existir no RC.
 - Sem avisos vermelhos em **Products** (identifier errado ou não encontrado na loja).
 
 ### Simulador
 
 Muitas vezes o simulador **não** recebe IAP reais até propagação completa. Opções:
 
-1. **StoreKit Configuration** no Xcode: ficheiro `.storekit` com os **mesmos Product IDs** → *Scheme → Run → Options → StoreKit Configuration* → correr o app.
+1. **StoreKit Configuration** no Xcode: o ficheiro está em [`ios/YummyLogClinicians.storekit`](../ios/YummyLogClinicians.storekit) (à frente do `Runner.xcodeproj`, para o Xcode resolver o caminho do scheme sem ambiguidade). Formato igual ao `GrowthLog.storekit` do GrowthLog. Os schemes **`development`**, **`staging`**, **`production`** e **`Runner`** referenciam `YummyLogClinicians.storekit` em *Run*. Depois de mudar o StoreKit ou o scheme: `flutter clean`, apagar o app do simulador e voltar a correr. Confirma em *Edit Scheme → Run → Options* que **StoreKit Configuration** não está em *None*.
+   - **Obrigatório:** os `productID` neste ficheiro têm de ser **exatamente** os mesmos que estão no RevenueCat e na App Store Connect. O catálogo atual no dashboard está alinhado com **`clinicians_monthly`** e **`clinicians_annual`** (ficheiro `YummyLogClinicians.storekit`). Se alterares os IDs na loja ou no RC, atualiza o `.storekit`; caso contrário o RC continua a falhar com *configuration error*.
 2. **Dispositivo físico** + utilizador **Sandbox** (App Store Connect → Users and Access → Sandbox).
 
 Documentação: [rev.cat/sdk-troubleshooting](https://rev.cat/sdk-troubleshooting).

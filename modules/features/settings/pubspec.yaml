@@ -20,6 +20,8 @@ dependencies:
   get_it: ^8.0.2
   go_router: ^14.6.3
   image_picker: ^1.1.2
+  patients_feature:
+    path: ../patients
   persistence_foundation:
     path: ../../foundation/persistence
   subscription_foundation:

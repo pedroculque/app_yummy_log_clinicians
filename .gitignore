@@ -130,7 +130,9 @@ obfuscation.map.json
 # Generated l10n files
 lib/l10n/gen/
 
-# Firebase CLI
+# Firebase CLI (cache na raiz do projeto; nunca em public/)
+.firebase/
+public/.firebase/
 .firebase-debug.log
 .firebase-debug.*.log
 

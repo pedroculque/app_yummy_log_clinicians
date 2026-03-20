@@ -17,6 +17,8 @@ import 'package:settings_feature/src/cubit/auth_cubit.dart'
     show
         AuthCubit,
         AuthState,
+        kDeleteAccountFailed,
+        kDeleteAccountRequiresRecentLogin,
         kProfilePhotoNeedSignIn,
         kProfilePhotoTokenFailed,
         kProfilePhotoUploadFailed,
@@ -70,8 +72,36 @@ class SettingsPage extends StatelessWidget {
       kProfilePhotoWrongAccount => l10n.profilePhotoWrongAccount,
       kProfilePhotoTokenFailed => l10n.profilePhotoTokenFailed,
       kProfilePhotoUploadFailed => l10n.profilePhotoUploadFailed,
+      kDeleteAccountRequiresRecentLogin =>
+        l10n.deleteAccountRequiresRecentLogin,
+      kDeleteAccountFailed => l10n.deleteAccountFailed,
       _ => code,
     };
+  }
+
+  Future<void> _confirmDeleteAccount(BuildContext context) async {
+    final l10n = context.l10n;
+    final authCubit = context.read<AuthCubit>();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteAccountConfirmTitle),
+        content: Text(l10n.deleteAccountConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.deleteAccountCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(l10n.deleteAccountConfirmCta),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) {
+      await authCubit.deleteAccount();
+    }
   }
 
   void _showSetDisplayNameDialog(BuildContext context) {
@@ -188,6 +218,9 @@ class SettingsPage extends StatelessWidget {
                             profilePhotoUploading: state.profilePhotoUploading,
                             onLogout: () => unawaited(
                               context.read<AuthCubit>().signOut(),
+                            ),
+                            onDeleteAccount: () => unawaited(
+                              _confirmDeleteAccount(context),
                             ),
                             onSetDisplayName: _showSetDisplayNameDialog,
                             onProfilePhotoTap: () =>
@@ -1122,6 +1155,7 @@ class _LoggedInSection extends StatelessWidget {
     required this.userId,
     required this.email,
     required this.onLogout,
+    required this.onDeleteAccount,
     this.photoUrl,
     this.displayName,
     this.profilePhotoUploading = false,
@@ -1135,6 +1169,7 @@ class _LoggedInSection extends StatelessWidget {
   final String? displayName;
   final bool profilePhotoUploading;
   final VoidCallback onLogout;
+  final VoidCallback onDeleteAccount;
   final void Function(BuildContext context)? onSetDisplayName;
   final VoidCallback? onProfilePhotoTap;
 
@@ -1207,6 +1242,15 @@ class _LoggedInSection extends StatelessWidget {
               label: Text(l10n.setDisplayName),
             ),
           ),
+        Center(
+          child: TextButton(
+            onPressed: onDeleteAccount,
+            child: Text(
+              l10n.deleteAccount,
+              style: AppTextStyles.body2.copyWith(color: appColors.error),
+            ),
+          ),
+        ),
       ],
     );
   }

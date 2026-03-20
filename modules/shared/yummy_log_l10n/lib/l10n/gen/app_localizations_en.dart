@@ -350,6 +350,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Sign out';
 
   @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Delete account?';
+
+  @override
+  String get deleteAccountConfirmMessage => 'Your clinician data in this app (links, invite code, preferences, and subscription) will be removed. Patients\' diary entries in their app are not deleted by this action. This cannot be undone.';
+
+  @override
+  String get deleteAccountConfirmCta => 'Delete permanently';
+
+  @override
+  String get deleteAccountCancel => 'Cancel';
+
+  @override
+  String get deleteAccountRequiresRecentLogin => 'For your security, sign out, sign in again, then try deleting your account again.';
+
+  @override
+  String get deleteAccountFailed => 'Could not delete the account. Try again or contact support.';
+
+  @override
   String loggedInAs(String email) {
     return 'Signed in as $email';
   }
@@ -501,7 +522,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansGotIt => 'Got it';
 
   @override
-  String get plansFeatureUnlimitedPatients => 'Unlimited patients';
+  String get plansFeatureUnlimitedPatients => 'Unlimited patients in your practice';
 
   @override
   String get plansFeatureFullHistory => 'Full history';
@@ -513,7 +534,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansFeaturePrioritySupport => 'Priority support';
 
   @override
-  String get plansFeatureMealPushNotifications => 'Push notifications for meals';
+  String get plansFeatureMealPushNotifications => 'Real-time alerts when patients log meals';
+
+  @override
+  String get plansFeatureClinicalDashboard => 'Dashboard with metrics, risk alerts, and attention ranking';
+
+  @override
+  String get plansFeaturePatientDiaryInsight => 'Patient diary: timeline, calendar, photos, and risk tags';
+
+  @override
+  String get plansFeatureBehaviorFormByPatient => 'Behavior questionnaire tailored to each patient';
 
   @override
   String get plansAnnual => 'Annual';

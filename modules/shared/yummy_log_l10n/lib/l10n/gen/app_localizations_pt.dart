@@ -350,6 +350,27 @@ class AppLocalizationsPt extends AppLocalizations {
   String get logout => 'Sair';
 
   @override
+  String get deleteAccount => 'Excluir conta';
+
+  @override
+  String get deleteAccountConfirmTitle => 'Excluir conta?';
+
+  @override
+  String get deleteAccountConfirmMessage => 'Seus dados de clínico (vínculos, código de convite, preferências e assinatura neste app) serão removidos. Os registros dos pacientes no app deles não são apagados por esta ação. Esta operação não pode ser desfeita.';
+
+  @override
+  String get deleteAccountConfirmCta => 'Excluir permanentemente';
+
+  @override
+  String get deleteAccountCancel => 'Cancelar';
+
+  @override
+  String get deleteAccountRequiresRecentLogin => 'Por segurança, saia, entre novamente e repita a exclusão da conta.';
+
+  @override
+  String get deleteAccountFailed => 'Não foi possível excluir a conta. Tente de novo ou fale com o suporte.';
+
+  @override
   String loggedInAs(String email) {
     return 'Conectado como $email';
   }
@@ -501,7 +522,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get plansGotIt => 'Entendi';
 
   @override
-  String get plansFeatureUnlimitedPatients => 'Pacientes ilimitados';
+  String get plansFeatureUnlimitedPatients => 'Pacientes ilimitados na sua prática';
 
   @override
   String get plansFeatureFullHistory => 'Histórico completo';
@@ -513,7 +534,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get plansFeaturePrioritySupport => 'Suporte prioritário';
 
   @override
-  String get plansFeatureMealPushNotifications => 'Notificações push das refeições';
+  String get plansFeatureMealPushNotifications => 'Alertas em tempo real quando o paciente registra no diário';
+
+  @override
+  String get plansFeatureClinicalDashboard => 'Dashboard com métricas, alertas de risco e ranking de atenção';
+
+  @override
+  String get plansFeaturePatientDiaryInsight => 'Diário do paciente: timeline, calendário, fotos e tags de risco';
+
+  @override
+  String get plansFeatureBehaviorFormByPatient => 'Formulário de comportamento personalizado por paciente';
 
   @override
   String get plansAnnual => 'Anual';

@@ -32,4 +32,11 @@ class StubAuthRepository implements AuthRepository {
 
   @override
   Future<void> updatePhotoUrl(String photoUrl) async {}
+
+  @override
+  Future<void> deleteAccount() async {
+    throw const AuthUnknownException(
+      'Configure Firebase to delete account.',
+    );
+  }
 }

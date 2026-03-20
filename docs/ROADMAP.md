@@ -235,7 +235,9 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 
 ### Média
 
-2. **Exportar relatórios** – PDF com resumo do paciente para consultas (ver [STATE.md](../STATE.md)).
+2. **Limpeza de conexões após exclusão do clínico** – Cloud Function (trigger ligado à exclusão do usuário no Auth ou job administrativo) que remove/atualiza entradas em `users/{patientId}/connections` apontando para o clínico excluído; evita vínculos órfãos no app do paciente. O app do clínico já limpa `clinicians/*`, `clinician_codes` e Auth; esta tarefa fecha o ciclo no Firestore compartilhado. Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e requisito **C38** em [REQUIREMENTS.md](../REQUIREMENTS.md).
+
+3. **Exportar relatórios** – PDF com resumo do paciente para consultas (ver [STATE.md](../STATE.md)).
 
 ### Concluído (referência)
 

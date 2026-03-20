@@ -141,6 +141,31 @@ Ou seja: quando existe documento em `clinicians/{clinicianUid}/patients/{patient
 
 ---
 
+## Exclusão de conta do clínico
+
+**No app (implementado):** o fluxo in-app (requisito Apple para apps com login) remove, enquanto a sessão ainda é válida:
+
+- Subcoleções e preferências em `clinicians/{clinicianUid}`,
+- Documento do código em `clinician_codes/{code}` associado ao clínico,
+- Documento `users/{clinicianUid}` se existir (perfil Firestore),
+- Avatar em Storage (`users/{clinicianUid}/profile/...`),
+- O registro do usuário no **Firebase Auth**.
+
+**Gap (backlog — requisito C38):** os documentos em **`users/{patientId}/connections`** onde o paciente guardou o vínculo com o clínico (`clinicianUid`, etc.) **não são atualizados por esse fluxo**, porque as [regras do Firestore](../firestore.rules) permitem escrita nessa subcoleção apenas ao **próprio paciente**. Se o clínico excluir a conta:
+
+- No app do paciente pode permanecer uma conexão apontando para um `clinicianUid` que já não existe no Auth (vínculo órfão), até o paciente remover manualmente ou até existir limpeza server-side.
+
+**Implementação recomendada:** Cloud Function com privilégio de admin (SDK Admin) disparada quando o usuário do clínico é **apagado no Firebase Auth** — por exemplo [extensão *Delete User Data*](https://firebase.google.com/docs/extensions/official/delete-user-data) com caminhos customizados, ou função que escuta `auth.user().onDelete()` e:
+
+1. Obtém a lista de `patientId` que estavam em `clinicians/{deletedUid}/patients` **antes** da exclusão (se a função rodar após o client já ter apagado essa subcoleção, usar **coleção de grupo** `collectionGroup('connections')` com filtro `clinicianUid == deletedUid`, se indexado, ou manter registro temporário de vínculos apenas para esse fim), ou
+2. Para cada conexão afetada, deleta ou atualiza o documento em `users/{patientId}/connections/{connectionId}`.
+
+O desenho exato depende de índices e de se a exclusão client-side remove `clinicians/.../patients` **antes** ou **depois** da chamada `deleteUser()`; hoje o client remove os dados do clínico **antes** de apagar o Auth, portanto uma função que só lê `clinicians/{uid}/patients` no trigger de Auth delete pode **não ver mais os pacientes**. Por isso a solução robusta costuma ser: **query `collectionGroup('connections')` onde `clinicianUid == uid`** (com [índice composto](https://firebase.google.com/docs/firestore/query-data/index-overview) se necessário) ou fila de “uids a limpar” gravada num passo anterior.
+
+Documentação de produto: [STATE.md](../STATE.md), [REQUIREMENTS.md](../REQUIREMENTS.md) (**C38**).
+
+---
+
 ## Referências
 
 - [firestore.rules](../firestore.rules) – regras de `clinician_codes`, `clinicians/.../patients` e `form_config`

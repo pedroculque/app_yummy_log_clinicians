@@ -112,6 +112,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | ID | Descrição | Status |
 |----|-----------|--------|
 | C37 | **Exportar relatórios:** PDF com resumo do paciente para consultas. | Pendente |
+| C38 | **Pós-exclusão do clínico (backend):** Cloud Function (ou processo admin equivalente) ao apagar o usuário no Firebase Auth, para limpar ou atualizar documentos em `users/{patientId}/connections` que referenciem o `clinicianUid` removido (o app do clínico não pode escrever nesses docs). | Pendente |
 
 ---
 

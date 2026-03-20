@@ -234,9 +234,9 @@ class _FeaturesList extends StatelessWidget {
   Widget build(BuildContext context) {
     final features = [
       l10n.plansFeatureUnlimitedPatients,
-      l10n.plansFeatureFullHistory,
-      l10n.plansFeatureExportReports,
-      l10n.plansFeaturePrioritySupport,
+      l10n.plansFeatureClinicalDashboard,
+      l10n.plansFeaturePatientDiaryInsight,
+      l10n.plansFeatureBehaviorFormByPatient,
       l10n.plansFeatureMealPushNotifications,
     ];
 
@@ -254,6 +254,7 @@ class _FeaturesList extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: 24,
@@ -269,11 +270,13 @@ class _FeaturesList extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 14),
-                Text(
-                  feature,
-                  style: AppTextStyles.body1.copyWith(
-                    color: appColors.neutralBlack,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    feature,
+                    style: AppTextStyles.body1.copyWith(
+                      color: appColors.neutralBlack,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],

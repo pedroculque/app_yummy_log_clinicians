@@ -240,6 +240,20 @@ class PhotoUploadService {
     }
   }
 
+  /// Remove avatares possíveis em `users/{userId}/profile/avatar*`.
+  Future<void> deleteProfilePhotos({required String userId}) async {
+    const extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    for (final ext in extensions) {
+      try {
+        final ref = _storage.ref('users/$userId/profile/avatar$ext');
+        await ref.delete();
+      } on FirebaseException catch (e) {
+        if (e.code == 'object-not-found') continue;
+        rethrow;
+      }
+    }
+  }
+
   /// Verifica sessão ativa e UID correto.
   static Future<_AuthUploadReady> _ensureAuthForUpload(
     String expectedUserId,
