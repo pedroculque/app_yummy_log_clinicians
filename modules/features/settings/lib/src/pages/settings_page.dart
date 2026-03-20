@@ -22,8 +22,28 @@ import 'package:settings_feature/src/cubit/auth_cubit.dart'
         kProfilePhotoUploadFailed,
         kProfilePhotoWrongAccount;
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
+
+Future<void> _restoreSubscriptionPurchases(BuildContext context) async {
+  final cubit = context.read<SubscriptionEntitlementCubit>();
+  final l10n = context.l10n;
+  final outcome = await cubit.restorePurchases();
+  if (!context.mounted) return;
+  final message = switch (outcome) {
+    SubscriptionRestoreOutcome.success => l10n.purchasesRestoreSuccess,
+    SubscriptionRestoreOutcome.nothingFound => l10n.purchasesRestoreEmpty,
+    SubscriptionRestoreOutcome.notConfigured => l10n.purchasesNotConfigured,
+    SubscriptionRestoreOutcome.failed => l10n.purchasesRestoreFailed,
+  };
+  final type = outcome == SubscriptionRestoreOutcome.success
+      ? UiSnackbarType.success
+      : outcome == SubscriptionRestoreOutcome.failed
+          ? UiSnackbarType.error
+          : UiSnackbarType.normal;
+  uiSnackBar(context: context, message: message, type: type);
+}
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
@@ -120,10 +140,17 @@ class SettingsPage extends StatelessWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 // --- ASSINATURA ---
-                _SubscriptionSection(
-                  maxFreePatients: 2,
-                  isPro: false,
-                  onUpgrade: () => context.push('/plans'),
+                BlocBuilder<SubscriptionEntitlementCubit,
+                    SubscriptionEntitlementState>(
+                  builder: (context, subState) {
+                    return _SubscriptionSection(
+                      maxFreePatients: SubscriptionLimits.maxFreePatients,
+                      isPro: subState.isPro,
+                      onUpgrade: () => context.push('/plans'),
+                      onRestorePurchases: () =>
+                          unawaited(_restoreSubscriptionPurchases(context)),
+                    );
+                  },
                 ),
                 const SizedBox(height: 32),
 
@@ -1648,11 +1675,13 @@ class _SubscriptionSection extends StatelessWidget {
     required this.maxFreePatients,
     required this.isPro,
     required this.onUpgrade,
+    required this.onRestorePurchases,
   });
 
   final int maxFreePatients;
   final bool isPro;
   final VoidCallback onUpgrade;
+  final VoidCallback onRestorePurchases;
 
   @override
   Widget build(BuildContext context) {
@@ -1676,12 +1705,7 @@ class _SubscriptionSection extends StatelessWidget {
           const SizedBox(height: 8),
           Center(
             child: TextButton.icon(
-              onPressed: () {
-                uiSnackBar(
-                  context: context,
-                  message: context.l10n.restorePurchasesSoon,
-                );
-              },
+              onPressed: onRestorePurchases,
               icon: Icon(
                 Icons.history_rounded,
                 size: 18,

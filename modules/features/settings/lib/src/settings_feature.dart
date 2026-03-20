@@ -8,6 +8,7 @@ import 'package:settings_feature/src/cubit/auth_cubit.dart';
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:settings_feature/src/pages/plans_page.dart';
 import 'package:settings_feature/src/pages/settings_page.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:sync_foundation/sync_foundation.dart';
 
 /// Feature Configurações: Login, idioma, aparência, etc.
@@ -56,7 +57,10 @@ class SettingsFeature implements YummyLogFeature {
         GoRoute(
           path: '/plans',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const PlansPage(),
+          builder: (context, state) => BlocProvider.value(
+            value: getIt<SubscriptionEntitlementCubit>(),
+            child: const PlansPage(),
+          ),
         ),
       ];
 }

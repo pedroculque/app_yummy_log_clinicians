@@ -1515,6 +1515,54 @@ abstract class AppLocalizations {
   /// **'Restore purchases: coming soon'**
   String get restorePurchasesSoon;
 
+  /// No description provided for @purchasesNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases are not configured in this build. Set RevenueCat API keys.'**
+  String get purchasesNotConfigured;
+
+  /// No description provided for @purchaseSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription activated.'**
+  String get purchaseSuccess;
+
+  /// No description provided for @purchaseCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase cancelled.'**
+  String get purchaseCancelled;
+
+  /// No description provided for @purchaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete the purchase. Please try again.'**
+  String get purchaseFailed;
+
+  /// No description provided for @purchaseOfferingsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans are unavailable right now. Please try again later.'**
+  String get purchaseOfferingsUnavailable;
+
+  /// No description provided for @purchasesRestoreSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription restored successfully.'**
+  String get purchasesRestoreSuccess;
+
+  /// No description provided for @purchasesRestoreEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No subscription found for this account.'**
+  String get purchasesRestoreEmpty;
+
+  /// No description provided for @purchasesRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not restore purchases.'**
+  String get purchasesRestoreFailed;
+
   /// No description provided for @planPro.
   ///
   /// In en, this message translates to:

@@ -11,6 +11,7 @@ import 'package:patients_feature/src/cubit/patients_cubit.dart';
 import 'package:patients_feature/src/cubit/patients_state.dart';
 import 'package:patients_feature/src/data/patient.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
@@ -466,8 +467,9 @@ class _PatientsPageState extends State<PatientsPage> {
     final cubit = context.read<PatientsCubit>();
     final state = cubit.state;
 
-    const maxFreePatients = 2;
-    if (state.patients.length >= maxFreePatients) {
+    final isPro = context.read<SubscriptionEntitlementCubit>().state.isPro;
+    if (!isPro &&
+        state.patients.length >= SubscriptionLimits.maxFreePatients) {
       _showUpgradeDialog(context);
       return;
     }

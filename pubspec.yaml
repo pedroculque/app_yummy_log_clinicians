@@ -33,6 +33,8 @@ dependencies:
     path: modules/foundation/persistence
   settings_feature:
     path: modules/features/settings
+  subscription_foundation:
+    path: modules/foundation/subscription
   sync_foundation:
     path: modules/foundation/sync
   ui_kit:

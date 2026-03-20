@@ -1,0 +1,25 @@
+name: subscription_foundation
+description: Assinaturas (RevenueCat) para YummyLog for Clinicians.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+  flutter: ^3.41.0
+
+dependencies:
+  auth_foundation:
+    path: ../auth
+  bloc: ^9.2.0
+  equatable: ^2.0.7
+  feature_contract:
+    path: ../../shared/feature_contract
+  flutter:
+    sdk: flutter
+  purchases_flutter: ^9.12.0
+
+dev_dependencies:
+  bloc_lint: ^0.3.7
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^10.2.0

@@ -91,8 +91,9 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 - [x] Lógica de limite em `_showInviteSheet`
 - [x] Rota full-screen `/plans`
 
-**Pendente:**
-- [ ] Integração com in-app purchases (RevenueCat ou nativo)
+**Pendente (operacional):**
+- [x] Integração client-side com RevenueCat (`subscription_foundation`, compra + restaurar + `isPro`)
+- [ ] Produtos e chaves nas lojas/CI; validação server-side (webhook) se necessário
 
 ---
 

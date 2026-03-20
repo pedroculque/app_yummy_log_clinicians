@@ -736,6 +736,30 @@ class AppLocalizationsPt extends AppLocalizations {
   String get restorePurchasesSoon => 'Restaurar compras: em breve';
 
   @override
+  String get purchasesNotConfigured => 'Compras não estão configuradas neste build. Defina as chaves do RevenueCat.';
+
+  @override
+  String get purchaseSuccess => 'Assinatura ativada.';
+
+  @override
+  String get purchaseCancelled => 'Compra cancelada.';
+
+  @override
+  String get purchaseFailed => 'Não foi possível concluir a compra. Tente novamente.';
+
+  @override
+  String get purchaseOfferingsUnavailable => 'Planos indisponíveis no momento. Tente mais tarde.';
+
+  @override
+  String get purchasesRestoreSuccess => 'Assinatura restaurada com sucesso.';
+
+  @override
+  String get purchasesRestoreEmpty => 'Nenhuma assinatura encontrada para esta conta.';
+
+  @override
+  String get purchasesRestoreFailed => 'Não foi possível restaurar as compras.';
+
+  @override
   String get planPro => 'Plano Clínicos';
 
   @override

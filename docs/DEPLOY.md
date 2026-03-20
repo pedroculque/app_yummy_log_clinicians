@@ -80,11 +80,16 @@ SPLIT_DEBUG_INFOPATH=build/app/outputs/symbols
 APP_STORE_CONNECT_KEY_ID=xxx
 APP_STORE_CONNECT_ISSUER_ID=xxx
 APP_STORE_CONNECT_KEY_CONTENT=xxx
+# RevenueCat (pública). Fastlane repassa como --dart-define (ver GeneralFastfile).
+# iOS: appl_... | Android: goog_... (ajuste conforme o build).
+REVENUECAT_API_KEY=appl_xxx
 
 # .env.dev (desenvolvimento)
 TARGET=lib/main_development.dart
 FIREBASE_IOS_APP_ID=xxx
 GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account.json
+# RevenueCat (chave pública). Usado pelo Cursor/VS Code (--dart-define-from-file=.env.dev).
+REVENUECAT_API_KEY=appl_xxx
 ```
 
 ### 3. SSH Config para GitHub

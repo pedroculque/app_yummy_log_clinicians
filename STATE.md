@@ -82,7 +82,7 @@ Nenhum no momento.
 
 ## Próximos passos (prioridade)
 
-1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro (a UI de planos e preços já refletem R$ 24,90/mês e R$ 179,90/ano).
+1. **RevenueCat em produção:** Entitlement `clinicians_pro`, offering default, produtos nas lojas; `REVENUECAT_API_KEY` no `.env.prod` / `.env.dev` (Fastlane → `--dart-define`, ver [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md)).
 2. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 3. **Manutenção:** validar deep links de push e fluxo de convite após alterações de branding/l10n.
 

@@ -9,12 +9,14 @@ import 'package:app_yummy_log_clinicians/core/router/app_router.dart';
 import 'package:feature_contract/app_build_flavor.dart';
 import 'package:flutter/widgets.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:sync_foundation/sync_foundation.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initPersistence(getIt);
   await initAuth(getIt);
+  await configureRevenueCat(AppBuildFlavor.development);
   // App do clínico: não observa users/{uid}/meals nem connections (evita permission-denied).
   initSync(getIt, config: const SyncConfig(watchersEnabled: false));
   await configureDependencies(flavor: AppBuildFlavor.development);

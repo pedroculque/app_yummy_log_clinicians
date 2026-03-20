@@ -1,6 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
@@ -13,12 +13,78 @@ class PlansPage extends StatefulWidget {
 
 class _PlansPageState extends State<PlansPage> {
   bool _isAnnual = true;
+  bool _purchaseBusy = false;
 
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
     final l10n = context.l10n;
 
+    return BlocBuilder<SubscriptionEntitlementCubit,
+        SubscriptionEntitlementState>(
+      builder: (context, subState) {
+        if (subState.isPro) {
+          return Scaffold(
+            backgroundColor: appColors.backgroundDefault,
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: appColors.neutralBlack,
+                          size: 28,
+                        ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(
+                      Icons.verified_rounded,
+                      size: 64,
+                      color: appColors.success,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.planPro,
+                      style: AppTextStyles.h2.copyWith(
+                        color: appColors.neutralBlack,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.unlimitedPatients,
+                      style: AppTextStyles.body1.copyWith(
+                        color: appColors.gray,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        return _buildPaywall(context, appColors, l10n);
+      },
+    );
+  }
+
+  Widget _buildPaywall(
+    BuildContext context,
+    AppColors appColors,
+    AppLocalizations l10n,
+  ) {
     return Scaffold(
       backgroundColor: appColors.backgroundDefault,
       body: SafeArea(
@@ -80,6 +146,7 @@ class _PlansPageState extends State<PlansPage> {
               isAnnual: _isAnnual,
               appColors: appColors,
               l10n: l10n,
+              busy: _purchaseBusy,
               onSubscribe: _handleSubscribe,
             ),
           ],
@@ -89,42 +156,34 @@ class _PlansPageState extends State<PlansPage> {
   }
 
   Future<void> _handleSubscribe() async {
-    final appColors = AppColors.fromContext(context);
+    if (_purchaseBusy) return;
     final l10n = context.l10n;
-    unawaited(showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: appColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.construction_rounded,
-                color: appColors.primary,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(l10n.plansComingSoon),
-          ],
-        ),
-        content: Text(l10n.plansComingSoonMessage),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.plansGotIt),
-          ),
-        ],
-      ),
-    ));
+    setState(() => _purchaseBusy = true);
+    final outcome = await context
+        .read<SubscriptionEntitlementCubit>()
+        .purchaseSelectedPlan(annual: _isAnnual);
+    if (!mounted) return;
+    setState(() => _purchaseBusy = false);
+
+    final message = switch (outcome) {
+      SubscriptionPurchaseOutcome.success => l10n.purchaseSuccess,
+      SubscriptionPurchaseOutcome.cancelled => l10n.purchaseCancelled,
+      SubscriptionPurchaseOutcome.offeringsUnavailable =>
+        l10n.purchaseOfferingsUnavailable,
+      SubscriptionPurchaseOutcome.notConfigured => l10n.purchasesNotConfigured,
+      SubscriptionPurchaseOutcome.failed => l10n.purchaseFailed,
+    };
+    final type = outcome == SubscriptionPurchaseOutcome.success
+        ? UiSnackbarType.success
+        : outcome == SubscriptionPurchaseOutcome.cancelled ||
+                outcome == SubscriptionPurchaseOutcome.offeringsUnavailable ||
+                outcome == SubscriptionPurchaseOutcome.notConfigured
+            ? UiSnackbarType.normal
+            : UiSnackbarType.error;
+    uiSnackBar(context: context, message: message, type: type);
+    if (outcome == SubscriptionPurchaseOutcome.success) {
+      Navigator.of(context).pop();
+    }
   }
 }
 
@@ -408,12 +467,14 @@ class _BottomSection extends StatelessWidget {
     required this.isAnnual,
     required this.appColors,
     required this.l10n,
+    required this.busy,
     required this.onSubscribe,
   });
 
   final bool isAnnual;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final bool busy;
   final VoidCallback onSubscribe;
 
   @override
@@ -441,7 +502,7 @@ class _BottomSection extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: onSubscribe,
+              onPressed: busy ? null : onSubscribe,
               style: FilledButton.styleFrom(
                 backgroundColor: appColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -449,13 +510,22 @@ class _BottomSection extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: Text(
-                buttonText,
-                style: AppTextStyles.body1.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              child: busy
+                  ? SizedBox(
+                      height: 22,
+                      width: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: appColors.neutralWhite,
+                      ),
+                    )
+                  : Text(
+                      buttonText,
+                      style: AppTextStyles.body1.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 12),

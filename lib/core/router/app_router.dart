@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:insights_feature/insights_feature.dart';
 import 'package:patients_feature/patients_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -46,8 +47,11 @@ GoRouter createAppRouter() {
         rootNavigatorKey: _rootNavigatorKey,
       ),
       StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) => AppShell(
-          navigationShell: navigationShell,
+        builder: (context, state, navigationShell) => BlocProvider.value(
+          value: getIt<SubscriptionEntitlementCubit>(),
+          child: AppShell(
+            navigationShell: navigationShell,
+          ),
         ),
         branches: [
           StatefulShellBranch(

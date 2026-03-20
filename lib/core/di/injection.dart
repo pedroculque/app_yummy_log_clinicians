@@ -7,6 +7,7 @@ import 'package:insights_feature/insights_feature.dart';
 import 'package:patients_feature/patients_feature.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 import 'package:settings_feature/settings_feature.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 
 /// Instância global do service locator.
 final GetIt getIt = GetIt.instance;
@@ -50,5 +51,10 @@ Future<void> configureDependencies({
     )
     ..registerSingleton<ClinicianNotificationService>(
       ClinicianNotificationService(authRepository: getIt<AuthRepository>()),
+    )
+    ..registerSingleton<SubscriptionEntitlementCubit>(
+      SubscriptionEntitlementCubit(
+        authRepository: getIt<AuthRepository>(),
+      ),
     );
 }

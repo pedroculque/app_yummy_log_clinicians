@@ -736,6 +736,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restorePurchasesSoon => 'Restore purchases: coming soon';
 
   @override
+  String get purchasesNotConfigured => 'Purchases are not configured in this build. Set RevenueCat API keys.';
+
+  @override
+  String get purchaseSuccess => 'Subscription activated.';
+
+  @override
+  String get purchaseCancelled => 'Purchase cancelled.';
+
+  @override
+  String get purchaseFailed => 'Could not complete the purchase. Please try again.';
+
+  @override
+  String get purchaseOfferingsUnavailable => 'Plans are unavailable right now. Please try again later.';
+
+  @override
+  String get purchasesRestoreSuccess => 'Subscription restored successfully.';
+
+  @override
+  String get purchasesRestoreEmpty => 'No subscription found for this account.';
+
+  @override
+  String get purchasesRestoreFailed => 'Could not restore purchases.';
+
+  @override
   String get planPro => 'Clinicians plan';
 
   @override
