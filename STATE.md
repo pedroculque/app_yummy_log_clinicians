@@ -7,12 +7,12 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 ## Posição atual
 
 - **Pacotes:** `meal_domain` concentra `MealEntry` (patients, insights, sync, diary). Módulo `conectar` removido (fluxo do clínico é convite em `patients_feature`).
-- **Fase:** 3.1 (Insights MVP) concluída. Fase 3.2 planejada.
+- **Fase:** Fase 3 (Insights **3.1–3.4**) concluída: dashboard, análises por paciente (3.2), análises avançadas (3.3) e notificações push (3.4).
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
 - **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.
 - **Pacientes:** Feature `patients_feature` implementada com:
   - Header com saudação personalizada (nome do clínico)
-  - Lista de pacientes (cards com avatar/iniciais, nome destacado, data de vínculo)
+  - Lista de pacientes (cards com avatar/foto de perfil ou iniciais, nome destacado, data de vínculo)
   - Swipe-to-remove com confirmação via bottom sheet
   - Tap no card → abre diário do paciente
   - Botão "CONVIDAR PACIENTE" (bloqueado se limite atingido)
@@ -48,7 +48,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - **Análises avançadas (Fase 3.3):** Tendências agregadas (atual vs anterior), refeições puladas por tipo, correlação sentimentos em refeições puladas
 - **Configurações:** Adaptado do app paciente + seção de Assinatura.
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
-- **i18n:** pt-BR, en, es via package `yummy_log_l10n`.
+- **i18n:** pt-BR, en, es via package `yummy_log_l10n`; nome do app e textos de assinatura/Pro alinhados à identidade **Clinicians** (stores + strings nativas Android por locale).
 - **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**.
 - **Notificações push:** Implementado fluxo completo:
   - `ClinicianNotificationService` registra token FCM em `clinicians/{uid}/notification_tokens`
@@ -82,10 +82,9 @@ Nenhum no momento.
 
 ## Próximos passos (prioridade)
 
-1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro.
-2. ~~**Insights Fase 3.2:** Gráficos de sentimentos, calendário de frequência, distribuição de quantidade por paciente.~~ ✅ Implementado.
-3. ~~**Insights Fase 3.3:** Análise por refeição (puladas + correlação sentimentos), tendências agregadas.~~ ✅ Implementado.
-4. **Exportar relatórios:** PDF com resumo do paciente para consultas.
+1. **Integrar In-App Purchases:** RevenueCat ou nativo para ativar plano Pro (a UI de planos e preços já refletem R$ 24,90/mês e R$ 179,90/ano).
+2. **Exportar relatórios:** PDF com resumo do paciente para consultas.
+3. **Manutenção:** validar deep links de push e fluxo de convite após alterações de branding/l10n.
 
 ---
 

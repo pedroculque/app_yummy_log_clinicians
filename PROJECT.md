@@ -20,8 +20,8 @@ O **YummyLog for Clinicians** permite que nutricionistas, psicólogos e outros p
 | Plano | Limite | Preço |
 |-------|--------|-------|
 | **Gratuito** | 2 pacientes | R$ 0 |
-| **Pro Mensal** | Ilimitado | R$ 19,90/mês |
-| **Pro Anual** | Ilimitado | R$ 149,90/ano (economia 37%) |
+| **Pro Mensal** | Ilimitado | R$ 24,90/mês |
+| **Pro Anual** | Ilimitado | R$ 179,90/ano (economia ~40%) |
 
 O app funciona em conjunto com o **YummyLog** (app do paciente), compartilhando o mesmo backend Firebase.
 
@@ -55,7 +55,7 @@ app_yummy_log_clinicians/
 ├── modules/
 │   ├── features/
 │   │   ├── patients/           # Lista de pacientes, diário, código de convite
-│   │   ├── insights/           # Métricas e dashboard (placeholder)
+│   │   ├── insights/           # Dashboard, alertas, análises por paciente e avançadas
 │   │   └── settings/           # Configurações, planos, login/logout
 │   └── foundation/
 │       ├── auth/               # AuthRepository, LoginPage
@@ -102,7 +102,7 @@ app_yummy_log_clinicians/
 
 | Documento | Descrição |
 |-----------|-----------|
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1-C34) |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1–C36 + backlog C37) |
 | [STATE.md](STATE.md) | Posição atual, decisões, próximos passos |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica |

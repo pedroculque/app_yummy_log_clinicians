@@ -13,7 +13,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | **v2** | Visualizar diário do paciente (read-only) | ✅ Concluído |
 | **v2.1** | Monetização: planos Free/Pro, limite de pacientes | ✅ Concluído |
 | **v2.2** | Configuração do formulário de comportamento por paciente | ✅ Concluído |
-| **v3** | Insights e métricas dos pacientes | ✅ Em andamento |
+| **v3** | Insights e métricas (incl. push 3.4) | ✅ Concluído |
 
 ---
 
@@ -79,10 +79,10 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | C23 | **Dashboard resumo:** cards com total de pacientes, registros do período, alertas ativos. | Alta | ✅ |
 | C24 | **Alertas de risco:** lista de comportamentos de risco (vômito forçado, laxantes, regurgitação, esconder comida, comer em segredo). | Alta | ✅ |
 | C25 | **Ranking de atenção:** lista de pacientes ordenada por necessidade de atenção (score baseado em comportamentos de risco, sentimentos negativos, baixa frequência). | Alta | ✅ |
-| C26 | **Análise de sentimentos:** distribuição de sentimentos por paciente (últimos 7/30 dias). | Média | Pendente |
-| C27 | **Frequência de registros:** calendário de calor e média de refeições/dia por paciente. | Média | Pendente |
-| C28 | **Quantidade consumida:** distribuição de `amountEaten` por paciente para identificar restrição. | Média | Pendente |
-| C29 | **Análise por refeição:** quais refeições são mais puladas, correlação com sentimentos. | Baixa | Pendente |
+| C26 | **Análise de sentimentos:** distribuição de sentimentos por paciente (últimos 7/30 dias). | Média | ✅ |
+| C27 | **Frequência de registros:** calendário de calor e média de refeições/dia por paciente. | Média | ✅ |
+| C28 | **Quantidade consumida:** distribuição de `amountEaten` por paciente para identificar restrição. | Média | ✅ |
+| C29 | **Análise por refeição:** quais refeições são mais puladas, correlação com sentimentos. | Baixa | ✅ |
 | C30 | **Filtros de período:** 7 dias, 30 dias, 90 dias. | Média | ✅ |
 
 ---
@@ -98,12 +98,28 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 
 ---
 
+## Requisitos funcionais (v3.4 – Notificações push)
+
+| ID | Descrição | Status |
+|----|-----------|--------|
+| C35 | **Token e preferências:** registro FCM em `clinicians/{uid}/notification_tokens`; `pushEnabled` e `pushMode` (todas vs só risco) na UI de configurações. | ✅ |
+| C36 | **Entrega:** Cloud Function `notifyCliniciansOnNewMeal` ao criar refeição; mensagem genérica ou de alerta conforme risco; deep link para `/patients/:patientId/diary`. | ✅ |
+
+---
+
+## Backlog (planejado)
+
+| ID | Descrição | Status |
+|----|-----------|--------|
+| C37 | **Exportar relatórios:** PDF com resumo do paciente para consultas. | Pendente |
+
+---
+
 ## Fora de escopo (atual)
 
 - Edição de refeições do paciente (app é read-only para o clínico).
 - Perfil completo do clínico (nome, CRN, bio, etc).
 - Chat com paciente.
-- Exportar relatórios (PDF).
 
 ---
 

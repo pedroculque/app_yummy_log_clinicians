@@ -26,12 +26,13 @@ App para **profissionais de saúde** acompanharem os diários alimentares de seu
 
 ### Monetização
 - **Plano Gratuito** — Limite de 2 pacientes
-- **Plano Pro** — Pacientes ilimitados (R$ 19,90/mês ou R$ 149,90/ano)
+- **Plano Pro** — Pacientes ilimitados (R$ 24,90/mês ou R$ 179,90/ano na UI; cobrança após IAP)
 - **Tela de planos** — UI para upgrade com trial de 7 dias
 
 ### Outros
 - **Login opcional** — Firebase Auth (Google + Apple no iOS); necessário para convidar
-- **Insights** — Métricas e estatísticas dos pacientes (em desenvolvimento)
+- **Insights** — Dashboard, alertas de risco, ranking, análises por paciente e tendências; período 7/30/90 dias
+- **Push** — Notificação quando o paciente registra refeição (todas ou só com risco), com deep link para o diário
 - **Internacionalização** — pt-BR, en, es
 - **Design system** — `ui_kit` (AppColors, AppTextStyles, UiCard, etc.)
 
@@ -66,7 +67,7 @@ app_yummy_log_clinicians/
 ├── modules/
 │   ├── features/
 │   │   ├── patients/             # Lista de pacientes, código de convite
-│   │   ├── insights/             # Métricas e dashboard (placeholder)
+│   │   ├── insights/             # Dashboard, métricas e análises
 │   │   └── settings/             # Configurações (login, preferências)
 │   └── foundation/
 │       ├── auth/                 # AuthRepository (Firebase)
@@ -82,7 +83,7 @@ app_yummy_log_clinicians/
 │   ├── ROADMAP.md
 │   └── THEMING.md
 ├── PROJECT.md                    # Visão do produto
-├── REQUIREMENTS.md               # Requisitos v1–v3 (C1–C16)
+├── REQUIREMENTS.md               # Requisitos por versão (C1–C37)
 └── STATE.md                      # Estado atual, decisões, próximos passos
 ```
 
@@ -181,7 +182,7 @@ flutter gen-l10n --arb-dir="modules/shared/yummy_log_l10n/lib/l10n/arb"
 |-----------|-----------|
 | [PROJECT.md](PROJECT.md) | Visão do produto, stack, estrutura |
 | [STATE.md](STATE.md) | Posição atual, decisões recentes, próximos passos |
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos v1–v3 (C1–C16) |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1–C37, ver tabelas no arquivo) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento e prioridades |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | go_router, get_it, módulos |
 | [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore compartilhada |
@@ -195,8 +196,10 @@ flutter gen-l10n --arb-dir="modules/shared/yummy_log_l10n/lib/l10n/arb"
 |------|-----------|--------|
 | **v1 – MVP** | Tab bar, código de convite, lista de pacientes, empty state | ✅ Concluído |
 | **v2 – Diário** | Visualizar diário do paciente (read-only) | ✅ Concluído |
-| **v2.1 – Monetização** | Sistema de planos (Free: 2 pacientes / Pro: ilimitado) | ✅ Concluído |
-| **v3 – Insights** | Dashboard com métricas e estatísticas | ⬜ Planejado |
+| **v2.1 – Monetização** | Planos Free/Pro na UI; **IAP** ainda pendente (C22) | 🟡 UI ✅ / IAP pendente |
+| **v2.2 – Formulário** | Configuração de comportamentos por paciente (`form_config`) | ✅ Concluído |
+| **v3 – Insights + push** | Dashboard, análises 3.2/3.3, notificações FCM | ✅ Concluído |
+| **Backlog** | Exportar PDF (C37) | ⬜ Planejado |
 
 ---
 

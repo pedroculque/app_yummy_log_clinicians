@@ -30,12 +30,12 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Estado vazio | Empty state visual com ícone, descrição e feature chips | ✅ |
 | Alerta de login | Ao convidar sem login, mostra alerta e direciona para Configurações | ✅ |
 | Configurações | Idioma, aparência, sobre, suporte, login/logout | ✅ |
-| Insights (placeholder) | Tela "Em breve" | ✅ |
+| Insights (MVP) | Tela "Em breve"; substituída pelo dashboard na **Fase 3** | ✅ |
 
 **Entregáveis:**
 - [x] Tab bar (3 abas: Pacientes, Insights, Configurações)
 - [x] Feature `patients_feature` com código de convite
-- [x] Feature `insights_feature` (placeholder)
+- [x] Feature `insights_feature` (MVP: placeholder; Fase 3: dashboard e análises)
 - [x] Configurações adaptadas do app paciente
 - [x] Empty state visual na aba Pacientes
 - [x] Alerta de login ao convidar sem estar logado
@@ -83,7 +83,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Bloqueio de convite | Ao atingir limite, mostra dialog de upgrade | ✅ |
 | Seção Assinatura | Card na tela de configurações com progresso | ✅ |
 | Tela de planos | UI com benefícios Pro, seletor Anual/Mensal | ✅ |
-| Preços | R$ 19,90/mês ou R$ 149,90/ano (economia de 37%) | ✅ |
+| Preços | R$ 24,90/mês ou R$ 179,90/ano (economia de ~40%) — valores exibidos na UI; cobrança real após IAP | ✅ |
 
 **Entregáveis:**
 - [x] `PlansPage` com UI de upgrade
@@ -125,7 +125,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 
 ### Fase 3: Insights e Métricas 📊
 
-**Status:** Fase 3.1 concluída ✅
+**Status:** Fase 3 (3.1–3.4) concluída ✅
 
 **Objetivo:** Dashboard com métricas e visualizações dos dados dos pacientes para apoio à decisão clínica.
 
@@ -230,13 +230,16 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 
 ### Alta (próximos passos)
 
-1. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro.
-2. **Fase 3** – Insights e métricas (3.2, 3.3).
+1. **Integração In-App Purchases** – RevenueCat ou nativo para planos Pro (alinhado aos preços da UI: R$ 24,90/mês, R$ 179,90/ano).
 
 ### Média
 
-3. ~~Configuração do formulário de comportamento.~~ ✅ Implementado (Fase 2.2)
-4. ~~Notificações push (quando paciente registra nova entrada).~~ ✅ Implementado (Fase 3.4)
+2. **Exportar relatórios** – PDF com resumo do paciente para consultas (ver [STATE.md](../STATE.md)).
+
+### Concluído (referência)
+
+- Configuração do formulário de comportamento (Fase 2.2).
+- Insights 3.2, 3.3 e notificações push 3.4.
 
 ---
 

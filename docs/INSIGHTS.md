@@ -236,6 +236,6 @@ class InsightsSummary extends Equatable {
 
 ## Referências
 
-- [REQUIREMENTS.md](../REQUIREMENTS.md) - Requisitos C23-C30
-- [ROADMAP.md](ROADMAP.md) - Fases 3.1, 3.2, 3.3
+- [REQUIREMENTS.md](../REQUIREMENTS.md) — Requisitos C23–C36 (insights + push)
+- [ROADMAP.md](ROADMAP.md) — Fases 3.1–3.4
 - [patients_feature](../modules/features/patients/) - Modelos Patient e MealEntry
