@@ -259,6 +259,7 @@
 				30CE03612F6B3CA300A7A9C9 /* Copy GoogleService-Info.plist */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
+				30CE03712F6B3CA500A7A9C9 /* Copy Localized Display Name */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				6B557D1B19DF81B37EEFC3DA /* [CP] Embed Pods Frameworks */,
@@ -299,6 +300,8 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				es,
+				pt,
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
@@ -376,6 +379,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "environment=\"prod\"\n\n# Regex: CONFIGURATION = Debug-development, Release-production, etc.\nif [[ $CONFIGURATION =~ -([^-]*)$ ]]; then\n  raw=${BASH_REMATCH[1]}\n  case \"$raw\" in\n    development) environment=\"dev\" ;;\n    production)  environment=\"prod\" ;;\n    staging)     environment=\"stg\" ;;\n    *)           environment=\"$raw\" ;;\n  esac\nfi\n\nGOOGLESERVICE_INFO_PLIST=GoogleService-Info.plist\nGOOGLESERVICE_INFO_FILE=${PROJECT_DIR}/Runner/config/${environment}/${GOOGLESERVICE_INFO_PLIST}\n\nif [ ! -f \"$GOOGLESERVICE_INFO_FILE\" ]; then\n  echo \"error: $GOOGLESERVICE_INFO_FILE not found\"\n  exit 1\nfi\n\nPLIST_DESTINATION=${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\ncp \"${GOOGLESERVICE_INFO_FILE}\" \"${PLIST_DESTINATION}\"\necho \"[Copy GoogleService-Info] ${CONFIGURATION} -> ${environment}\"\n";
+		};
+		30CE03712F6B3CA500A7A9C9 /* Copy Localized Display Name */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Localized Display Name";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "environment=\"prod\"\n\nif [[ \"$CONFIGURATION\" =~ -([^-]*)$ ]]; then\n  raw=${BASH_REMATCH[1]}\n  case \"$raw\" in\n    development) environment=\"dev\" ;;\n    production)  environment=\"prod\" ;;\n    staging)     environment=\"stg\" ;;\n    *)           environment=\"prod\" ;;\n  esac\nfi\n\nSRC_ROOT=\"${PROJECT_DIR}/Runner/DisplayNameLocalizations/${environment}\"\nAPP=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n\nif [ ! -d \"$SRC_ROOT\" ]; then\n  echo \"error: DisplayName localizations not found at $SRC_ROOT\"\n  exit 1\nfi\n\nif [ ! -d \"$APP\" ]; then\n  echo \"error: $APP not found yet; ensure the app bundle is built before this phase\"\n  exit 1\nfi\n\nfor lang in en pt es; do\n  SRC=\"${SRC_ROOT}/${lang}.lproj/InfoPlist.strings\"\n  if [ -f \"$SRC\" ]; then\n    mkdir -p \"${APP}/${lang}.lproj\"\n    cp \"$SRC\" \"${APP}/${lang}.lproj/\"\n    echo \"[Copy Localized Display Name] ${lang} <- ${environment}\"\n  fi\ndone\n";
 		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -583,7 +604,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "YummyLog for Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_production.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -691,7 +712,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "YummyLog for Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_production.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -794,7 +815,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "YummyLog for Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_production.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -901,7 +922,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "[DEV] YummyLog Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_development.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1006,7 +1027,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "[DEV] YummyLog Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_development.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1110,7 +1131,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "[DEV] YummyLog Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_development.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1218,7 +1239,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "[STG] YummyLog Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_staging.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1326,7 +1347,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "[STG] YummyLog Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_staging.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1429,7 +1450,7 @@
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = YGC8DVQ24H;
 				ENABLE_BITCODE = NO;
-				FLAVOR_APP_NAME = "[STG] YummyLog Clinicians";
+				FLAVOR_APP_NAME = "Yummy Clinicians";
 				FLUTTER_TARGET = lib/main_staging.dart;
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

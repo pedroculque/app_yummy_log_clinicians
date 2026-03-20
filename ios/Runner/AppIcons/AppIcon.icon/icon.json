@@ -13,25 +13,11 @@
       "blur-material" : 0.5,
       "layers" : [
         {
-          "fill-specializations" : [
-            {
-              "appearance" : "dark",
-              "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
-              }
-            },
-            {
-              "appearance" : "tinted",
-              "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
-              }
-            }
-          ],
           "glass" : false,
-          "image-name" : "Logo.svg",
+          "image-name" : "Group 36272.svg",
           "name" : "Logo",
           "position" : {
-            "scale" : 1.8,
+            "scale" : 5,
             "translation-in-points" : [
               0,
               0
