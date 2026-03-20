@@ -269,7 +269,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get accountSignInIntro => 'Inicia sesión para sincronizar y conectar con tu nutricionista.';
 
   @override
-  String get accountProHint => 'Inicio de sesión y sincronización disponibles en el plan Pro.';
+  String get accountProHint => 'Inicio de sesión y sincronización disponibles en el plan Clínicos.';
 
   @override
   String get viewPlans => 'Ver planes';
@@ -486,7 +486,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get insightsComingSoonSubtitle => 'Pronto podrás ver métricas y datos de tus pacientes aquí.';
 
   @override
-  String get plansUnlockPro => 'Desbloquea YummyLog Pro';
+  String get plansUnlockPro => 'Desbloquea YummyLog Clínicos';
 
   @override
   String get plansUnlockSubtitle => 'Disfruta de todas las funciones sin límites';
@@ -495,7 +495,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get plansComingSoon => 'Próximamente';
 
   @override
-  String get plansComingSoonMessage => 'La suscripción Pro estará disponible pronto. ¡Mantente atento a las actualizaciones!';
+  String get plansComingSoonMessage => 'La suscripción YummyLog Clínicos estará disponible pronto. ¡Mantente atento a las actualizaciones!';
 
   @override
   String get plansGotIt => 'Entendido';
@@ -511,6 +511,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get plansFeaturePrioritySupport => 'Soporte prioritario';
+
+  @override
+  String get plansFeatureMealPushNotifications => 'Notificaciones push de las comidas';
 
   @override
   String get plansAnnual => 'Anual';
@@ -586,7 +589,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get limitReachedTitle => 'Límite alcanzado';
 
   @override
-  String get limitReachedMessage => 'Has alcanzado el límite de 2 pacientes del plan gratuito. ¡Actualiza a Pro para tener pacientes ilimitados!';
+  String get limitReachedMessage => 'Has alcanzado el límite de 2 pacientes del plan gratuito. ¡Actualiza a YummyLog Clínicos para tener pacientes ilimitados!';
 
   @override
   String get viewPlansButton => 'Ver planes';
@@ -604,6 +607,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String patientsConnectedCount(int count) {
     return '$count pacientes conectados';
   }
+
+  @override
+  String get patientsHeaderYummyLogHint => 'Vía la app YummyLog del paciente';
+
+  @override
+  String get inviteRequiresYummyLogApp => 'El paciente necesita la app YummyLog para aceptar la invitación.';
 
   @override
   String get greetingMorning => 'Buenos días';
@@ -727,7 +736,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get restorePurchasesSoon => 'Restaurar compras: próximamente';
 
   @override
-  String get planPro => 'Plan Pro';
+  String get planPro => 'Plan Clínicos';
 
   @override
   String get planFree => 'Plan Gratuito';
@@ -744,7 +753,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get upgradeToPro => 'Actualizar a Pro';
+  String get upgradeToPro => 'Actualizar a Clínicos';
 
   @override
   String get insightsDashboard => 'Dashboard';

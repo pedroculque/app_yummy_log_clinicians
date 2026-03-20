@@ -612,7 +612,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountProHint.
   ///
   /// In en, this message translates to:
-  /// **'Sign in and sync available on Pro plan.'**
+  /// **'Sign in and sync available on the Clinicians plan.'**
   String get accountProHint;
 
   /// No description provided for @viewPlans.
@@ -1038,7 +1038,7 @@ abstract class AppLocalizations {
   /// No description provided for @plansUnlockPro.
   ///
   /// In en, this message translates to:
-  /// **'Unlock YummyLog Pro'**
+  /// **'Unlock YummyLog Clinicians'**
   String get plansUnlockPro;
 
   /// No description provided for @plansUnlockSubtitle.
@@ -1056,7 +1056,7 @@ abstract class AppLocalizations {
   /// No description provided for @plansComingSoonMessage.
   ///
   /// In en, this message translates to:
-  /// **'Pro subscription will be available soon. Stay tuned for updates!'**
+  /// **'The YummyLog Clinicians subscription will be available soon. Stay tuned for updates!'**
   String get plansComingSoonMessage;
 
   /// No description provided for @plansGotIt.
@@ -1088,6 +1088,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Priority support'**
   String get plansFeaturePrioritySupport;
+
+  /// No description provided for @plansFeatureMealPushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications for meals'**
+  String get plansFeatureMealPushNotifications;
 
   /// No description provided for @plansAnnual.
   ///
@@ -1230,7 +1236,7 @@ abstract class AppLocalizations {
   /// No description provided for @limitReachedMessage.
   ///
   /// In en, this message translates to:
-  /// **'You have reached the limit of 2 patients on the free plan. Upgrade to Pro for unlimited patients!'**
+  /// **'You have reached the limit of 2 patients on the free plan. Upgrade to YummyLog Clinicians for unlimited patients!'**
   String get limitReachedMessage;
 
   /// No description provided for @viewPlansButton.
@@ -1262,6 +1268,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} patients connected'**
   String patientsConnectedCount(int count);
+
+  /// No description provided for @patientsHeaderYummyLogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected via the patient\'s YummyLog app'**
+  String get patientsHeaderYummyLogHint;
+
+  /// No description provided for @inviteRequiresYummyLogApp.
+  ///
+  /// In en, this message translates to:
+  /// **'The patient needs the YummyLog app to accept the invite.'**
+  String get inviteRequiresYummyLogApp;
 
   /// No description provided for @greetingMorning.
   ///
@@ -1500,7 +1518,7 @@ abstract class AppLocalizations {
   /// No description provided for @planPro.
   ///
   /// In en, this message translates to:
-  /// **'Pro plan'**
+  /// **'Clinicians plan'**
   String get planPro;
 
   /// No description provided for @planFree.
@@ -1530,7 +1548,7 @@ abstract class AppLocalizations {
   /// No description provided for @upgradeToPro.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to Pro'**
+  /// **'Upgrade to Clinicians'**
   String get upgradeToPro;
 
   /// No description provided for @insightsDashboard.

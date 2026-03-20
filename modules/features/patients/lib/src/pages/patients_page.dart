@@ -594,6 +594,14 @@ class _PageHeader extends StatelessWidget {
                     color: appColors.gray,
                   ),
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.patientsHeaderYummyLogHint,
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.gray.withValues(alpha: 0.85),
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),
@@ -1212,6 +1220,14 @@ class _InviteBottomSheetState extends State<_InviteBottomSheet> {
               Text(
                 l10n.inviteCodeSubtitle,
                 style: AppTextStyles.body2.copyWith(color: appColors.gray),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.inviteRequiresYummyLogApp,
+                style: AppTextStyles.body3.copyWith(
+                  color: appColors.gray.withValues(alpha: 0.9),
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

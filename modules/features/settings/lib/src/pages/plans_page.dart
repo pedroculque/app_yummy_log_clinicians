@@ -178,6 +178,7 @@ class _FeaturesList extends StatelessWidget {
       l10n.plansFeatureFullHistory,
       l10n.plansFeatureExportReports,
       l10n.plansFeaturePrioritySupport,
+      l10n.plansFeatureMealPushNotifications,
     ];
 
     return Container(
