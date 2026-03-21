@@ -741,6 +741,12 @@ abstract class AppLocalizations {
   /// **'Copy'**
   String get copySupportId;
 
+  /// No description provided for @supportIdCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Support ID copied to clipboard.'**
+  String get supportIdCopied;
+
   /// No description provided for @rateApp.
   ///
   /// In en, this message translates to:

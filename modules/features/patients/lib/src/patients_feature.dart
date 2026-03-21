@@ -38,6 +38,9 @@ class PatientsFeature implements YummyLogFeature {
           analytics: getIt.isRegistered<CliniciansAnalytics>()
               ? getIt<CliniciansAnalytics>()
               : null,
+          crashReporter: getIt.isRegistered<CrashReporter>()
+              ? getIt<CrashReporter>()
+              : null,
         ),
       )
       ..registerFactory<PatientDiaryCubit>(
@@ -45,6 +48,9 @@ class PatientsFeature implements YummyLogFeature {
           repository: getIt<PatientMealsRepository>(),
           analytics: getIt.isRegistered<CliniciansAnalytics>()
               ? getIt<CliniciansAnalytics>()
+              : null,
+          crashReporter: getIt.isRegistered<CrashReporter>()
+              ? getIt<CrashReporter>()
               : null,
         ),
       )
@@ -54,6 +60,9 @@ class PatientsFeature implements YummyLogFeature {
           authRepository: getIt<AuthRepository>(),
           analytics: getIt.isRegistered<CliniciansAnalytics>()
               ? getIt<CliniciansAnalytics>()
+              : null,
+          crashReporter: getIt.isRegistered<CrashReporter>()
+              ? getIt<CrashReporter>()
               : null,
         ),
       );

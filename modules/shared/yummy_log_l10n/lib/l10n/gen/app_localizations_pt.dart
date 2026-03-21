@@ -335,6 +335,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get copySupportId => 'Copiar';
 
   @override
+  String get supportIdCopied => 'ID de suporte copiado para a área de transferência.';
+
+  @override
   String get rateApp => 'Avaliar o app';
 
   @override

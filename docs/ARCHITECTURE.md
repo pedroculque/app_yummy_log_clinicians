@@ -98,18 +98,41 @@ abstract class YummyLogFeature {
 
 ## Fluxo de inicialização
 
+Os entry points (`lib/main_*.dart`) delegam em `launchClinicianApp(flavor)` em [`lib/core/observability/launch_clinician_app.dart`](../lib/core/observability/launch_clinician_app.dart): primeiro `SentryFlutter.init`, depois o corpo abaixo no `appRunner`.
+
 ```dart
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initPersistence(getIt);      // Sembast
-  await initAuth(getIt);             // Firebase Auth
-  await configureDependencies();     // Features + cubits globais (+ flavor)
-  await getIt<ThemeModeCubit>().init();
-  await getIt<LocaleCubit>().init();
-  final router = createAppRouter();
-  await bootstrap(() => App(router: router));
-}
+// Resumo (ver ficheiro para imports e detalhes)
+await initPersistence(getIt);
+await registerSessionLogger(getIt, prefs: prefs);
+registerCrashReporterIfNeeded(getIt);
+await initAuth(getIt);
+await initRemoteConfig();
+await configureRevenueCat(flavor);
+initSync(getIt, config: const SyncConfig(watchersEnabled: false));
+await configureDependencies(flavor: flavor);
+await getIt<AppRating>().trackSession();
+await getIt<ThemeModeCubit>().init();
+await getIt<LocaleCubit>().init();
+final router = createAppRouter();
+unawaited(getIt<ClinicianNotificationService>().attachRouter(router));
+await bootstrap(() => App(router: router));
 ```
+
+O **SessionLogger** é registado cedo (após persistência, antes de auth/sync) para capturar falhas precoces e para o `CrashReporter` depender apenas do buffer de sessão.
+
+[`bootstrap`](../lib/bootstrap.dart) regista `AppBlocObserver`: em `onError`, se `SessionLogger` estiver no `GetIt`, grava o erro com `context: 'Bloc:…'` (além de `FlutterError` / `PlatformDispatcher`).
+
+---
+
+## Observabilidade
+
+- **Sentry:** DSN via `--dart-define=SENTRY_DSN`, `environment` = flavor, `sendDefaultPii: false`, `beforeSend` do pacote `session_sentry`.
+- **Session logger:** `package_session_logger` + cliente `SentrySessionClient` (módulo `modules/shared/session_sentry`): erros de sessão → evento com fingerprint; resto → breadcrumbs; `appVersion` no config inclui `version+buildNumber` (`register_session_logger`).
+- **Erros tratados:** `CrashReporter` (`feature_contract`) → `SessionLoggerErrorReporter` → `SessionLogger.error` (sem `captureException` direto nas features).
+- **Rotas:** `AnalyticsRouteObserver` recebe `logger` (Firebase) e `sessionLogger` (trilho de sessão).
+- **Utilizador / suporte:** `init_session_logger_user_binding` sincroniza `AuthUser.uid` com o session logger; o mesmo UID aparece como **ID de Suporte** nas Configurações (logado) e nas tags Sentry `user` / `support_id`. Ver [modules/features/settings/docs/support-id.md](../modules/features/settings/docs/support-id.md).
+
+Documentação: [OBSERVABILITY.md](OBSERVABILITY.md), [lib/core/observability/README.md](../lib/core/observability/README.md).
 
 ---
 
@@ -128,4 +151,5 @@ Future<void> main() async {
 
 - [go_router – StatefulShellRoute](https://pub.dev/documentation/go_router/latest/go_router/StatefulShellRoute-class.html)
 - [get_it no pub.dev](https://pub.dev/packages/get_it)
+- [OBSERVABILITY.md](OBSERVABILITY.md) – Sentry e session logger
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura Firestore

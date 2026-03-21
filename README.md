@@ -80,6 +80,7 @@ app_yummy_log_clinicians/
 │   ├── ARCHITECTURE.md
 │   ├── BACKEND_CONECTAR.md
 │   ├── FIREBASE_SETUP_CLINICIANS.md  # Config Firebase (app do clínico)
+│   ├── OBSERVABILITY.md              # Sentry, session logger, CrashReporter
 │   ├── ROADMAP.md
 │   └── THEMING.md
 ├── PROJECT.md                    # Visão do produto
@@ -185,6 +186,8 @@ flutter gen-l10n --arb-dir="modules/shared/yummy_log_l10n/lib/l10n/arb"
 | [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1–C37, ver tabelas no arquivo) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento e prioridades |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | go_router, get_it, módulos |
+| [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) | Session logger, Sentry, arranque, privacidade, ID de Suporte ↔ UID |
+| [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md) | ID de Suporte nas Configurações (Firebase UID + Sentry) |
 | [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore compartilhada |
 | [docs/THEMING.md](docs/THEMING.md) | Tema e design system |
 

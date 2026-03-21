@@ -8,7 +8,9 @@ import 'package:get_it/get_it.dart';
 Future<void> initAuth(GetIt getIt) async {
   try {
     await Firebase.initializeApp();
-    getIt.registerSingleton<AuthRepository>(FirebaseAuthRepository());
+    getIt.registerSingleton<AuthRepository>(
+      FirebaseAuthRepository(getIt: getIt),
+    );
   } on Object {
     getIt.registerSingleton<AuthRepository>(StubAuthRepository());
   }

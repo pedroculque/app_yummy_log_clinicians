@@ -7,6 +7,8 @@ environment:
   sdk: ^3.11.0
 
 dependencies:
+  feature_contract:
+    path: ../../shared/feature_contract
   firebase_auth: ^5.3.4
   firebase_core: ^3.8.1
   flutter:

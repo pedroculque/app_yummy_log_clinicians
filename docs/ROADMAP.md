@@ -243,6 +243,7 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 
 - Configuração do formulário de comportamento (Fase 2.2).
 - Insights 3.2, 3.3 e notificações push 3.4.
+- Observabilidade: session logger + Sentry (`session_sentry`), `CrashReporter` → buffer de sessão, arranque em `launchClinicianApp`, erros BLoC → session logger em `bootstrap`, **ID de Suporte** (UID) nas Configurações alinhado ao Sentry — ver [docs/OBSERVABILITY.md](OBSERVABILITY.md) e [modules/features/settings/docs/support-id.md](../modules/features/settings/docs/support-id.md).
 
 ---
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:diary_feature/src/data/meal_entry_repository.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meal_domain/meal_domain.dart';
 import 'package:path/path.dart' as p;
@@ -17,11 +18,16 @@ class DiaryState {
 /// Inicia o carregamento no construtor (singleton é criado na primeira vez
 /// que a tab Diário é aberta).
 class DiaryCubit extends Cubit<DiaryState> {
-  DiaryCubit(this._repository) : super(const DiaryState(loading: true)) {
+  DiaryCubit(
+    this._repository, {
+    CrashReporter? crashReporter,
+  })  : _crashReporter = crashReporter,
+        super(const DiaryState(loading: true)) {
     unawaited(load());
   }
 
   final MealEntryRepository _repository;
+  final CrashReporter? _crashReporter;
   bool _migrated = false;
 
   Future<void> load() async {
@@ -41,6 +47,12 @@ class DiaryCubit extends Cubit<DiaryState> {
       emit(state.copyWith(entries: entries, loading: false));
     } on Object catch (err, st) {
       debugPrint('[DiaryCubit] load() ERROR: $err\n$st');
+      _crashReporter?.call(
+        err,
+        st,
+        feature: 'diary',
+        hint: 'load',
+      );
       emit(state.copyWith(loading: false));
     }
   }

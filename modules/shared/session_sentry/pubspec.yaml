@@ -1,0 +1,21 @@
+name: session_sentry
+description: Cliente Sentry para package_session_logger + filtros beforeSend.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+  flutter: ^3.41.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  package_session_logger:
+    git:
+      url: https://github.com/pedroculque/mobile-foundation.git
+      ref: main
+      path: packages/session_logger
+  sentry_flutter: ^8.14.2
+
+dev_dependencies:
+  very_good_analysis: ^10.2.0

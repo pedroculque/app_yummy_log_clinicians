@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patients_feature/src/cubit/form_config_state.dart';
 import 'package:patients_feature/src/data/behavior_form_config.dart';
@@ -13,14 +14,17 @@ class FormConfigCubit extends Cubit<FormConfigState> {
     required FormConfigRepository repository,
     required AuthRepository authRepository,
     CliniciansAnalytics? analytics,
+    CrashReporter? crashReporter,
   })  : _repository = repository,
         _authRepository = authRepository,
         _analytics = analytics,
+        _crashReporter = crashReporter,
         super(const FormConfigState());
 
   final FormConfigRepository _repository;
   final AuthRepository _authRepository;
   final CliniciansAnalytics? _analytics;
+  final CrashReporter? _crashReporter;
   StreamSubscription<BehaviorFormConfig>? _subscription;
 
   /// Carrega a config do paciente e passa a observar alterações.
@@ -42,7 +46,13 @@ class FormConfigCubit extends Cubit<FormConfigState> {
           config: config,
         ));
       },
-      onError: (Object e, StackTrace _) {
+      onError: (Object e, StackTrace st) {
+        _crashReporter?.call(
+          e,
+          st,
+          feature: 'form_config',
+          hint: 'watch',
+        );
         emit(state.copyWith(
           status: FormConfigStatus.error,
           error: e.toString(),
@@ -91,6 +101,12 @@ class FormConfigCubit extends Cubit<FormConfigState> {
     } on Object catch (e, st) {
       debugPrint('[FormConfigCubit] save failed: $e');
       debugPrint('[FormConfigCubit] stack: $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'form_config',
+        hint: 'save',
+      );
       emit(state.copyWith(
         status: FormConfigStatus.error,
         error: e.toString(),

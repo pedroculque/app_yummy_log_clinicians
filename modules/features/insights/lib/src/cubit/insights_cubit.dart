@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:insights_feature/src/cubit/insights_state.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
 import 'package:insights_feature/src/domain/insights_summary.dart';
@@ -12,9 +13,11 @@ class InsightsCubit extends Cubit<InsightsState> {
     required InsightsRepository repository,
     required AuthRepository authRepository,
     CliniciansAnalytics? analytics,
+    CrashReporter? crashReporter,
   })  : _repository = repository,
         _authRepository = authRepository,
         _analytics = analytics,
+        _crashReporter = crashReporter,
         super(const InsightsState()) {
     _authSubscription = authRepository.authStateChanges.listen(_onAuthChanged);
   }
@@ -22,6 +25,7 @@ class InsightsCubit extends Cubit<InsightsState> {
   final InsightsRepository _repository;
   final AuthRepository _authRepository;
   final CliniciansAnalytics? _analytics;
+  final CrashReporter? _crashReporter;
   StreamSubscription<dynamic>? _subscription;
   late final StreamSubscription<AuthUser?> _authSubscription;
 
@@ -61,7 +65,13 @@ class InsightsCubit extends Cubit<InsightsState> {
           lastUpdated: DateTime.now(),
         ),
       );
-    } on Exception catch (e) {
+    } on Object catch (e, st) {
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'insights',
+        hint: 'load_summary',
+      );
       emit(
         state.copyWith(
           status: InsightsStatus.error,

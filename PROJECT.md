@@ -36,6 +36,7 @@ O app funciona em conjunto com o **YummyLog** (app do paciente), compartilhando 
 | **Navegação** | go_router (StatefulShellRoute) |
 | **DI** | get_it |
 | **Backend** | Firebase (Auth, Firestore) |
+| **Observabilidade** | `package_session_logger`, Sentry (`session_sentry`), Firebase Analytics |
 | **UI** | ui_kit (design system compartilhado) |
 | **i18n** | yummy_log_l10n (pt, en, es) |
 
@@ -50,6 +51,7 @@ app_yummy_log_clinicians/
 │   ├── core/
 │   │   ├── auth/               # Inicialização do Firebase Auth
 │   │   ├── di/                 # Injeção de dependências (get_it)
+│   │   ├── observability/      # launch + Sentry, session logger, CrashReporter
 │   │   └── router/             # go_router, tab bar shell
 │   └── main_*.dart             # Entry points por flavor
 ├── modules/
@@ -62,8 +64,9 @@ app_yummy_log_clinicians/
 │       ├── persistence/        # Sembast (cache local)
 │       └── sync/               # Firestore connection
 ├── modules/shared/
-│   ├── feature_contract/       # Interface YummyLogFeature
+│   ├── feature_contract/       # Interface YummyLogFeature, CrashReporter
 │   ├── meal_domain/            # MealEntry
+│   ├── session_sentry/         # SessionClient → Sentry (reutilizável)
 │   └── yummy_log_l10n/         # Localizações
 └── docs/                       # Documentação
 ```
@@ -106,6 +109,8 @@ app_yummy_log_clinicians/
 | [STATE.md](STATE.md) | Posição atual, decisões, próximos passos |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica |
+| [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) | Session logger, Sentry, CrashReporter, ID de Suporte ↔ UID |
+| [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md) | ID de Suporte (Firebase UID), UI, i18n, Sentry |
 | [docs/APP_RATING.md](docs/APP_RATING.md) | Regras de avaliação na loja (triggers, modal, origens) |
 | [docs/ANALYTICS.md](docs/ANALYTICS.md) | Analytics mobile-foundation (Firebase, rotas, utilizador) |
 | [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore |

@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:auth_foundation/src/auth_exceptions.dart';
 import 'package:auth_foundation/src/auth_repository.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -12,14 +14,23 @@ class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository({
     firebase_auth.FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
+    GetIt? getIt,
   })  : _auth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
         _googleSignIn = googleSignIn ??
             GoogleSignIn(
               scopes: ['email', 'profile'],
-            );
+            ),
+        _getIt = getIt;
 
   final firebase_auth.FirebaseAuth _auth;
   final GoogleSignIn _googleSignIn;
+  final GetIt? _getIt;
+
+  void _report(Object e, StackTrace? st, {required String hint}) {
+    final g = _getIt;
+    if (g == null) return;
+    reportCaughtError(g, e, st, feature: 'auth', hint: hint);
+  }
 
   @override
   Stream<AuthUser?> get authStateChanges =>
@@ -126,6 +137,7 @@ class FirebaseAuthRepository implements AuthRepository {
           debugPrint(
             '[Auth] updatePhotoURL falhou: $e $st',
           );
+          _report(e, st, hint: 'update_photo_url');
         }
       }
       // Retornar com foto do Google se o Firebase ainda não tiver
@@ -142,7 +154,8 @@ class FirebaseAuthRepository implements AuthRepository {
       throw _mapFirebaseException(e);
     } on AuthException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      _report(e, st, hint: 'sign_in_google_unexpected');
       throw AuthUnknownException(e.toString());
     }
   }
@@ -189,7 +202,8 @@ class FirebaseAuthRepository implements AuthRepository {
       throw _mapFirebaseException(e);
     } on AuthException {
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
+      _report(e, st, hint: 'sign_in_apple_unexpected');
       throw AuthUnknownException(e.toString());
     }
   }

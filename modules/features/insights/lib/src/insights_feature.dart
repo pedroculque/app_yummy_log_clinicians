@@ -32,6 +32,9 @@ class InsightsFeature implements YummyLogFeature {
           analytics: getIt.isRegistered<CliniciansAnalytics>()
               ? getIt<CliniciansAnalytics>()
               : null,
+          crashReporter: getIt.isRegistered<CrashReporter>()
+              ? getIt<CrashReporter>()
+              : null,
         ),
       );
   }
@@ -88,6 +91,9 @@ class InsightsFeature implements YummyLogFeature {
             mealsRepository: getIt<PatientMealsRepository>(),
             analytics: getIt.isRegistered<CliniciansAnalytics>()
                 ? getIt<CliniciansAnalytics>()
+                : null,
+            crashReporter: getIt.isRegistered<CrashReporter>()
+                ? getIt<CrashReporter>()
                 : null,
           );
           return PatientAnalyticsPage(

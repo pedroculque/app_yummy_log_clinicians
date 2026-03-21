@@ -4,9 +4,11 @@ import 'package:app_yummy_log_clinicians/core/analytics/init_analytics_user_bind
 import 'package:app_yummy_log_clinicians/core/app_rating/clinician_app_rating_modal.dart';
 import 'package:app_yummy_log_clinicians/core/app_rating/shared_preferences_rating_storage.dart';
 import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
+import 'package:app_yummy_log_clinicians/core/observability/init_session_logger_user_binding.dart';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:feature_contract/app_build_flavor.dart';
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:feature_contract/feature_contract.dart'
     show AppBuildFlavorConfig, ProfilePhotoSheet;
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -126,7 +128,12 @@ Future<void> configureDependencies({
       ),
     )
     ..registerSingleton<ClinicianNotificationService>(
-      ClinicianNotificationService(authRepository: getIt<AuthRepository>()),
+      ClinicianNotificationService(
+        authRepository: getIt<AuthRepository>(),
+        crashReporter: getIt.isRegistered<CrashReporter>()
+            ? getIt<CrashReporter>()
+            : null,
+      ),
     )
     ..registerSingleton<AuthCubit>(
       AuthCubit(
@@ -140,13 +147,20 @@ Future<void> configureDependencies({
         analytics: getIt.isRegistered<CliniciansAnalytics>()
             ? getIt<CliniciansAnalytics>()
             : null,
+        crashReporter: getIt.isRegistered<CrashReporter>()
+            ? getIt<CrashReporter>()
+            : null,
       ),
     )
     ..registerSingleton<SubscriptionEntitlementCubit>(
       SubscriptionEntitlementCubit(
         authRepository: getIt<AuthRepository>(),
+        crashReporter: getIt.isRegistered<CrashReporter>()
+            ? getIt<CrashReporter>()
+            : null,
       ),
     );
 
   initAnalyticsUserBinding(getIt);
+  initSessionLoggerUserBinding(getIt);
 }

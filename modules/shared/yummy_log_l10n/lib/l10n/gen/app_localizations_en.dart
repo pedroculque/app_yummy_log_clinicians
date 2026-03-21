@@ -335,6 +335,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get copySupportId => 'Copy';
 
   @override
+  String get supportIdCopied => 'Support ID copied to clipboard.';
+
+  @override
   String get rateApp => 'Rate the app';
 
   @override

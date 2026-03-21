@@ -45,7 +45,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Navegação direta para o diário do paciente
   - **Análises por paciente (Fase 3.2):** Sentimentos, quantidade consumida, calendário de frequência
   - **Análises avançadas (Fase 3.3):** Tendências agregadas (atual vs anterior), refeições puladas por tipo, correlação sentimentos em refeições puladas
-- **Configurações:** Adaptado do app paciente + seção de Assinatura + **exclusão de conta** (requisito Apple para apps com login): fluxo in-app com confirmação; remove dados do clínico no Firestore (`clinicians/*`, `clinician_codes`, `users/{uid}` se existir), tokens de push, avatar no Storage e usuário no Firebase Auth.
+- **Configurações:** Adaptado do app paciente + seção de Assinatura + **exclusão de conta** (requisito Apple para apps com login): fluxo in-app com confirmação; remove dados do clínico no Firestore (`clinicians/*`, `clinician_codes`, `users/{uid}` se existir), tokens de push, avatar no Storage e usuário no Firebase Auth. **ID de Suporte** (Firebase UID) na secção Suporte quando logado — copiável; alinhado ao `SessionLogger` e tags Sentry `user` / `support_id` — ver [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md).
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`; nome do app e textos de assinatura/Pro alinhados à identidade **Clinicians** (stores + strings nativas Android por locale).
 - **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**.
@@ -64,6 +64,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 - **App Rating:** Regras de elegibilidade, triggers, UI do modal, origens (`origin`) e pontos de integração estão documentados em [docs/APP_RATING.md](docs/APP_RATING.md).
 - **Analytics:** Integração com `package_analytics` / `package_firebase_analytics` (mobile-foundation), observer de rotas, vínculo `setUserId`/`reset` com auth — ver [docs/ANALYTICS.md](docs/ANALYTICS.md).
+- **Observabilidade (Sentry + session logger):** `launchClinicianApp` chama `SentryFlutter.init` e, no `appRunner`, `initPersistence` → `registerSessionLogger` → `registerCrashReporterIfNeeded` (`SessionLoggerErrorReporter` → só `SessionLogger.error`) → auth/sync/DI → `bootstrap`. Em `bootstrap`, `FlutterError`, `PlatformDispatcher` e **`BlocObserver.onError`** enviam para `SessionLogger` quando registado. `SessionLoggerConfig.appVersion` inclui build number (`version+build`). Erros de sessão chegam ao Sentry via `session_sentry` (`SentrySessionClient`, fingerprint estável; `beforeSend` para compra cancelada). Utilizador no Sentry: `init_session_logger_user_binding` com `AuthUser.uid` (mesmo valor do ID de Suporte na UI). Ver [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) e [lib/core/observability/README.md](lib/core/observability/README.md).
 - **Oferta Grátis vs Pro (2026-03-20):** Ver [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md) — Insights: **teaser** no grátis e dashboard **completo** no Pro; **push** para todos com login; **formulário de comportamento** no grátis; preços mantidos com revisão trimestral.
 - **Limite de pacientes:** Plano gratuito permite até 2 pacientes; Pro é ilimitado.
 - **Preços Pro:** R$ 24,90/mês ou R$ 179,90/ano (economia de 40%).
@@ -95,6 +96,8 @@ Nenhum no momento.
 ## Referências
 
 - [docs/ROADMAP.md](docs/ROADMAP.md) – Fases e entregáveis
+- [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) – Session logger, Sentry, ID de Suporte
+- [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md) – ID de Suporte (detalhe de produto/UI)
 - [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) – Estrutura Firestore, fluxo de notificações push e vínculo paciente–clínico
 - [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md) – Configurar Firebase (registrar app do clínico)
 - [REQUIREMENTS.md](REQUIREMENTS.md) – Requisitos v1/v2/v3

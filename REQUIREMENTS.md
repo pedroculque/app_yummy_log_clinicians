@@ -29,7 +29,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | C6 | **Lista de pacientes:** exibir pacientes vinculados com avatar/iniciais, nome, data de vínculo. | ✅ |
 | C7 | **Empty state visual:** ícone, título, descrição e feature chips quando não há pacientes. | ✅ |
 | C8 | **Navegação para diário:** tap no card ou botão "ACOMPANHAR" → diário do paciente. | ✅ |
-| C9 | **Configurações:** idioma, aparência (tema), sobre, suporte, login/logout. | ✅ |
+| C9 | **Configurações:** idioma, aparência (tema), sobre, suporte (incl. **ID de Suporte** = Firebase UID quando logado, copiável; alinhado a observabilidade/Sentry — ver [support-id.md](modules/features/settings/docs/support-id.md)), login/logout. | ✅ |
 | C10 | **Insights placeholder:** tela "Em breve" na aba Insights. | ✅ |
 
 ---

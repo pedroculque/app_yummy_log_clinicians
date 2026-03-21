@@ -1,4 +1,5 @@
 import 'package:auth_foundation/auth_foundation.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 import 'package:sync_foundation/src/clinician_link_service.dart';
@@ -24,6 +25,9 @@ import 'package:sync_foundation/src/user_profile_reader.dart';
 void initSync(GetIt getIt, {SyncConfig config = const SyncConfig()}) {
   final mealDs = getIt<MealEntryLocalDataSource>();
   final db = (mealDs as SembastMealEntryLocalDataSource).database;
+  final crash = getIt.isRegistered<CrashReporter>()
+      ? getIt<CrashReporter>()
+      : null;
 
   getIt
     ..registerSingleton<SyncQueue>(SembastSyncQueue(db))
@@ -34,7 +38,9 @@ void initSync(GetIt getIt, {SyncConfig config = const SyncConfig()}) {
     ..registerSingleton<ClinicianLinkService>(FirestoreClinicianLinkService())
     ..registerSingleton<UserDocumentWriter>(FirestoreUserDocumentWriter())
     ..registerSingleton<UserProfileReader>(FirestoreUserProfileReader())
-    ..registerSingleton<PhotoUploadService>(PhotoUploadService())
+    ..registerSingleton<PhotoUploadService>(
+      PhotoUploadService(crashReporter: crash),
+    )
     ..registerSingleton<SyncService>(
       SyncService(
         authRepository: getIt<AuthRepository>(),
@@ -47,6 +53,7 @@ void initSync(GetIt getIt, {SyncConfig config = const SyncConfig()}) {
         syncQueue: getIt<SyncQueue>(),
         userDocumentWriter: getIt<UserDocumentWriter>(),
         config: config,
+        crashReporter: crash,
       ),
     )
     ..registerSingleton<SyncCubit>(

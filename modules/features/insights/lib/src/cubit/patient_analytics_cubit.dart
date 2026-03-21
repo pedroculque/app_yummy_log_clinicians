@@ -1,4 +1,5 @@
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:insights_feature/src/cubit/patient_analytics_state.dart';
 import 'package:insights_feature/src/domain/insights_calculator.dart';
@@ -11,13 +12,16 @@ class PatientAnalyticsCubit {
     required String patientId,
     required PatientMealsRepository mealsRepository,
     CliniciansAnalytics? analytics,
+    CrashReporter? crashReporter,
   })  : _patientId = patientId,
         _mealsRepository = mealsRepository,
-        _analytics = analytics;
+        _analytics = analytics,
+        _crashReporter = crashReporter;
 
   final String _patientId;
   final PatientMealsRepository _mealsRepository;
   final CliniciansAnalytics? _analytics;
+  final CrashReporter? _crashReporter;
 
   PatientAnalyticsState _state = const PatientAnalyticsState.initial();
   PatientAnalyticsState get state => _state;
@@ -115,6 +119,12 @@ class PatientAnalyticsCubit {
       );
     } on Object catch (e, st) {
       debugPrint('[PatientAnalyticsCubit] load error: $e\n$st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'patient_analytics',
+        hint: 'load',
+      );
       _state = _state.copyWith(isLoading: false, error: e.toString());
     }
     _emit();

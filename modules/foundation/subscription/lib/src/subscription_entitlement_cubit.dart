@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -56,7 +57,9 @@ class SubscriptionEntitlementState extends Equatable {
 class SubscriptionEntitlementCubit extends Cubit<SubscriptionEntitlementState> {
   SubscriptionEntitlementCubit({
     required AuthRepository authRepository,
+    CrashReporter? crashReporter,
   })  : _auth = authRepository,
+        _crashReporter = crashReporter,
         super(const SubscriptionEntitlementState.initial()) {
     Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
     _authSub = _auth.authStateChanges.listen(_onAuthUserChanged);
@@ -64,7 +67,23 @@ class SubscriptionEntitlementCubit extends Cubit<SubscriptionEntitlementState> {
   }
 
   final AuthRepository _auth;
+  final CrashReporter? _crashReporter;
   late final StreamSubscription<AuthUser?> _authSub;
+
+  void _report(
+    Object e,
+    StackTrace? st, {
+    required String hint,
+    Map<String, Object?>? extras,
+  }) {
+    _crashReporter?.call(
+      e,
+      st,
+      feature: 'subscription',
+      hint: hint,
+      extras: extras,
+    );
+  }
 
   void _onCustomerInfoUpdated(CustomerInfo info) {
     if (isClosed) return;
@@ -95,6 +114,7 @@ class SubscriptionEntitlementCubit extends Cubit<SubscriptionEntitlementState> {
       }
     } on Object catch (e, st) {
       debugPrint('SubscriptionEntitlementCubit RevenueCat user sync: $e $st');
+      _report(e, st, hint: 'revenuecat_user_sync');
     }
   }
 
@@ -108,6 +128,7 @@ class SubscriptionEntitlementCubit extends Cubit<SubscriptionEntitlementState> {
       emit(_stateFrom(info));
     } on Object catch (e, st) {
       debugPrint('SubscriptionEntitlementCubit refresh: $e $st');
+      _report(e, st, hint: 'customer_info_refresh');
       emit(state.copyWith(loading: false));
     }
   }
@@ -142,16 +163,18 @@ class SubscriptionEntitlementCubit extends Cubit<SubscriptionEntitlementState> {
       }
       try {
         await Purchases.purchase(PurchaseParams.package(pkg));
-      } on PlatformException catch (e) {
+      } on PlatformException catch (e, st) {
         final code = PurchasesErrorHelper.getErrorCode(e);
         if (code == PurchasesErrorCode.purchaseCancelledError) {
           return SubscriptionPurchaseOutcome.cancelled;
         }
+        _report(e, st, hint: 'purchase_platform', extras: {'code': e.code});
         return SubscriptionPurchaseOutcome.failed;
       }
       return SubscriptionPurchaseOutcome.success;
     } on Object catch (e, st) {
       debugPrint('purchaseSelectedPlan: $e $st');
+      _report(e, st, hint: 'purchase_or_offerings');
       return SubscriptionPurchaseOutcome.failed;
     }
   }
@@ -170,6 +193,7 @@ class SubscriptionEntitlementCubit extends Cubit<SubscriptionEntitlementState> {
           : SubscriptionRestoreOutcome.nothingFound;
     } on Object catch (e, st) {
       debugPrint('restorePurchases: $e $st');
+      _report(e, st, hint: 'restore_purchases');
       return SubscriptionRestoreOutcome.failed;
     }
   }

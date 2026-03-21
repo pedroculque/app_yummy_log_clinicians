@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meal_domain/meal_domain.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
@@ -42,6 +43,7 @@ class SyncService {
     required UserDocumentWriter userDocumentWriter,
     SyncConfig config = const SyncConfig(),
     Connectivity? connectivity,
+    CrashReporter? crashReporter,
   })  : _auth = authRepository,
         _mealLocal = mealLocalDataSource,
         _connLocal = connectionLocalDataSource,
@@ -51,7 +53,8 @@ class SyncService {
         _syncQueue = syncQueue,
         _userDocumentWriter = userDocumentWriter,
         _config = config,
-        _connectivity = connectivity ?? Connectivity();
+        _connectivity = connectivity ?? Connectivity(),
+        _crashReporter = crashReporter;
 
   final AuthRepository _auth;
   final UserDocumentWriter _userDocumentWriter;
@@ -62,7 +65,17 @@ class SyncService {
   final PhotoUploadService _photoUpload;
   final SyncQueue _syncQueue;
   final Connectivity _connectivity;
+  final CrashReporter? _crashReporter;
   SyncConfig _config;
+
+  void _report(Object e, StackTrace st, String hint) {
+    _crashReporter?.call(
+      e,
+      st,
+      feature: 'sync',
+      hint: hint,
+    );
+  }
 
   StreamSubscription<AuthUser?>? _authSub;
   StreamSubscription<List<Map<String, dynamic>>>? _mealWatchSub;
@@ -209,10 +222,12 @@ class SyncService {
           }
         } on Object catch (e, st) {
           debugPrint('SyncService meal pull: $e\n$st');
+          _report(e, st, 'meal_pull_merge');
         }
       },
       onError: (Object e, StackTrace st) {
         debugPrint('SyncService meal watch ERROR: $e\n$st');
+        _report(e, st, 'meal_watch_stream');
       },
     );
 
@@ -223,10 +238,12 @@ class SyncService {
           if (updated.isNotEmpty) onConnectionsUpdated?.call();
         } on Object catch (e, st) {
           debugPrint('SyncService conn pull: $e\n$st');
+          _report(e, st, 'connection_pull_merge');
         }
       },
       onError: (Object e, StackTrace st) {
         debugPrint('SyncService conn watch: $e\n$st');
+        _report(e, st, 'connection_watch_stream');
       },
     );
   }
@@ -308,7 +325,8 @@ class SyncService {
         downloadedCount: pullResult.downloadedCount,
         errors: errors,
       );
-    } on Object catch (e) {
+    } on Object catch (e, st) {
+      _report(e, st, 'sync_push_pull');
       _setStatus(SyncServiceStatus.error);
       return SyncResult(success: false, errors: [e.toString()]);
     }
@@ -364,9 +382,10 @@ class SyncService {
         await _executeOperation(userId, op);
         await _syncQueue.dequeue(op.id);
         uploadedCount++;
-      } on Object catch (e) {
+      } on Object catch (e, st) {
         final updated = op.withError(e.toString());
         if (updated.attempts >= _config.maxRetries) {
+          _report(e, st, 'queue_op_final_failure');
           await _syncQueue.dequeue(op.id);
           errors.add('${op.entityType}/${op.entityId}: $e');
         } else {
@@ -436,6 +455,7 @@ class SyncService {
             debugPrint(
               '[SyncService] Photo upload failed (meal still synced): $e\n$st',
             );
+            _report(e, st, 'meal_photo_upload');
           }
         }
 
@@ -590,6 +610,7 @@ class SyncService {
       _setStatus(SyncServiceStatus.idle);
     } on Object catch (e, st) {
       debugPrint('SyncService.fullPush ERROR: $e\n$st');
+      _report(e, st, 'full_push');
       _setStatus(SyncServiceStatus.error);
     }
   }

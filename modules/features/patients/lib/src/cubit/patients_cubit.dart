@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patients_feature/src/cubit/patients_state.dart';
 import 'package:patients_feature/src/data/patients_repository.dart';
@@ -12,14 +13,17 @@ class PatientsCubit extends Cubit<PatientsState> {
     required PatientsRepository repository,
     required AuthRepository authRepository,
     CliniciansAnalytics? analytics,
+    CrashReporter? crashReporter,
   })  : _repository = repository,
         _authRepository = authRepository,
         _analytics = analytics,
+        _crashReporter = crashReporter,
         super(const PatientsState());
 
   final PatientsRepository _repository;
   final AuthRepository _authRepository;
   final CliniciansAnalytics? _analytics;
+  final CrashReporter? _crashReporter;
 
   static String _patientCountBucket(int count) {
     if (count == 0) return '0';
@@ -101,7 +105,13 @@ class PatientsCubit extends Cubit<PatientsState> {
           );
         },
       );
-    } on Object catch (e) {
+    } on Object catch (e, st) {
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'patients',
+        hint: 'load_list',
+      );
       emit(
         state.copyWith(
           status: PatientsStatus.error,
@@ -122,7 +132,13 @@ class PatientsCubit extends Cubit<PatientsState> {
         user.displayName,
       );
       emit(state.copyWith(inviteCode: code));
-    } on Object catch (e) {
+    } on Object catch (e, st) {
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'patients',
+        hint: 'invite_code',
+      );
       emit(state.copyWith(error: e.toString()));
     }
   }
@@ -134,7 +150,13 @@ class PatientsCubit extends Cubit<PatientsState> {
     try {
       await _repository.removePatient(user.uid, patientId);
       _analytics?.logPatientRemoveConfirm();
-    } on Object catch (e) {
+    } on Object catch (e, st) {
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'patients',
+        hint: 'remove_patient',
+      );
       emit(state.copyWith(error: e.toString()));
     }
   }

@@ -107,6 +107,7 @@
   "supportIdLabel": "ID de Suporte",
   "supportIdHint": "Use este código ao entrar em contato",
   "copySupportId": "Copiar",
+  "supportIdCopied": "ID de suporte copiado para a área de transferência.",
   "rateApp": "Avaliar o app",
   "rateAppSubtitle": "Sua opinião nos ajuda a melhorar",
   "loginWithGoogle": "Entrar com Google",

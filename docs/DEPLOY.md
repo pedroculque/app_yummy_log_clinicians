@@ -149,7 +149,8 @@ No deploy **prod**, o build usa:
 Os Dart symbols são enviados a:
 
 - **Firebase Crashlytics**: via `firebase crashlytics:symbols:upload`. Requer Firebase CLI (`npm install -g firebase-tools`) e `FIREBASE_IOS_APP_ID` em `.env.prod`.
-- **Sentry**: via `sentry_dart_plugin` (roda `dart run sentry_dart_plugin` após o build). Requer `SENTRY_ORG`, `SENTRY_PROJECT` e `SENTRY_AUTH_TOKEN` em `.env.prod`. O plugin usa o mesmo diretório de symbols e o `obfuscation.map.json` (gerado com `--save-obfuscation-map`) para títulos de issue legíveis.
+- **Sentry (runtime):** o SDK lê o DSN em tempo de compilação (`String.fromEnvironment('SENTRY_DSN')`, tipicamente `--dart-define=SENTRY_DSN=...`; ver [docs/OBSERVABILITY.md](OBSERVABILITY.md) e `lib/core/observability/sentry_dsn.dart`). Se o DSN estiver vazio, o Sentry não envia eventos de forma útil — configure o define em CI ou localmente para ambientes onde quiseres telemetria. No app clínico, issues podem ser filtradas por **`support_id`** / **`user`** (Firebase UID — o mesmo do [ID de Suporte](OBSERVABILITY.md) nas Configurações).
+- **Sentry (symbols):** via `sentry_dart_plugin` (roda `dart run sentry_dart_plugin` após o build). Requer `SENTRY_ORG`, `SENTRY_PROJECT` e `SENTRY_AUTH_TOKEN` em `.env.prod`. O plugin usa o mesmo diretório de symbols e o `obfuscation.map.json` (gerado com `--save-obfuscation-map`) para títulos de issue legíveis.
 
 A pasta de symbols e o `obfuscation.map.json` estão no `.gitignore`; para debug de uma versão antiga, guarde uma cópia por release.
 
@@ -556,6 +557,7 @@ Two-factor Authentication (6 digits code) is enabled
 | Variável | Descrição |
 |----------|-----------|
 | `TARGET` | Entry point: `lib/main_production.dart` |
+| `SENTRY_DSN` | (Opcional no `.env`; em CI costuma ir no comando Flutter) DSN do projeto Sentry para o SDK em runtime. Ver [OBSERVABILITY.md](OBSERVABILITY.md). |
 | `SPLIT_DEBUG_INFOPATH` | Pasta dos Dart symbols (ex: `build/app/outputs/symbols`). **Obrigatório** para prod (ofuscação). |
 | `FIREBASE_IOS_APP_ID` | Firebase App ID do iOS (ex: `1:123:ios:abc`) para upload de symbols no Crashlytics. Se não definido, o upload é pulado. |
 | `SENTRY_ORG` | Slug da organização no Sentry (ex: `minha-org`). Para upload de symbols via sentry_dart_plugin. |
@@ -573,6 +575,7 @@ Two-factor Authentication (6 digits code) is enabled
 | Variável | Descrição |
 |----------|-----------|
 | `TARGET` | Entry point: `lib/main_development.dart` |
+| `SENTRY_DSN` | DSN Sentry para builds locais (ou `--dart-define` no `flutter run`). |
 | `FIREBASE_IOS_APP_ID` | App ID do Firebase para iOS |
 | `FIREBASE_ANDROID_APP_ID` | App ID do Firebase para Android (Firebase App Distribution) |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Path para service account JSON (Firebase e, se configurado, Play Console) |

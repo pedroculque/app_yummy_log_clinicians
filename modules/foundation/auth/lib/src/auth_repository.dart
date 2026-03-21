@@ -7,6 +7,10 @@ class AuthUser {
     this.photoUrl,
   });
 
+  /// Identificador estável da conta (Firebase UID).
+  ///
+  /// É o mesmo valor exibido como **ID de Suporte** nas Configurações e
+  /// propagado ao session logger / Sentry para correlação com suporte.
   final String uid;
   final String? email;
   final String? displayName;

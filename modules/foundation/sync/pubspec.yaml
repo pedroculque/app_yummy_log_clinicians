@@ -12,6 +12,8 @@ dependencies:
   cloud_firestore: ^5.6.5
   connectivity_plus: ^6.1.3
   equatable: ^2.0.5
+  feature_contract:
+    path: ../../shared/feature_contract
   firebase_auth: ^5.3.4
   firebase_storage: ^12.4.4
   flutter:

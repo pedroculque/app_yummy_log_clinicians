@@ -91,7 +91,7 @@ Upload Dart obfuscation symbols to Firebase Crashlytics (prod only)
 [bundle exec] fastlane upload_sentry_symbols
 ```
 
-Upload Dart debug symbols to Sentry (prod only)
+Upload Dart debug symbols to Sentry (prod only). O **DSN** do SDK em runtime é configurado à parte (`--dart-define=SENTRY_DSN`); ver [docs/OBSERVABILITY.md](../../docs/OBSERVABILITY.md) e [docs/DEPLOY.md](../../docs/DEPLOY.md).
 
 ### uploading_firebase_distribution
 

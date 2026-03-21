@@ -71,7 +71,6 @@ class SettingsPage extends StatelessWidget {
   final ProfilePhotoSheet profilePhotoSheet;
   final SettingsPageDependencies dependencies;
 
-  static const String _supportId = 'GsV6wVJe89UQajUpAZJELaEYn733';
   static const String _appVersion = '1.0.0';
 
   static String _resolveErrorMessage(BuildContext context, String code) {
@@ -369,23 +368,41 @@ class SettingsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 32),
 
-                // --- SUPORTE ---
-                _SectionTitle(
-                  title: l10n.sectionSupport,
-                  icon: Icons.support_agent_rounded,
-                ),
-                const SizedBox(height: 8),
-                _SupportCard(
-                  supportId: _supportId,
-                  supportIdHint: l10n.supportIdHint,
-                  copyLabel: l10n.copySupportId,
-                  onCopy: () => _copySupportId(context),
-                ),
-                const SizedBox(height: 12),
-                _RateAppCard(
-                  title: l10n.rateApp,
-                  subtitle: l10n.rateAppSubtitle,
-                  onTap: () => unawaited(_openRateAppFromSettings(context)),
+                // --- SUPORTE (ID = Firebase UID; visível só logado; alinhado ao SessionLogger/Sentry)
+                BlocBuilder<AuthCubit, AuthState>(
+                  buildWhen: (previous, current) =>
+                      previous.isLoggedIn != current.isLoggedIn ||
+                      previous.user?.uid != current.user?.uid,
+                  builder: (context, authState) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _SectionTitle(
+                          title: l10n.sectionSupport,
+                          icon: Icons.support_agent_rounded,
+                        ),
+                        const SizedBox(height: 8),
+                        if (authState.isLoggedIn && authState.user != null) ...[
+                          _SupportCard(
+                            supportId: authState.user!.uid,
+                            supportIdHint: l10n.supportIdHint,
+                            copyLabel: l10n.copySupportId,
+                            onCopy: () => _copySupportId(
+                              context,
+                              authState.user!.uid,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                        ],
+                        _RateAppCard(
+                          title: l10n.rateApp,
+                          subtitle: l10n.rateAppSubtitle,
+                          onTap: () =>
+                              unawaited(_openRateAppFromSettings(context)),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
               ]),
@@ -396,13 +413,12 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  static void _copySupportId(BuildContext context) {
-    unawaited(
-      Clipboard.setData(const ClipboardData(text: _supportId)),
-    );
+  static void _copySupportId(BuildContext context, String supportId) {
+    unawaited(Clipboard.setData(ClipboardData(text: supportId)));
     uiSnackBar(
       context: context,
-      message: context.l10n.copySupportId,
+      message: context.l10n.supportIdCopied,
+      type: UiSnackbarType.success,
     );
   }
 

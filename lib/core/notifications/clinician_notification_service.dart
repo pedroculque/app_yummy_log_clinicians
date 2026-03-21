@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -16,13 +17,16 @@ class ClinicianNotificationService {
     AuthRepository? authRepository,
     FirebaseFirestore? firestore,
     FirebaseMessaging? messaging,
+    CrashReporter? crashReporter,
   }) : _auth = authRepository,
        _firestore = firestore ?? FirebaseFirestore.instance,
-       _messaging = messaging ?? FirebaseMessaging.instance;
+       _messaging = messaging ?? FirebaseMessaging.instance,
+       _crashReporter = crashReporter;
 
   final AuthRepository? _auth;
   final FirebaseFirestore _firestore;
   final FirebaseMessaging _messaging;
+  final CrashReporter? _crashReporter;
 
   StreamSubscription<AuthUser?>? _authSub;
   StreamSubscription<String>? _tokenRefreshSub;
@@ -144,12 +148,19 @@ class ClinicianNotificationService {
       _tokenRefreshSub ??= _messaging.onTokenRefresh.listen((newToken) {
         unawaited(_persistToken(userId: userId, token: newToken));
       });
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (e, st) {
       if (e.code == 'apns-token-not-set') {
         debugPrint('[Notifications] waiting for APNS token');
         _scheduleRetry(userId);
         return;
       }
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'notifications',
+        hint: 'fcm_token',
+        extras: {'code': e.code},
+      );
       rethrow;
     }
   }
@@ -234,6 +245,12 @@ class ClinicianNotificationService {
           .delete();
     } on Object catch (e, st) {
       debugPrint('[Notifications] failed to delete token: $e\n$st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'notifications',
+        hint: 'clear_token',
+      );
     }
   }
 

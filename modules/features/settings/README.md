@@ -9,6 +9,7 @@ Feature Configurações do YummyLog for Clinicians: tela de configurações com 
 - **Tela de Planos:** UI para upgrade com benefícios Pro, seletor Anual/Mensal e preços.
 - **Login:** integração com `auth_foundation` (Google Sign-In, Sign in with Apple); exibição de nome e avatar quando logado.
 - **Estado deslogado:** CTA para entrar na conta.
+- **ID de Suporte:** Firebase UID do utilizador logado (copiar para área de transferência); alinhado ao `SessionLogger` e Sentry. Ver [docs/support-id.md](docs/support-id.md).
 
 ## Quick Start
 
@@ -26,12 +27,15 @@ final fullScreenRoutes = feature.getFullScreenRoutes(getIt, rootNavigatorKey: ke
 
 | Documento | Descrição |
 |-----------|-----------|
+| [docs/support-id.md](docs/support-id.md) | ID de Suporte (UID), visibilidade, i18n, ligação ao Sentry |
 | (a criar) | docs/architecture.md – AuthCubit, dependências |
 | (a criar) | docs/features.md – fluxo login, assinatura |
 
 ## Estrutura
 
 ```
+docs/
+└── support-id.md               # ID de Suporte (UID), UI, i18n, Sentry
 lib/
 ├── settings_feature.dart       # Barrel
 └── src/

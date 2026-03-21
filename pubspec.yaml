@@ -1,6 +1,6 @@
 name: app_yummy_log_clinicians
 description: YummyLog for Clinicians - App para profissionais de saúde acompanharem pacientes.
-version: 1.0.0+19
+version: 1.0.0+20
 publish_to: none
 
 environment:
@@ -48,15 +48,24 @@ dependencies:
       url: https://github.com/pedroculque/mobile-foundation.git
       ref: main
       path: packages/analytics_firebase
+  package_info_plus: ^8.1.0
   package_remote_config:
     git:
       url: https://github.com/pedroculque/mobile-foundation.git
       ref: main
       path: packages/remote_config
+  package_session_logger:
+    git:
+      url: https://github.com/pedroculque/mobile-foundation.git
+      ref: main
+      path: packages/session_logger
   patients_feature:
     path: modules/features/patients
   persistence_foundation:
     path: modules/foundation/persistence
+  sentry_flutter: ^8.14.2
+  session_sentry:
+    path: modules/shared/session_sentry
   settings_feature:
     path: modules/features/settings
   shared_preferences: ^2.5.3
@@ -68,6 +77,7 @@ dependencies:
     git:
       url: https://github.com/pedroculque/flutter_ui_kit.git
       ref: main
+  uuid: ^4.5.1
   yummy_log_l10n:
     path: modules/shared/yummy_log_l10n
 

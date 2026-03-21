@@ -29,7 +29,12 @@ class DiaryFeature implements YummyLogFeature {
         MealEntryRepository(getIt<MealEntryLocalDataSource>()),
       )
       ..registerSingleton<DiaryCubit>(
-        DiaryCubit(getIt<MealEntryRepository>()),
+        DiaryCubit(
+          getIt<MealEntryRepository>(),
+          crashReporter: getIt.isRegistered<CrashReporter>()
+              ? getIt<CrashReporter>()
+              : null,
+        ),
       );
   }
 
@@ -70,7 +75,13 @@ class DiaryFeature implements YummyLogFeature {
                 final repo = getIt<MealEntryRepository>();
                 return BlocProvider(
                   create: (_) {
-                    final cubit = EntryDetailCubit(repo, id);
+                    final cubit = EntryDetailCubit(
+                      repo,
+                      id,
+                      crashReporter: getIt.isRegistered<CrashReporter>()
+                          ? getIt<CrashReporter>()
+                          : null,
+                    );
                     unawaited(cubit.load());
                     return cubit;
                   },

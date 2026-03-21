@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 export 'app_build_flavor.dart';
 export 'clinicians_analytics.dart';
+export 'crash_reporter.dart';
 
 /// Callback para exibir o sheet de foto de perfil (câmera/galeria).
 typedef ProfilePhotoSheet = void Function(BuildContext context);

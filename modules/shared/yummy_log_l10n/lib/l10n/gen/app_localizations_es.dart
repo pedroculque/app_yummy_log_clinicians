@@ -335,6 +335,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get copySupportId => 'Copiar';
 
   @override
+  String get supportIdCopied => 'ID de soporte copiado al portapapeles.';
+
+  @override
   String get rateApp => 'Valorar la app';
 
   @override

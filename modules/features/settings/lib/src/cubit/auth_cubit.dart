@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patients_feature/patients_feature.dart';
 import 'package:sync_foundation/sync_foundation.dart';
@@ -48,6 +49,7 @@ class AuthCubit extends Cubit<AuthState> {
     required PatientsRepository patientsRepository,
     Future<void> Function()? clearPushRegistration,
     CliniciansAnalytics? analytics,
+    CrashReporter? crashReporter,
     this.onProfilePhotoUpdated,
   })  : _auth = authRepository,
         _photoUpload = photoUploadService,
@@ -56,6 +58,7 @@ class AuthCubit extends Cubit<AuthState> {
         _patients = patientsRepository,
         _clearPushRegistration = clearPushRegistration,
         _analytics = analytics,
+        _crashReporter = crashReporter,
         super(const AuthState()) {
     _subscription = _auth.authStateChanges.listen(_onAuthChanged);
     unawaited(_emitMergedFromAuth());
@@ -68,6 +71,7 @@ class AuthCubit extends Cubit<AuthState> {
   final PatientsRepository _patients;
   final Future<void> Function()? _clearPushRegistration;
   final CliniciansAnalytics? _analytics;
+  final CrashReporter? _crashReporter;
   late final StreamSubscription<AuthUser?> _subscription;
 
   /// Chamado após upload bem-sucedido da foto de perfil.
@@ -101,6 +105,12 @@ class AuthCubit extends Cubit<AuthState> {
       }
     } on Object catch (e, st) {
       debugPrint('AuthCubit _withFirestorePhoto: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'firestore_photo',
+      );
     }
     return user;
   }
@@ -146,6 +156,12 @@ class AuthCubit extends Cubit<AuthState> {
       ));
     } on Object catch (e, st) {
       debugPrint('signInWithGoogle: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'sign_in_google',
+      );
       _analytics?.logAuthResult(
         method: 'google',
         success: false,
@@ -188,6 +204,12 @@ class AuthCubit extends Cubit<AuthState> {
       ));
     } on Object catch (e, st) {
       debugPrint('signInWithApple: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'sign_in_apple',
+      );
       _analytics?.logAuthResult(
         method: 'apple',
         success: false,
@@ -210,6 +232,12 @@ class AuthCubit extends Cubit<AuthState> {
       emit(current == null ? const AuthState() : AuthState(user: current));
     } on Object catch (e, st) {
       debugPrint('signOut: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'sign_out',
+      );
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
@@ -245,6 +273,12 @@ class AuthCubit extends Cubit<AuthState> {
       );
     } on Object catch (e, st) {
       debugPrint('deleteAccount: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'delete_account',
+      );
       emit(
         state.copyWith(
           isLoading: false,
@@ -261,6 +295,12 @@ class AuthCubit extends Cubit<AuthState> {
       unawaited(_emitMergedFromAuth());
     } on Object catch (e, st) {
       debugPrint('updateDisplayName: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'display_name',
+      );
       emit(state.copyWith(errorMessage: e.toString()));
     }
   }
@@ -299,6 +339,12 @@ class AuthCubit extends Cubit<AuthState> {
         await _auth.updatePhotoUrl(url);
       } on Object catch (e, st) {
         debugPrint('updatePhotoUrl (Auth) failed, using Firestore: $e $st');
+        _crashReporter?.call(
+          e,
+          st,
+          feature: 'settings_auth',
+          hint: 'update_photo_url',
+        );
       }
       await _userDoc.ensureExists(
         user.uid,
@@ -321,6 +367,12 @@ class AuthCubit extends Cubit<AuthState> {
       return true;
     } on Object catch (e, st) {
       debugPrint('uploadProfilePhoto: $e $st');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'settings_auth',
+        hint: 'upload_profile_photo',
+      );
       _profilePhotoUploadInProgress = false;
       emit(AuthState(
         user: _auth.currentUser ?? user,

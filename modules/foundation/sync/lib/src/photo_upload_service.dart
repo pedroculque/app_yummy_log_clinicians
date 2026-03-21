@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -28,10 +29,23 @@ class ProfilePhotoUploadResult {
 ///
 /// Baseado no PhotoSyncService do growth_standards.
 class PhotoUploadService {
-  PhotoUploadService({FirebaseStorage? storage})
-      : _storage = storage ?? FirebaseStorage.instance;
+  PhotoUploadService({
+    FirebaseStorage? storage,
+    CrashReporter? crashReporter,
+  })  : _storage = storage ?? FirebaseStorage.instance,
+        _crashReporter = crashReporter;
 
   final FirebaseStorage _storage;
+  final CrashReporter? _crashReporter;
+
+  void _report(Object e, StackTrace? st, String hint) {
+    _crashReporter?.call(
+      e,
+      st,
+      feature: 'photo_storage',
+      hint: hint,
+    );
+  }
 
   /// Diretório local para fotos de refeições.
   static const String _mealPhotosDir = 'meal_photos';
@@ -85,13 +99,15 @@ class PhotoUploadService {
       debugPrint('[PhotoUploadService] SUCCESS - $downloadUrl');
 
       return downloadUrl;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (e, st) {
       debugPrint(
         '[PhotoUploadService] FirebaseException: ${e.code} - ${e.message}',
       );
+      _report(e, st, 'meal_upload_firebase');
       return null;
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       debugPrint('[PhotoUploadService] ERROR - $e');
+      _report(e, st, 'meal_upload');
       return null;
     }
   }
@@ -134,8 +150,9 @@ class PhotoUploadService {
       final relativePath = p.join(_mealPhotosDir, fileName);
       debugPrint('[PhotoUploadService] download SUCCESS - $relativePath');
       return relativePath;
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       debugPrint('[PhotoUploadService] download ERROR - $e');
+      _report(e, st, 'meal_download_sdk');
       return null;
     }
   }
@@ -173,8 +190,9 @@ class PhotoUploadService {
       } finally {
         client.close();
       }
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       debugPrint('[PhotoUploadService] HTTP download failed - $e');
+      _report(e, st, 'meal_download_http');
       return null;
     }
   }
@@ -227,15 +245,17 @@ class PhotoUploadService {
       final downloadUrl = await ref.getDownloadURL();
       debugPrint('[PhotoUploadService] profile SUCCESS');
       return ProfilePhotoUploadResult.success(downloadUrl);
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (e, st) {
       debugPrint(
         '[PhotoUploadService] profile FirebaseException: ${e.code}',
       );
+      _report(e, st, 'profile_upload_firebase');
       return ProfilePhotoUploadResult.failure(
         e.code == 'unauthenticated' ? 'unauthenticated' : 'storage',
       );
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       debugPrint('[PhotoUploadService] profile ERROR - $e');
+      _report(e, st, 'profile_upload');
       return const ProfilePhotoUploadResult.failure('storage');
     }
   }

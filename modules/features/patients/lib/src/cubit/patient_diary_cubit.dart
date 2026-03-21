@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meal_domain/meal_domain.dart';
@@ -12,12 +13,15 @@ class PatientDiaryCubit extends Cubit<PatientDiaryState> {
   PatientDiaryCubit({
     required PatientMealsRepository repository,
     CliniciansAnalytics? analytics,
+    CrashReporter? crashReporter,
   })  : _repository = repository,
         _analytics = analytics,
+        _crashReporter = crashReporter,
         super(const PatientDiaryState());
 
   final PatientMealsRepository _repository;
   final CliniciansAnalytics? _analytics;
+  final CrashReporter? _crashReporter;
 
   /// Valores estáveis para GA4 (sem PII).
   static String mealTypeAnalyticsParam(MealType type) => switch (type) {
@@ -63,8 +67,14 @@ class PatientDiaryCubit extends Cubit<PatientDiaryState> {
             entries: entries,
           ));
         },
-        onError: (Object error) {
+        onError: (Object error, StackTrace stackTrace) {
           debugPrint('[PatientDiaryCubit] watchMeals error: $error');
+          _crashReporter?.call(
+            error,
+            stackTrace,
+            feature: 'patient_diary',
+            hint: 'watch_meals',
+          );
           emit(state.copyWith(
             status: PatientDiaryStatus.error,
             error: error.toString(),
@@ -72,12 +82,18 @@ class PatientDiaryCubit extends Cubit<PatientDiaryState> {
         },
       );
       debugPrint('[PatientDiaryCubit] watchMeals subscription active');
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       debugPrint('[PatientDiaryCubit] load failed: $e');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'patient_diary',
+        hint: 'load',
+      );
       emit(state.copyWith(
         status: PatientDiaryStatus.error,
         error: e.toString(),
-      )      );
+      ));
     }
   }
 
@@ -100,8 +116,14 @@ class PatientDiaryCubit extends Cubit<PatientDiaryState> {
         status: PatientDiaryStatus.loaded,
         entries: entries,
       ));
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       debugPrint('[PatientDiaryCubit] refresh failed: $e');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'patient_diary',
+        hint: 'refresh',
+      );
       emit(state.copyWith(
         status: PatientDiaryStatus.error,
         error: e.toString(),
