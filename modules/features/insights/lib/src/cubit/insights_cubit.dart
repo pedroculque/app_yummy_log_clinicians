@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
+import 'package:feature_contract/clinicians_analytics.dart';
 import 'package:insights_feature/src/cubit/insights_state.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
 import 'package:insights_feature/src/domain/insights_summary.dart';
@@ -10,14 +11,17 @@ class InsightsCubit extends Cubit<InsightsState> {
   InsightsCubit({
     required InsightsRepository repository,
     required AuthRepository authRepository,
+    CliniciansAnalytics? analytics,
   })  : _repository = repository,
         _authRepository = authRepository,
+        _analytics = analytics,
         super(const InsightsState()) {
     _authSubscription = authRepository.authStateChanges.listen(_onAuthChanged);
   }
 
   final InsightsRepository _repository;
   final AuthRepository _authRepository;
+  final CliniciansAnalytics? _analytics;
   StreamSubscription<dynamic>? _subscription;
   late final StreamSubscription<AuthUser?> _authSubscription;
 
@@ -71,6 +75,11 @@ class InsightsCubit extends Cubit<InsightsState> {
     if (period == state.period) return;
     emit(state.copyWith(period: period));
     await load();
+    _analytics?.logInsightsPeriodSet(days: period.days);
+  }
+
+  void logInsightsPatientDrill({required String target}) {
+    _analytics?.logInsightsPatientDrill(target: target);
   }
 
   Future<void> refresh() async {

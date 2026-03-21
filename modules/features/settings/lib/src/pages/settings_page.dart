@@ -23,16 +23,29 @@ import 'package:settings_feature/src/cubit/auth_cubit.dart'
         kProfilePhotoUploadFailed,
         kProfilePhotoWrongAccount;
 import 'package:settings_feature/src/cubit/rate_app_cubit.dart';
+import 'package:settings_feature/src/cubit/settings_analytics_cubit.dart';
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:settings_feature/src/settings_page_dependencies.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
+String _restoreOutcomeAnalyticsValue(SubscriptionRestoreOutcome o) =>
+    switch (o) {
+      SubscriptionRestoreOutcome.success => 'success',
+      SubscriptionRestoreOutcome.nothingFound => 'nothing_found',
+      SubscriptionRestoreOutcome.notConfigured => 'not_configured',
+      SubscriptionRestoreOutcome.failed => 'failed',
+    };
+
 Future<void> _restoreSubscriptionPurchases(BuildContext context) async {
   final cubit = context.read<SubscriptionEntitlementCubit>();
   final l10n = context.l10n;
   final outcome = await cubit.restorePurchases();
+  if (!context.mounted) return;
+  context.read<SettingsAnalyticsCubit>().logRestoreOutcome(
+        result: _restoreOutcomeAnalyticsValue(outcome),
+      );
   if (!context.mounted) return;
   final message = switch (outcome) {
     SubscriptionRestoreOutcome.success => l10n.purchasesRestoreSuccess,
@@ -172,7 +185,7 @@ class SettingsPage extends StatelessWidget {
                     return _SubscriptionSection(
                       maxFreePatients: SubscriptionLimits.maxFreePatients,
                       isPro: subState.isPro,
-                      onUpgrade: () => context.push('/plans'),
+                      onUpgrade: () => context.push('/plans?source=settings_subscription'),
                       onRestorePurchases: () =>
                           unawaited(_restoreSubscriptionPurchases(context)),
                     );
@@ -394,6 +407,7 @@ class SettingsPage extends StatelessWidget {
   }
 
   static Future<void> _openRateAppFromSettings(BuildContext context) async {
+    context.read<SettingsAnalyticsCubit>().logRateAppOpen();
     final opened =
         await context.read<RateAppCubit>().openFromSettings(context);
     if (!context.mounted) return;
@@ -702,13 +716,24 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
                         ),
                         Switch.adaptive(
                           value: prefs.pushEnabled,
-                          onChanged: (v) =>
-                              unawaited(
-                                repository.setPushEnabled(
-                                  userId,
-                                  enabled: v,
-                                ),
-                              ),
+                          onChanged: (v) => unawaited(
+                            () async {
+                              await repository.setPushEnabled(
+                                userId,
+                                enabled: v,
+                              );
+                              if (!context.mounted) return;
+                              final mode = prefs.mode ==
+                                      NotificationPushMode.all
+                                  ? 'all'
+                                  : 'critical_only';
+                              context.read<SettingsAnalyticsCubit>()
+                                  .logNotifPrefUpdate(
+                                pushEnabled: v,
+                                mode: mode,
+                              );
+                            }(),
+                          ),
                           activeTrackColor:
                               appColors.primary.withValues(alpha: 0.45),
                         ),
@@ -730,23 +755,27 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
                       title: l10n.notificationPushAllEntries,
                       subtitle: l10n.notificationPushAllEntriesRowSubtitle,
                       value: prefs.mode == NotificationPushMode.all,
-                      onChanged: (on) {
-                        if (on) {
-                          unawaited(
-                            repository.setPushMode(
+                      onChanged: (on) => unawaited(
+                        () async {
+                          if (on) {
+                            await repository.setPushMode(
                               userId,
                               NotificationPushMode.all,
-                            ),
-                          );
-                        } else {
-                          unawaited(
-                            repository.setPushMode(
+                            );
+                          } else {
+                            await repository.setPushMode(
                               userId,
                               NotificationPushMode.criticalOnly,
-                            ),
+                            );
+                          }
+                          if (!context.mounted) return;
+                          context.read<SettingsAnalyticsCubit>()
+                              .logNotifPrefUpdate(
+                            pushEnabled: prefs.pushEnabled,
+                            mode: on ? 'all' : 'critical_only',
                           );
-                        }
-                      },
+                        }(),
+                      ),
                       appColors: appColors,
                     ),
                     Divider(
@@ -760,23 +789,27 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
                       subtitle: l10n.notificationPushCriticalOnlyRowSubtitle,
                       value:
                           prefs.mode == NotificationPushMode.criticalOnly,
-                      onChanged: (on) {
-                        if (on) {
-                          unawaited(
-                            repository.setPushMode(
+                      onChanged: (on) => unawaited(
+                        () async {
+                          if (on) {
+                            await repository.setPushMode(
                               userId,
                               NotificationPushMode.criticalOnly,
-                            ),
-                          );
-                        } else {
-                          unawaited(
-                            repository.setPushMode(
+                            );
+                          } else {
+                            await repository.setPushMode(
                               userId,
                               NotificationPushMode.all,
-                            ),
+                            );
+                          }
+                          if (!context.mounted) return;
+                          context.read<SettingsAnalyticsCubit>()
+                              .logNotifPrefUpdate(
+                            pushEnabled: prefs.pushEnabled,
+                            mode: on ? 'critical_only' : 'all',
                           );
-                        }
-                      },
+                        }(),
+                      ),
                       appColors: appColors,
                     ),
                     const SizedBox(height: 8),

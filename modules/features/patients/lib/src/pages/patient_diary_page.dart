@@ -1308,6 +1308,7 @@ class _EntryCard extends StatelessWidget {
   }
 
   void _showMealDetail(BuildContext context) {
+    context.read<PatientDiaryCubit>().logDiaryMealOpen(entry.mealType);
     unawaited(
       showModalBottomSheet<void>(
         context: context,

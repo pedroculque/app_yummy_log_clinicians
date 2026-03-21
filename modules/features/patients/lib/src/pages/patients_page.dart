@@ -360,6 +360,7 @@ class _PatientsPageState extends State<PatientsPage> {
 
   void _showUpgradeDialog(BuildContext context) {
     final appColors = AppColors.fromContext(context);
+    context.read<PatientsCubit>().logPaywallInviteLimitSheet();
 
     unawaited(showModalBottomSheet<void>(
       context: context,
@@ -438,7 +439,9 @@ class _PatientsPageState extends State<PatientsPage> {
                         child: FilledButton(
                           onPressed: () {
                             Navigator.of(ctx).pop();
-                            unawaited(context.push('/plans'));
+                            unawaited(
+                              context.push('/plans?source=invite_limit'),
+                            );
                           },
                           style: FilledButton.styleFrom(
                             backgroundColor: appColors.primary,
@@ -491,6 +494,8 @@ class _PatientsPageState extends State<PatientsPage> {
     if (state.inviteCode == null) {
       unawaited(cubit.generateInviteCode());
     }
+
+    cubit.logInviteFlowOpen();
 
     unawaited(showModalBottomSheet<void>(
       context: context,
@@ -1311,6 +1316,8 @@ class _InviteBottomSheetState extends State<_InviteBottomSheet> {
 
   Future<void> _copyCode(String code) async {
     await Clipboard.setData(ClipboardData(text: code));
+    if (!mounted) return;
+    context.read<PatientsCubit>().logInviteShare(channel: 'copy');
     unawaited(HapticFeedback.mediumImpact());
     setState(() => _copied = true);
     await Future<void>.delayed(const Duration(seconds: 2));
@@ -1322,6 +1329,8 @@ class _InviteBottomSheetState extends State<_InviteBottomSheet> {
   Future<void> _shareVia(String method, String code) async {
     final message = context.l10n.shareInviteMessage(code);
     await Share.share(message);
+    if (!mounted) return;
+    context.read<PatientsCubit>().logInviteShare(channel: method);
   }
 }
 

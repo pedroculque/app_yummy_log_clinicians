@@ -1,19 +1,55 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:settings_feature/src/cubit/plans_cubit.dart';
+import 'package:settings_feature/src/cubit/plans_state.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
-class PlansPage extends StatefulWidget {
+class PlansPage extends StatelessWidget {
   const PlansPage({super.key});
 
-  @override
-  State<PlansPage> createState() => _PlansPageState();
-}
+  static String _paywallSourceFromContext(BuildContext context) {
+    final uri = GoRouterState.of(context).uri;
+    final raw = uri.queryParameters['source'];
+    if (raw == null || raw.isEmpty) return 'direct';
+    switch (raw) {
+      case 'invite_limit':
+      case 'settings_subscription':
+        return raw;
+      default:
+        return 'other';
+    }
+  }
 
-class _PlansPageState extends State<PlansPage> {
-  bool _isAnnual = true;
-  bool _purchaseBusy = false;
+  Future<void> _handleSubscribe(BuildContext context) async {
+    final l10n = context.l10n;
+    final outcome = await context.read<PlansCubit>().purchase();
+    if (!context.mounted) return;
+
+    final message = switch (outcome) {
+      SubscriptionPurchaseOutcome.success => l10n.purchaseSuccess,
+      SubscriptionPurchaseOutcome.cancelled => l10n.purchaseCancelled,
+      SubscriptionPurchaseOutcome.offeringsUnavailable =>
+        l10n.purchaseOfferingsUnavailable,
+      SubscriptionPurchaseOutcome.notConfigured => l10n.purchasesNotConfigured,
+      SubscriptionPurchaseOutcome.failed => l10n.purchaseFailed,
+    };
+    final type = outcome == SubscriptionPurchaseOutcome.success
+        ? UiSnackbarType.success
+        : outcome == SubscriptionPurchaseOutcome.cancelled ||
+                outcome == SubscriptionPurchaseOutcome.offeringsUnavailable ||
+                outcome == SubscriptionPurchaseOutcome.notConfigured
+            ? UiSnackbarType.normal
+            : UiSnackbarType.error;
+    uiSnackBar(context: context, message: message, type: type);
+    if (outcome == SubscriptionPurchaseOutcome.success) {
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +59,9 @@ class _PlansPageState extends State<PlansPage> {
     return BlocBuilder<SubscriptionEntitlementCubit,
         SubscriptionEntitlementState>(
       builder: (context, subState) {
+        context.read<PlansCubit>().tryLogPaywallViewIfNeeded(
+              source: _paywallSourceFromContext(context),
+            );
         if (subState.isPro) {
           return Scaffold(
             backgroundColor: appColors.backgroundDefault,
@@ -85,105 +124,80 @@ class _PlansPageState extends State<PlansPage> {
     AppColors appColors,
     AppLocalizations l10n,
   ) {
-    return Scaffold(
-      backgroundColor: appColors.backgroundDefault,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: Icon(
-                          Icons.close_rounded,
-                          color: appColors.neutralBlack,
-                          size: 28,
+    return BlocBuilder<PlansCubit, PlansUiState>(
+      builder: (context, plansState) {
+        return Scaffold(
+          backgroundColor: appColors.backgroundDefault,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: Icon(
+                              Icons.close_rounded,
+                              color: appColors.neutralBlack,
+                              size: 28,
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
                         ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
+                        const SizedBox(height: 16),
+                        _ProBadge(appColors: appColors),
+                        const SizedBox(height: 20),
+                        Text(
+                          l10n.plansUnlockPro,
+                          style: AppTextStyles.h2.copyWith(
+                            color: appColors.neutralBlack,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.plansUnlockSubtitle,
+                          style: AppTextStyles.body1.copyWith(
+                            color: appColors.gray,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 28),
+                        _FeaturesList(appColors: appColors, l10n: l10n),
+                        const SizedBox(height: 28),
+                        _PlanSelector(
+                          isAnnual: plansState.isAnnual,
+                          onChanged: (value) => context
+                              .read<PlansCubit>()
+                              .setAnnual(isAnnual: value),
+                          appColors: appColors,
+                          l10n: l10n,
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    _ProBadge(appColors: appColors),
-                    const SizedBox(height: 20),
-                    Text(
-                      l10n.plansUnlockPro,
-                      style: AppTextStyles.h2.copyWith(
-                        color: appColors.neutralBlack,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.plansUnlockSubtitle,
-                      style: AppTextStyles.body1.copyWith(
-                        color: appColors.gray,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 28),
-                    _FeaturesList(appColors: appColors, l10n: l10n),
-                    const SizedBox(height: 28),
-                    _PlanSelector(
-                      isAnnual: _isAnnual,
-                      onChanged: (value) => setState(() => _isAnnual = value),
-                      appColors: appColors,
-                      l10n: l10n,
-                    ),
-                    const SizedBox(height: 24),
-                  ],
+                  ),
                 ),
-              ),
+                _BottomSection(
+                  isAnnual: plansState.isAnnual,
+                  appColors: appColors,
+                  l10n: l10n,
+                  busy: plansState.purchaseBusy,
+                  onSubscribe: () => unawaited(_handleSubscribe(context)),
+                ),
+              ],
             ),
-            _BottomSection(
-              isAnnual: _isAnnual,
-              appColors: appColors,
-              l10n: l10n,
-              busy: _purchaseBusy,
-              onSubscribe: _handleSubscribe,
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
-  }
-
-  Future<void> _handleSubscribe() async {
-    if (_purchaseBusy) return;
-    final l10n = context.l10n;
-    setState(() => _purchaseBusy = true);
-    final outcome = await context
-        .read<SubscriptionEntitlementCubit>()
-        .purchaseSelectedPlan(annual: _isAnnual);
-    if (!mounted) return;
-    setState(() => _purchaseBusy = false);
-
-    final message = switch (outcome) {
-      SubscriptionPurchaseOutcome.success => l10n.purchaseSuccess,
-      SubscriptionPurchaseOutcome.cancelled => l10n.purchaseCancelled,
-      SubscriptionPurchaseOutcome.offeringsUnavailable =>
-        l10n.purchaseOfferingsUnavailable,
-      SubscriptionPurchaseOutcome.notConfigured => l10n.purchasesNotConfigured,
-      SubscriptionPurchaseOutcome.failed => l10n.purchaseFailed,
-    };
-    final type = outcome == SubscriptionPurchaseOutcome.success
-        ? UiSnackbarType.success
-        : outcome == SubscriptionPurchaseOutcome.cancelled ||
-                outcome == SubscriptionPurchaseOutcome.offeringsUnavailable ||
-                outcome == SubscriptionPurchaseOutcome.notConfigured
-            ? UiSnackbarType.normal
-            : UiSnackbarType.error;
-    uiSnackBar(context: context, message: message, type: type);
-    if (outcome == SubscriptionPurchaseOutcome.success) {
-      Navigator.of(context).pop();
-    }
   }
 }
 

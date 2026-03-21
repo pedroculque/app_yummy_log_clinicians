@@ -1,10 +1,14 @@
 import 'package:app_yummy_log_clinicians/app/app.dart';
+import 'package:app_yummy_log_clinicians/core/analytics/clinicians_analytics_impl.dart';
 import 'package:app_yummy_log_clinicians/core/analytics/init_analytics_user_binding.dart';
 import 'package:app_yummy_log_clinicians/core/app_rating/clinician_app_rating_modal.dart';
 import 'package:app_yummy_log_clinicians/core/app_rating/shared_preferences_rating_storage.dart';
 import 'package:app_yummy_log_clinicians/core/notifications/clinician_notification_service.dart';
 import 'package:auth_foundation/auth_foundation.dart';
-import 'package:feature_contract/feature_contract.dart';
+import 'package:feature_contract/app_build_flavor.dart';
+import 'package:feature_contract/clinicians_analytics.dart';
+import 'package:feature_contract/feature_contract.dart'
+    show AppBuildFlavorConfig, ProfilePhotoSheet;
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -47,7 +51,14 @@ Future<void> configureDependencies({
       config: const AnalyticsLoggerConfig(showDebugLogs: kDebugMode),
     );
     await analyticsLogger.initialize();
+    CliniciansAnalyticsImpl.applyDefaultUserProperties(analyticsLogger);
     getIt.registerSingleton<AnalyticsLogger>(analyticsLogger);
+  }
+
+  if (!getIt.isRegistered<CliniciansAnalytics>()) {
+    getIt.registerSingleton<CliniciansAnalytics>(
+      CliniciansAnalyticsImpl(getIt<AnalyticsLogger>()),
+    );
   }
 
   if (!getIt.isRegistered<AppRating>()) {
@@ -126,6 +137,9 @@ Future<void> configureDependencies({
         patientsRepository: getIt<PatientsRepository>(),
         clearPushRegistration: () =>
             getIt<ClinicianNotificationService>().clearCurrentToken(),
+        analytics: getIt.isRegistered<CliniciansAnalytics>()
+            ? getIt<CliniciansAnalytics>()
+            : null,
       ),
     )
     ..registerSingleton<SubscriptionEntitlementCubit>(

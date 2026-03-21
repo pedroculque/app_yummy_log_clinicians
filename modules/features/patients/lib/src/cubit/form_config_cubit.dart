@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
+import 'package:feature_contract/clinicians_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patients_feature/src/cubit/form_config_state.dart';
 import 'package:patients_feature/src/data/behavior_form_config.dart';
@@ -11,12 +12,15 @@ class FormConfigCubit extends Cubit<FormConfigState> {
   FormConfigCubit({
     required FormConfigRepository repository,
     required AuthRepository authRepository,
+    CliniciansAnalytics? analytics,
   })  : _repository = repository,
         _authRepository = authRepository,
+        _analytics = analytics,
         super(const FormConfigState());
 
   final FormConfigRepository _repository;
   final AuthRepository _authRepository;
+  final CliniciansAnalytics? _analytics;
   StreamSubscription<BehaviorFormConfig>? _subscription;
 
   /// Carrega a config do paciente e passa a observar alterações.
@@ -82,6 +86,7 @@ class FormConfigCubit extends Cubit<FormConfigState> {
         clinicianUid: user.uid,
         clinicianDisplayName: user.displayName,
       );
+      _analytics?.logFormConfigSave();
       // Estado já é atualizado pelo stream watchFormConfig
     } on Object catch (e, st) {
       debugPrint('[FormConfigCubit] save failed: $e');

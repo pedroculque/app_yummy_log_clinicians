@@ -1,18 +1,40 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:feature_contract/clinicians_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meal_domain/meal_domain.dart';
 import 'package:patients_feature/src/cubit/patient_diary_state.dart';
 import 'package:patients_feature/src/data/patient_meals_repository.dart';
 
 class PatientDiaryCubit extends Cubit<PatientDiaryState> {
   PatientDiaryCubit({
     required PatientMealsRepository repository,
+    CliniciansAnalytics? analytics,
   })  : _repository = repository,
+        _analytics = analytics,
         super(const PatientDiaryState());
 
   final PatientMealsRepository _repository;
+  final CliniciansAnalytics? _analytics;
+
+  /// Valores estáveis para GA4 (sem PII).
+  static String mealTypeAnalyticsParam(MealType type) => switch (type) {
+        MealType.breakfast => 'breakfast',
+        MealType.lunch => 'lunch',
+        MealType.dinner => 'dinner',
+        MealType.supper => 'supper',
+        MealType.morningSnack => 'morning_snack',
+        MealType.afternoonSnack => 'afternoon_snack',
+        MealType.eveningSnack => 'evening_snack',
+      };
+
+  void logDiaryMealOpen(MealType mealType) {
+    _analytics?.logDiaryMealOpen(
+      mealType: mealTypeAnalyticsParam(mealType),
+    );
+  }
   StreamSubscription<dynamic>? _subscription;
 
   Future<void> load({

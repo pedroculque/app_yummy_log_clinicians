@@ -49,12 +49,22 @@ getIt<AnalyticsLogger>().logEvent('nome_evento', params: {'chave': 'valor'});
 
 Ou `logEventWithParams` com `EventParams` para tipagem forte (ver README do `package_analytics`).
 
+**App Clínicos (`cl_*`):** eventos de produto usam a facade [`CliniciansAnalytics`](../modules/shared/feature_contract/lib/clinicians_analytics.dart), registada no `GetIt` após `AnalyticsLogger` (implementação em [`clinicians_analytics_impl.dart`](../lib/core/analytics/clinicians_analytics_impl.dart)).
+
+### Onde chamar analytics (regra de camadas)
+
+- **Não** chamar `CliniciansAnalytics` nem `GetIt` a partir de páginas/widgets.
+- Injetar `CliniciansAnalytics?` no **construtor do cubit** (ou num cubit dedicado ao ecrã). O registo no `GetIt` resolve a instância ao criar o cubit (`PatientsCubit`, `InsightsCubit`, `AuthCubit`, `PlansCubit`, `SettingsAnalyticsCubit`, etc.).
+- A **UI** obtém o cubit com `context.read<MyCubit>()` e chama métodos que encapsulam os `log*` (ex.: `PatientsCubit.logInviteShare`, `PlansCubit.purchase`).
+- **Testes:** passar um mock de `CliniciansAnalytics` ou `null` no construtor do cubit, sem service locator na view.
+
 ---
 
 ## Documentação relacionada
 
 | Documento | Conteúdo |
 |-----------|----------|
+| [ANALYTICS_EVENTS.md](ANALYTICS_EVENTS.md) | Dicionário canónico de eventos `cl_*`, parâmetros e validação DebugView |
 | [APP_RATING.md](APP_RATING.md) | Eventos do modal de avaliação e origens (`origin`) |
 
 ---

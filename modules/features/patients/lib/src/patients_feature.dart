@@ -35,17 +35,26 @@ class PatientsFeature implements YummyLogFeature {
         () => PatientsCubit(
           repository: getIt<PatientsRepository>(),
           authRepository: getIt<AuthRepository>(),
+          analytics: getIt.isRegistered<CliniciansAnalytics>()
+              ? getIt<CliniciansAnalytics>()
+              : null,
         ),
       )
       ..registerFactory<PatientDiaryCubit>(
         () => PatientDiaryCubit(
           repository: getIt<PatientMealsRepository>(),
+          analytics: getIt.isRegistered<CliniciansAnalytics>()
+              ? getIt<CliniciansAnalytics>()
+              : null,
         ),
       )
       ..registerFactory<FormConfigCubit>(
         () => FormConfigCubit(
           repository: getIt<FormConfigRepository>(),
           authRepository: getIt<AuthRepository>(),
+          analytics: getIt.isRegistered<CliniciansAnalytics>()
+              ? getIt<CliniciansAnalytics>()
+              : null,
         ),
       );
   }

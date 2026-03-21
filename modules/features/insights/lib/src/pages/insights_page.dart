@@ -655,6 +655,7 @@ class _PatientAnalyticsCard extends StatelessWidget {
   }
 
   void _openDetail(BuildContext context) {
+    context.read<InsightsCubit>().logInsightsPatientDrill(target: 'detail');
     unawaited(context.push('/insights/patient-detail', extra: insight));
   }
 
@@ -1073,6 +1074,7 @@ class PatientDetailPage extends StatelessWidget {
   }
 
   void _openAnalytics(BuildContext context, PatientInsight insight) {
+    context.read<InsightsCubit>().logInsightsPatientDrill(target: 'analytics');
     unawaited(
       context.push(
         '/patients/${insight.patient.id}/analytics'

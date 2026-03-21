@@ -5,7 +5,9 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_app_rating/package_app_rating.dart';
 import 'package:settings_feature/src/cubit/auth_cubit.dart';
+import 'package:settings_feature/src/cubit/plans_cubit.dart';
 import 'package:settings_feature/src/cubit/rate_app_cubit.dart';
+import 'package:settings_feature/src/cubit/settings_analytics_cubit.dart';
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
 import 'package:settings_feature/src/pages/plans_page.dart';
 import 'package:settings_feature/src/pages/settings_page.dart';
@@ -29,6 +31,13 @@ class SettingsFeature implements YummyLogFeature {
               ? getIt<AppRating>()
               : null,
         ),
+      )
+      ..registerLazySingleton<SettingsAnalyticsCubit>(
+        () => SettingsAnalyticsCubit(
+          getIt.isRegistered<CliniciansAnalytics>()
+              ? getIt<CliniciansAnalytics>()
+              : null,
+        ),
       );
   }
 
@@ -44,6 +53,7 @@ class SettingsFeature implements YummyLogFeature {
             providers: [
               BlocProvider.value(value: getIt<AuthCubit>()),
               BlocProvider(create: (_) => getIt<RateAppCubit>()),
+              BlocProvider.value(value: getIt<SettingsAnalyticsCubit>()),
             ],
             child: SettingsPage(
               profilePhotoSheet: getIt<ProfilePhotoSheet>(),
@@ -61,8 +71,20 @@ class SettingsFeature implements YummyLogFeature {
         GoRoute(
           path: '/plans',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => BlocProvider.value(
-            value: getIt<SubscriptionEntitlementCubit>(),
+          builder: (context, state) => MultiBlocProvider(
+            providers: [
+              BlocProvider.value(
+                value: getIt<SubscriptionEntitlementCubit>(),
+              ),
+              BlocProvider(
+                create: (_) => PlansCubit(
+                  subscriptionCubit: getIt<SubscriptionEntitlementCubit>(),
+                  analytics: getIt.isRegistered<CliniciansAnalytics>()
+                      ? getIt<CliniciansAnalytics>()
+                      : null,
+                ),
+              ),
+            ],
             child: const PlansPage(),
           ),
         ),

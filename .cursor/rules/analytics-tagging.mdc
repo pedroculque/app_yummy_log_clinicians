@@ -1,138 +1,69 @@
-# Analytics Tagging Guidelines
+---
+description: Tagueamento Firebase/GA4 (eventos cl_*) no YummyLog Clinicians — alinhado a docs/ANALYTICS_EVENTS.md
+globs:
+  - "**/clinicians_analytics*.dart"
+  - "**/docs/ANALYTICS*.md"
+  - "**/modules/features/**/cubit/**/*.dart"
+  - "**/lib/core/analytics/**/*.dart"
+  - "**/lib/core/di/injection.dart"
+---
 
-**Nota:** Analytics ainda não está implementado no Yummy Log. Esta rule é referência futura; ao implementar, adaptar eventos para o domínio do app (ex.: `meal_added`, `diary_viewed`, `connection_created`).
+# Analytics — YummyLog Clinicians
+
+**Fonte de verdade:** [`docs/ANALYTICS_EVENTS.md`](docs/ANALYTICS_EVENTS.md) (dicionário P0/P1/P2) e [`docs/ANALYTICS.md`](docs/ANALYTICS.md) (stack, screen views, regra de camadas).
+
+Não usar como referência tabelas de outros produtos (ex. “Growth Standards”, `patient_created` genérico): neste repo os eventos de produto são o prefixo **`cl_`** no mesmo projeto Firebase que o app paciente.
 
 ---
 
-Padrões e governança para tagueamento de analytics no app.
+## Governança
 
-## Estrutura de Arquivos
+| Regra | Detalhe |
+|-------|---------|
+| Nomes | `cl_*`, **≤ 40 caracteres**, sem PII |
+| Parâmetros | Poucos e estáveis (enums string: `source`, `channel`, `result`, …); **≤ 25** params por evento (limite Firebase) |
+| Navegação | **Não** duplicar “abriu ecrã X” se já há `screen_view` via [`AnalyticsRouteObserver`](lib/core/router/app_router.dart) |
+| App Rating | Eventos do pacote `AppRating` via `injection.dart` — não misturar com `cl_*` salvo doc explícito |
 
-```
-package_analytics/
-├── lib/src/
-│   ├── params/
-│   │   └── analytics_params.dart    # Constantes de parâmetros
-│   └── observers/
-│       └── analytics_route_observer.dart  # Observer de navegação
+---
 
-module_core/
-├── lib/src/analytics/
-│   └── events/
-│       └── base_events.dart         # Eventos globais (AppEvents)
+## Onde implementar (camada)
 
-module_growth_standards/
-├── lib/src/analytics/
-│   └── growth_events.dart           # Eventos do módulo
-```
+1. **Contrato:** [`CliniciansAnalytics`](modules/shared/feature_contract/lib/clinicians_analytics.dart) — métodos tipados por evento.
+2. **Implementação:** [`clinicians_analytics_impl.dart`](lib/core/analytics/clinicians_analytics_impl.dart) → `AnalyticsLogger.logEvent`.
+3. **Injeção:** `CliniciansAnalytics?` no **construtor do cubit** (ou cubit dedicado, ex. `PlansCubit`, `SettingsAnalyticsCubit`). Registo no `GetIt` só em [`injection.dart`](lib/core/di/injection.dart) / `*Feature.registerDependencies` / builders de rota.
+4. **UI (pages/widgets):** chama apenas `context.read<XxxCubit>().metodo()` — **nunca** `getIt<CliniciansAnalytics>()` nem imports de analytics na view.
 
-## User Properties (Firebase)
+Testes: passar mock de `CliniciansAnalytics` ou `null` no cubit.
 
-Propriedades que identificam o perfil do usuário e persistem entre sessões:
+---
 
-| Propriedade | Descrição | Valores |
-|-------------|-----------|---------|
-| `patient_count_range` | Faixa de pacientes cadastrados | `0`, `1-5`, `6-20`, `20+` |
-| `user_language` | Idioma preferido | `pt`, `en`, `es` |
+## User property
 
-### Quando Atualizar
+| Nome | Valor | Onde |
+|------|--------|------|
+| `app_variant` | `clinicians` | [`CliniciansAnalyticsImpl.applyDefaultUserProperties`](lib/core/analytics/clinicians_analytics_impl.dart) após `AnalyticsLogger.initialize()` |
 
-```dart
-// Após carregar/adicionar/deletar pacientes
-GrowthEvents.setPatientCountRange(logger, children.length);
+`user_id` continua em [`init_analytics_user_binding.dart`](lib/core/analytics/init_analytics_user_binding.dart).
 
-// Após mudar idioma
-GrowthEvents.setUserLanguage(logger, 'pt');
-```
+---
 
-## Eventos de Milestone (Ativação)
+## Checklist ao adicionar/alterar evento
 
-| Evento | Quando | Por quê |
-|--------|--------|---------|
-| `first_patient_created` | Primeiro paciente criado | Mede ativação |
-| `first_measurement_added` | Primeira medição adicionada | Mede engajamento |
+- [ ] Atualizar tabela em `docs/ANALYTICS_EVENTS.md` (nome, params, prioridade).
+- [ ] Adicionar método em `CliniciansAnalytics` + `CliniciansAnalyticsImpl` se for evento novo.
+- [ ] Disparar a partir de um **cubit** (não da widget).
+- [ ] Sem email, nome de paciente, IDs sensíveis nos params.
+- [ ] Validar no DebugView (flavor dev) antes de considerar fechado.
 
-## Convenções de Nomenclatura
+---
 
-### Eventos
+## P2 (diário + form config)
 
-| Tipo | Padrão | Exemplo |
-|------|--------|---------|
-| Ação do usuário | `{objeto}_{acao}` | `patient_created`, `add_patient_tapped` |
-| Tela (automático) | Via RouteObserver | `growth_detail_:id` |
-| Milestone | `first_{entidade}_{acao}` | `first_patient_created` |
-| Interação UI | `{elemento}_{acao}` | `statistic_changed`, `view_mode_changed` |
-| Busca | `{entidade}_searched` | `patient_searched` |
-| Relatório | `report_{acao}` | `report_generated`, `report_shared` |
-| Configurações | `{setting}_{acao}` | `language_changed`, `settings_viewed` |
+Eventos `cl_diary_meal_open` e `cl_form_config_save` — ver tabela em `ANALYTICS_EVENTS.md`.
 
-### Regras
+---
 
-- **snake_case** para todos os nomes
-- **Máximo 40 caracteres** (limite Firebase)
-- **Máximo 25 parâmetros** por evento
-- **Sem PII** (dados pessoais identificáveis)
+## Relação com mobile-foundation
 
-## Eventos por Tela - Growth Standards
-
-### Lista de Pacientes
-
-| Evento | Quando | Parâmetros |
-|--------|--------|------------|
-| `patient_list_loaded` | Lista carregada | `item_count` |
-| `patient_searched` | Busca realizada | `search_term_length`, `results_count` |
-| `add_patient_tapped` | Clique em adicionar | - |
-| `view_mode_changed` | Toggle grid/lista | `view_mode` |
-| `pagination_used` | Navegação de página | `page`, `total_pages` |
-| `patient_viewed` | Clique em paciente | `patient_id`, `source` |
-
-### Criação de Paciente
-
-| Evento | Quando | Parâmetros |
-|--------|--------|------------|
-| `patient_created` | Paciente criado | `patient_id`, `patient_sex` |
-| `first_patient_created` | **Primeiro** paciente | `patient_id`, `patient_sex` |
-
-### Medições
-
-| Evento | Quando | Parâmetros |
-|--------|--------|------------|
-| `measurement_added` | Medição adicionada | `patient_id`, `measurement_type` |
-| `first_measurement_added` | **Primeira** medição | `patient_id`, `measurement_type` |
-| `measurement_deleted` | Medição excluída | `patient_id`, `item_id` |
-
-### Tela de Gráficos
-
-| Evento | Quando | Parâmetros |
-|--------|--------|------------|
-| `statistic_changed` | Toggle Z-Score/Percentil | `statistic_type`, `patient_id` |
-| `indicator_selected` | Mudança tipo gráfico | `indicator`, `patient_id` |
-| `visit_selected` | Clique na tabela | `item_id`, `patient_id` |
-| `report_generated` | Clique em imprimir | `patient_id`, `content_type` |
-| `report_shared` | Clique em compartilhar | `patient_id`, `method` |
-
-### Configurações
-
-| Evento | Quando | Parâmetros |
-|--------|--------|------------|
-| `settings_viewed` | Tela aberta | - |
-| `language_changed` | Idioma alterado | `language_code`, `language_name` |
-
-## Funil de Ativação
-
-```
-Download → first_patient_created → first_measurement_added
-```
-
-Use esses eventos para medir conversão no Firebase Analytics.
-
-## Checklist de Implementação
-
-- [ ] Criar arquivo `{module}_events.dart`
-- [ ] Definir constantes de eventos
-- [ ] Criar métodos tipados de logging
-- [ ] Implementar User Properties
-- [ ] Implementar eventos de milestone
-- [ ] Usar `AnalyticsParams` para parâmetros
-- [ ] Nunca logar PII (nome, email, telefone)
-- [ ] Testar eventos no console (dev mode)
+Pacotes `package_analytics` / Firebase: ver [`docs/ANALYTICS.md`](docs/ANALYTICS.md). Não é obrigatório criar `module_events.dart` por módulo se o contrato `CliniciansAnalytics` já centraliza os `cl_*`.

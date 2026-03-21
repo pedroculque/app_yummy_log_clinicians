@@ -1,3 +1,4 @@
+import 'package:feature_contract/clinicians_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:insights_feature/src/cubit/patient_analytics_state.dart';
 import 'package:insights_feature/src/domain/insights_calculator.dart';
@@ -9,11 +10,14 @@ class PatientAnalyticsCubit {
   PatientAnalyticsCubit({
     required String patientId,
     required PatientMealsRepository mealsRepository,
+    CliniciansAnalytics? analytics,
   })  : _patientId = patientId,
-        _mealsRepository = mealsRepository;
+        _mealsRepository = mealsRepository,
+        _analytics = analytics;
 
   final String _patientId;
   final PatientMealsRepository _mealsRepository;
+  final CliniciansAnalytics? _analytics;
 
   PatientAnalyticsState _state = const PatientAnalyticsState.initial();
   PatientAnalyticsState get state => _state;
@@ -119,6 +123,7 @@ class PatientAnalyticsCubit {
   Future<void> changePeriod(int periodDays) async {
     if (!_periodOptions.contains(periodDays)) return;
     await load(periodDays: periodDays);
+    _analytics?.logInsightsPeriodSet(days: periodDays);
   }
 
   Map<DateTime, int> _computeDailyMealCounts(List<MealEntry> meals) {

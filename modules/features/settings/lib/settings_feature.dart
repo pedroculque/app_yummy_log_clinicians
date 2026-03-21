@@ -1,5 +1,8 @@
 export 'src/cubit/auth_cubit.dart';
+export 'src/cubit/plans_cubit.dart';
+export 'src/cubit/plans_state.dart';
 export 'src/cubit/rate_app_cubit.dart';
+export 'src/cubit/settings_analytics_cubit.dart';
 export 'src/data/notification_push_preferences_repository.dart'
     show
         NotificationPushMode,

@@ -29,6 +29,9 @@ class InsightsFeature implements YummyLogFeature {
         () => InsightsCubit(
           repository: getIt<InsightsRepository>(),
           authRepository: getIt<AuthRepository>(),
+          analytics: getIt.isRegistered<CliniciansAnalytics>()
+              ? getIt<CliniciansAnalytics>()
+              : null,
         ),
       );
   }
@@ -83,6 +86,9 @@ class InsightsFeature implements YummyLogFeature {
           final cubit = PatientAnalyticsCubit(
             patientId: patientId,
             mealsRepository: getIt<PatientMealsRepository>(),
+            analytics: getIt.isRegistered<CliniciansAnalytics>()
+                ? getIt<CliniciansAnalytics>()
+                : null,
           );
           return PatientAnalyticsPage(
             patientId: patientId,

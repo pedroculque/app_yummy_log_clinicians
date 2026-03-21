@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:bloc/bloc.dart';
+import 'package:feature_contract/clinicians_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patients_feature/patients_feature.dart';
 import 'package:sync_foundation/sync_foundation.dart';
@@ -46,6 +47,7 @@ class AuthCubit extends Cubit<AuthState> {
     required UserProfileReader userProfileReader,
     required PatientsRepository patientsRepository,
     Future<void> Function()? clearPushRegistration,
+    CliniciansAnalytics? analytics,
     this.onProfilePhotoUpdated,
   })  : _auth = authRepository,
         _photoUpload = photoUploadService,
@@ -53,6 +55,7 @@ class AuthCubit extends Cubit<AuthState> {
         _profileReader = userProfileReader,
         _patients = patientsRepository,
         _clearPushRegistration = clearPushRegistration,
+        _analytics = analytics,
         super(const AuthState()) {
     _subscription = _auth.authStateChanges.listen(_onAuthChanged);
     unawaited(_emitMergedFromAuth());
@@ -64,6 +67,7 @@ class AuthCubit extends Cubit<AuthState> {
   final UserProfileReader _profileReader;
   final PatientsRepository _patients;
   final Future<void> Function()? _clearPushRegistration;
+  final CliniciansAnalytics? _analytics;
   late final StreamSubscription<AuthUser?> _subscription;
 
   /// Chamado após upload bem-sucedido da foto de perfil.
@@ -112,23 +116,40 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signInWithGoogle() async {
+    _analytics?.logAuthStart(method: 'google');
     emit(state.copyWith(isLoading: true));
     try {
       await _auth.signInWithGoogle();
       final current = _auth.currentUser;
       if (current == null) {
+        _analytics?.logAuthResult(
+          method: 'google',
+          success: false,
+        );
         emit(const AuthState());
       } else {
+        _analytics?.logAuthResult(
+          method: 'google',
+          success: true,
+        );
         final merged = await _withFirestorePhoto(current);
         emit(AuthState(user: merged));
       }
     } on AuthException catch (e) {
+      _analytics?.logAuthResult(
+        method: 'google',
+        success: false,
+      );
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.message,
       ));
     } on Object catch (e, st) {
       debugPrint('signInWithGoogle: $e $st');
+      _analytics?.logAuthResult(
+        method: 'google',
+        success: false,
+      );
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
@@ -137,23 +158,40 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signInWithApple() async {
+    _analytics?.logAuthStart(method: 'apple');
     emit(state.copyWith(isLoading: true));
     try {
       await _auth.signInWithApple();
       final current = _auth.currentUser;
       if (current == null) {
+        _analytics?.logAuthResult(
+          method: 'apple',
+          success: false,
+        );
         emit(const AuthState());
       } else {
+        _analytics?.logAuthResult(
+          method: 'apple',
+          success: true,
+        );
         final merged = await _withFirestorePhoto(current);
         emit(AuthState(user: merged));
       }
     } on AuthException catch (e) {
+      _analytics?.logAuthResult(
+        method: 'apple',
+        success: false,
+      );
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.message,
       ));
     } on Object catch (e, st) {
       debugPrint('signInWithApple: $e $st');
+      _analytics?.logAuthResult(
+        method: 'apple',
+        success: false,
+      );
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
@@ -166,6 +204,9 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await _auth.signOut();
       final current = _auth.currentUser;
+      if (current == null) {
+        _analytics?.logLogout();
+      }
       emit(current == null ? const AuthState() : AuthState(user: current));
     } on Object catch (e, st) {
       debugPrint('signOut: $e $st');
@@ -186,6 +227,7 @@ class AuthCubit extends Cubit<AuthState> {
       await _patients.deleteClinicianAccountData(user.uid);
       await _photoUpload.deleteProfilePhotos(userId: user.uid);
       await _auth.deleteAccount();
+      _analytics?.logAccountDeleteComplete();
       emit(const AuthState());
     } on AuthRequiresRecentLoginException {
       emit(
