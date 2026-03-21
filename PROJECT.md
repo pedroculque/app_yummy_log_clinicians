@@ -106,6 +106,8 @@ app_yummy_log_clinicians/
 | [STATE.md](STATE.md) | Posição atual, decisões, próximos passos |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arquitetura técnica |
+| [docs/APP_RATING.md](docs/APP_RATING.md) | Regras de avaliação na loja (triggers, modal, origens) |
+| [docs/ANALYTICS.md](docs/ANALYTICS.md) | Analytics mobile-foundation (Firebase, rotas, utilizador) |
 | [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore |
 
 ---

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:patients_feature/patients_feature.dart'
+    show trackActionAndRequestAppRatingIfEligible;
 import 'package:patients_feature/src/cubit/form_config_cubit.dart';
 import 'package:patients_feature/src/cubit/form_config_state.dart';
 import 'package:patients_feature/src/data/behavior_catalog.dart';
@@ -81,6 +83,12 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
             SnackBar(
               content: Text(context.l10n.formConfigSaved),
               behavior: SnackBarBehavior.floating,
+            ),
+          );
+          unawaited(
+            trackActionAndRequestAppRatingIfEligible(
+              context,
+              origin: 'form_config_saved',
             ),
           );
         },

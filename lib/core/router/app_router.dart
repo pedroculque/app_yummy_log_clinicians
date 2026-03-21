@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insights_feature/insights_feature.dart';
+import 'package:package_analytics/package_analytics.dart';
 import 'package:patients_feature/patients_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
@@ -23,6 +24,9 @@ GoRouter createAppRouter() {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/patients',
     debugLogDiagnostics: true,
+    observers: [
+      AnalyticsRouteObserver(logger: getIt<AnalyticsLogger>()),
+    ],
     routes: [
       GoRoute(
         path: '/login',

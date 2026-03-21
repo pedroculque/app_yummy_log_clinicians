@@ -10,7 +10,6 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
 import 'package:settings_feature/src/cubit/auth_cubit.dart'
@@ -23,7 +22,9 @@ import 'package:settings_feature/src/cubit/auth_cubit.dart'
         kProfilePhotoTokenFailed,
         kProfilePhotoUploadFailed,
         kProfilePhotoWrongAccount;
+import 'package:settings_feature/src/cubit/rate_app_cubit.dart';
 import 'package:settings_feature/src/data/notification_push_preferences_repository.dart';
+import 'package:settings_feature/src/settings_page_dependencies.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
@@ -50,20 +51,15 @@ Future<void> _restoreSubscriptionPurchases(BuildContext context) async {
 class SettingsPage extends StatelessWidget {
   const SettingsPage({
     required this.profilePhotoSheet,
+    required this.dependencies,
     super.key,
   });
 
   final ProfilePhotoSheet profilePhotoSheet;
+  final SettingsPageDependencies dependencies;
 
   static const String _supportId = 'GsV6wVJe89UQajUpAZJELaEYn733';
   static const String _appVersion = '1.0.0';
-
-  /// Dev/staging apenas ([AppBuildFlavorConfig] no GetIt).
-  static bool _showPushTokenDebug() {
-    final g = GetIt.instance;
-    return g.isRegistered<AppBuildFlavorConfig>() &&
-        g<AppBuildFlavorConfig>().showPushTokenDebug;
-  }
 
   static String _resolveErrorMessage(BuildContext context, String code) {
     final l10n = context.l10n;
@@ -229,8 +225,10 @@ class SettingsPage extends StatelessWidget {
                           const SizedBox(height: 32),
                           _NotificationPushPreferencesSection(
                             userId: state.user!.uid,
+                            repository: dependencies
+                                .notificationPushPreferencesRepository,
                           ),
-                          if (_showPushTokenDebug()) ...[
+                          if (dependencies.showPushTokenDebug) ...[
                             if (defaultTargetPlatform ==
                                 TargetPlatform.iOS) ...[
                               const SizedBox(height: 32),
@@ -298,7 +296,9 @@ class SettingsPage extends StatelessWidget {
                   icon: Icons.translate_rounded,
                 ),
                 const SizedBox(height: 8),
-                const _LanguageSection(),
+                _LanguageSection(
+                  localeService: dependencies.localeService,
+                ),
                 const SizedBox(height: 32),
 
                 // --- APARÊNCIA ---
@@ -307,7 +307,10 @@ class SettingsPage extends StatelessWidget {
                   icon: Icons.palette_outlined,
                 ),
                 const SizedBox(height: 8),
-                _AppearanceSection(theme: theme),
+                _AppearanceSection(
+                  theme: theme,
+                  themeModeService: dependencies.themeModeService,
+                ),
                 const SizedBox(height: 32),
 
                 // --- SOBRE ---
@@ -369,12 +372,7 @@ class SettingsPage extends StatelessWidget {
                 _RateAppCard(
                   title: l10n.rateApp,
                   subtitle: l10n.rateAppSubtitle,
-                  onTap: () {
-                    uiSnackBar(
-                      context: context,
-                      message: l10n.rateAppStoreSoon,
-                    );
-                  },
+                  onTap: () => unawaited(_openRateAppFromSettings(context)),
                 ),
                 const SizedBox(height: 24),
               ]),
@@ -393,6 +391,18 @@ class SettingsPage extends StatelessWidget {
       context: context,
       message: context.l10n.copySupportId,
     );
+  }
+
+  static Future<void> _openRateAppFromSettings(BuildContext context) async {
+    final opened =
+        await context.read<RateAppCubit>().openFromSettings(context);
+    if (!context.mounted) return;
+    if (!opened) {
+      uiSnackBar(
+        context: context,
+        message: context.l10n.rateAppStoreSoon,
+      );
+    }
   }
 
   /// Debug iOS — remover no futuro.
@@ -623,13 +633,16 @@ class _FcmTokenDebugDialogState extends State<_FcmTokenDebugDialog> {
 // ---------------------------------------------------------------------------
 
 class _NotificationPushPreferencesSection extends StatelessWidget {
-  const _NotificationPushPreferencesSection({required this.userId});
+  const _NotificationPushPreferencesSection({
+    required this.userId,
+    required this.repository,
+  });
 
   final String userId;
+  final NotificationPushPreferencesRepository repository;
 
   @override
   Widget build(BuildContext context) {
-    final repo = GetIt.instance<NotificationPushPreferencesRepository>();
     final l10n = context.l10n;
     final appColors = AppColors.fromContext(context);
 
@@ -642,7 +655,7 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         StreamBuilder<NotificationPushPrefs>(
-          stream: repo.watchPrefs(userId),
+          stream: repository.watchPrefs(userId),
           builder: (context, snapshot) {
             final prefs = snapshot.data ??
                 const NotificationPushPrefs(
@@ -691,7 +704,7 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
                           value: prefs.pushEnabled,
                           onChanged: (v) =>
                               unawaited(
-                                repo.setPushEnabled(
+                                repository.setPushEnabled(
                                   userId,
                                   enabled: v,
                                 ),
@@ -720,14 +733,14 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
                       onChanged: (on) {
                         if (on) {
                           unawaited(
-                            repo.setPushMode(
+                            repository.setPushMode(
                               userId,
                               NotificationPushMode.all,
                             ),
                           );
                         } else {
                           unawaited(
-                            repo.setPushMode(
+                            repository.setPushMode(
                               userId,
                               NotificationPushMode.criticalOnly,
                             ),
@@ -750,14 +763,14 @@ class _NotificationPushPreferencesSection extends StatelessWidget {
                       onChanged: (on) {
                         if (on) {
                           unawaited(
-                            repo.setPushMode(
+                            repository.setPushMode(
                               userId,
                               NotificationPushMode.criticalOnly,
                             ),
                           );
                         } else {
                           unawaited(
-                            repo.setPushMode(
+                            repository.setPushMode(
                               userId,
                               NotificationPushMode.all,
                             ),
@@ -1561,22 +1574,20 @@ class _RateAppCard extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _AppearanceSection extends StatefulWidget {
-  const _AppearanceSection({required this.theme});
+  const _AppearanceSection({
+    required this.theme,
+    required this.themeModeService,
+  });
 
   final ThemeData theme;
+  final ThemeModeService themeModeService;
 
   @override
   State<_AppearanceSection> createState() => _AppearanceSectionState();
 }
 
 class _AppearanceSectionState extends State<_AppearanceSection> {
-  late ThemeModeService _themeService;
-
-  @override
-  void initState() {
-    super.initState();
-    _themeService = GetIt.instance<ThemeModeService>();
-  }
+  ThemeModeService get _themeService => widget.themeModeService;
 
   Future<void> _setTheme(ThemeMode mode) async {
     await _themeService.setThemeMode(mode);
@@ -1636,26 +1647,22 @@ class _AppearanceSectionState extends State<_AppearanceSection> {
 // ---------------------------------------------------------------------------
 
 class _LanguageSection extends StatefulWidget {
-  const _LanguageSection();
+  const _LanguageSection({required this.localeService});
+
+  final LocaleService localeService;
 
   @override
   State<_LanguageSection> createState() => _LanguageSectionState();
 }
 
 class _LanguageSectionState extends State<_LanguageSection> {
-  late LocaleService _localeService;
+  LocaleService get _localeService => widget.localeService;
 
   static const _locales = [
     ui.Locale('pt'),
     ui.Locale('en'),
     ui.Locale('es'),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _localeService = GetIt.instance<LocaleService>();
-  }
 
   Future<void> _setLocale(ui.Locale locale) async {
     await _localeService.setLocale(locale);

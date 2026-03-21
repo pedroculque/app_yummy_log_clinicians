@@ -62,6 +62,8 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 ## Decisões recentes
 
+- **App Rating:** Regras de elegibilidade, triggers, UI do modal, origens (`origin`) e pontos de integração estão documentados em [docs/APP_RATING.md](docs/APP_RATING.md).
+- **Analytics:** Integração com `package_analytics` / `package_firebase_analytics` (mobile-foundation), observer de rotas, vínculo `setUserId`/`reset` com auth — ver [docs/ANALYTICS.md](docs/ANALYTICS.md).
 - **Oferta Grátis vs Pro (2026-03-20):** Ver [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md) — Insights: **teaser** no grátis e dashboard **completo** no Pro; **push** para todos com login; **formulário de comportamento** no grátis; preços mantidos com revisão trimestral.
 - **Limite de pacientes:** Plano gratuito permite até 2 pacientes; Pro é ilimitado.
 - **Preços Pro:** R$ 24,90/mês ou R$ 179,90/ano (economia de 40%).

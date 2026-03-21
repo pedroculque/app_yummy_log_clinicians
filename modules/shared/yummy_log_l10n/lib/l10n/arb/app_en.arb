@@ -629,5 +629,8 @@
   "settingsDebugFcmShow": "Show FCM token",
   "settingsDebugFcmCopy": "Copy",
   "settingsDebugFcmUnavailable": "FCM token unavailable. Check notification permission and network.",
-  "settingsDebugFcmCopied": "FCM token copied"
+  "settingsDebugFcmCopied": "FCM token copied",
+  "appRatingModalTitle": "Enjoying YummyLog for Clinicians?",
+  "appRatingModalSubtitle": "Tap a star rating to help us improve.",
+  "appRatingButton": "Submit"
 }

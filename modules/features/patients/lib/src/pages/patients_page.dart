@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:patients_feature/patients_feature.dart'
+    show trackActionAndRequestAppRatingIfEligible;
 import 'package:patients_feature/src/cubit/patients_cubit.dart';
 import 'package:patients_feature/src/cubit/patients_state.dart';
 import 'package:patients_feature/src/data/patient.dart';
@@ -100,7 +102,19 @@ class _PatientsPageState extends State<PatientsPage> {
   }
 
   Widget _buildLoggedInContent(AuthUser user) {
-    return BlocBuilder<PatientsCubit, PatientsState>(
+    return BlocConsumer<PatientsCubit, PatientsState>(
+      listenWhen: (previous, current) =>
+          current.status == PatientsStatus.loaded &&
+          current.hasPatients &&
+          previous.patients.isEmpty,
+      listener: (context, state) {
+        unawaited(
+          trackActionAndRequestAppRatingIfEligible(
+            context,
+            origin: 'first_patient_linked',
+          ),
+        );
+      },
       builder: (context, state) {
         if (state.status == PatientsStatus.initial) {
           unawaited(context.read<PatientsCubit>().load());

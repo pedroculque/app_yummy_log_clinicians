@@ -20,6 +20,11 @@ dependencies:
   get_it: ^8.0.2
   go_router: ^14.6.3
   image_picker: ^1.1.2
+  package_app_rating:
+    git:
+      url: https://github.com/pedroculque/mobile-foundation.git
+      ref: main
+      path: packages/app_rating_core
   patients_feature:
     path: ../patients
   persistence_foundation:

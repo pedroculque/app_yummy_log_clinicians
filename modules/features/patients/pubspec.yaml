@@ -24,6 +24,11 @@ dependencies:
   intl: ^0.20.2
   meal_domain:
     path: ../../shared/meal_domain
+  package_app_rating:
+    git:
+      url: https://github.com/pedroculque/mobile-foundation.git
+      ref: main
+      path: packages/app_rating_core
   path: ^1.9.0
   path_provider: ^2.1.5
   share_plus: ^10.1.4

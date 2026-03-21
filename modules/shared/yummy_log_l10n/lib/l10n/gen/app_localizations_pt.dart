@@ -1415,4 +1415,13 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get settingsDebugFcmCopied => 'Token FCM copiado';
+
+  @override
+  String get appRatingModalTitle => 'Está gostando do YummyLog para Clínicos?';
+
+  @override
+  String get appRatingModalSubtitle => 'Toque nas estrelas para nos ajudar a melhorar.';
+
+  @override
+  String get appRatingButton => 'Enviar';
 }

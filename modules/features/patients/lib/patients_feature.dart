@@ -1,3 +1,4 @@
+export 'src/app_rating_prompt.dart';
 export 'src/cubit/patients_cubit.dart';
 export 'src/cubit/patients_state.dart';
 export 'src/data/behavior_catalog.dart';

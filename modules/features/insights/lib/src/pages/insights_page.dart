@@ -10,6 +10,8 @@ import 'package:insights_feature/src/domain/insights_summary.dart';
 import 'package:insights_feature/src/domain/patient_insight.dart';
 import 'package:insights_feature/src/domain/risk_alert.dart';
 import 'package:intl/intl.dart';
+import 'package:patients_feature/patients_feature.dart'
+    show trackActionAndRequestAppRatingIfEligible;
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
@@ -26,6 +28,9 @@ class _InsightsPageState extends State<InsightsPage> {
   /// Recarrega métricas quando o usuário fizer login ou trocar de conta.
   String? _lastLoadedUserId;
 
+  /// Evita repetir o pedido de avaliação ao mudar período / pull-to-refresh.
+  bool _hasRequestedAppRatingForInsightsData = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,9 +43,11 @@ class _InsightsPageState extends State<InsightsPage> {
   void _onAuthUserChanged(AuthUser? user) {
     if (user == null) {
       _lastLoadedUserId = null;
+      _hasRequestedAppRatingForInsightsData = false;
       return;
     }
     if (user.uid == _lastLoadedUserId) return;
+    _hasRequestedAppRatingForInsightsData = false;
     _lastLoadedUserId = user.uid;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -61,7 +68,23 @@ class _InsightsPageState extends State<InsightsPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder<InsightsCubit, InsightsState>(
+        child: BlocConsumer<InsightsCubit, InsightsState>(
+          listenWhen: (previous, current) {
+            if (_hasRequestedAppRatingForInsightsData) return false;
+            if (!current.isLoaded || current.isEmpty) return false;
+            return previous.isLoading ||
+                previous.status == InsightsStatus.initial ||
+                previous.isEmpty;
+          },
+          listener: (context, state) {
+            _hasRequestedAppRatingForInsightsData = true;
+            unawaited(
+              trackActionAndRequestAppRatingIfEligible(
+                context,
+                origin: 'insights_dashboard_loaded',
+              ),
+            );
+          },
           builder: (context, state) {
             if (state.isLoading) {
               return const Center(child: CircularProgressIndicator());

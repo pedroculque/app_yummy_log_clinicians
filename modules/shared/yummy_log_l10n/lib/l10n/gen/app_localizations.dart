@@ -2768,6 +2768,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'FCM token copied'**
   String get settingsDebugFcmCopied;
+
+  /// No description provided for @appRatingModalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoying YummyLog for Clinicians?'**
+  String get appRatingModalTitle;
+
+  /// No description provided for @appRatingModalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a star rating to help us improve.'**
+  String get appRatingModalSubtitle;
+
+  /// No description provided for @appRatingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get appRatingButton;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
