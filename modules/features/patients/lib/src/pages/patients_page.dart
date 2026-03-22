@@ -20,10 +20,6 @@ import 'package:ui_kit/ui_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
-// Subscrições Auth + Firestore do perfil: canceladas em
-// `_PatientsPageState.dispose` (e ao trocar de utilizador).
-// ignore_for_file: cancel_subscriptions
-
 class PatientsPage extends StatefulWidget {
   const PatientsPage({
     required this.profilePhotoSheet,
@@ -62,12 +58,12 @@ class _PatientsPageState extends State<PatientsPage> {
 
   @override
   void dispose() {
-    final authSub = _authSubscription;
-    final profileSub = _firestoreProfileSubscription;
+    final authDone = _authSubscription?.cancel();
+    final profileDone = _firestoreProfileSubscription?.cancel();
+    if (authDone != null) unawaited(authDone);
+    if (profileDone != null) unawaited(profileDone);
     _authSubscription = null;
     _firestoreProfileSubscription = null;
-    if (authSub != null) unawaited(authSub.cancel());
-    if (profileSub != null) unawaited(profileSub.cancel());
     super.dispose();
   }
 
