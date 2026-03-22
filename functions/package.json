@@ -2,7 +2,7 @@
   "name": "yummy-log-clinicians-functions",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "lib/index.js",
   "scripts": {
@@ -17,5 +17,8 @@
   "devDependencies": {
     "@types/node": "^22.15.18",
     "typescript": "^5.8.3"
+  },
+  "overrides": {
+    "@tootallnate/once": "3.0.1"
   }
 }
