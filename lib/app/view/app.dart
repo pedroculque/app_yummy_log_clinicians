@@ -30,6 +30,7 @@ class App extends StatelessWidget {
           return BlocBuilder<LocaleCubit, ui.Locale>(
             builder: (context, locale) {
               return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
                 routerConfig: router,
                 theme: UiKitTheme.buildLight(designConfig),
                 darkTheme: UiKitTheme.buildDark(designConfig),
