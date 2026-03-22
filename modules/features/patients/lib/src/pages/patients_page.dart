@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feature_contract/feature_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1139,12 +1140,29 @@ class _PatientAvatar extends StatelessWidget {
     }
 
     return ClipOval(
-      child: Image.network(
-        photoUrl!,
+      child: SizedBox(
         width: 44,
         height: 44,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => placeholder,
+        child: CachedNetworkImage(
+          imageUrl: photoUrl!,
+          width: 44,
+          height: 44,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => ColoredBox(
+            color: appColors.grayLight.withValues(alpha: 0.7),
+            child: Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: appColors.primary,
+                ),
+              ),
+            ),
+          ),
+          errorWidget: (context, url, error) => placeholder,
+        ),
       ),
     );
   }

@@ -7,6 +7,7 @@ environment:
   sdk: ^3.11.0
 
 dependencies:
+  cached_network_image: ^3.4.1
   feature_contract:
     path: ../../shared/feature_contract
   firebase_auth: ^5.3.4

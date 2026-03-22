@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -2790,8 +2791,46 @@ class _PatientAvatar extends StatelessWidget {
         ? name.split(' ').take(2).map((e) => e.isNotEmpty ? e[0] : '').join()
         : '?';
 
+    const avatarSize = 48.0;
+
     if (photoUrl != null && photoUrl!.isNotEmpty) {
-      return CircleAvatar(radius: 24, backgroundImage: NetworkImage(photoUrl!));
+      return ClipOval(
+        child: SizedBox(
+          width: avatarSize,
+          height: avatarSize,
+          child: CachedNetworkImage(
+            imageUrl: photoUrl!,
+            width: avatarSize,
+            height: avatarSize,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => ColoredBox(
+              color: appColors.grayLight,
+              child: Center(
+                child: SizedBox(
+                  width: avatarSize * 0.35,
+                  height: avatarSize * 0.35,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: appColors.primary,
+                  ),
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => ColoredBox(
+              color: appColors.primary.withValues(alpha: 0.1),
+              child: Center(
+                child: Text(
+                  initials.toUpperCase(),
+                  style: AppTextStyles.body1.copyWith(
+                    color: appColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
     }
 
     return CircleAvatar(
