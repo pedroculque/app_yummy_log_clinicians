@@ -6,6 +6,9 @@ import 'package:feature_contract/clinicians_analytics.dart';
 import 'package:feature_contract/crash_reporter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patients_feature/patients_feature.dart';
+import 'package:persistence_foundation/persistence_foundation.dart'
+    show ClinicianProfilePhotoLocalStore, clinicianProfilePhotoUrlHint,
+        logClinicianProfilePhoto;
 import 'package:sync_foundation/sync_foundation.dart';
 
 /// Chaves para mapear erros de upload nas strings localizadas.
@@ -27,6 +30,7 @@ class AuthState {
     this.errorMessage,
     this.profilePhotoUploading = false,
     this.profilePhotoCacheBuster,
+    this.profileFirestoreCacheToken,
   });
 
   final AuthUser? user;
@@ -35,6 +39,8 @@ class AuthState {
   final bool profilePhotoUploading;
   /// Timestamp para forçar reload da foto após upload (evita cache).
   final int? profilePhotoCacheBuster;
+  /// Derivado de `users/{uid}.updatedAt` — invalida cache quando a URL se repete.
+  final String? profileFirestoreCacheToken;
 
   bool get isLoggedIn => user != null;
 }
@@ -47,6 +53,7 @@ class AuthCubit extends Cubit<AuthState> {
     required UserDocumentWriter userDocumentWriter,
     required UserProfileReader userProfileReader,
     required PatientsRepository patientsRepository,
+    required ClinicianProfilePhotoLocalStore clinicianProfilePhotoLocalStore,
     Future<void> Function()? clearPushRegistration,
     CliniciansAnalytics? analytics,
     CrashReporter? crashReporter,
@@ -56,10 +63,12 @@ class AuthCubit extends Cubit<AuthState> {
         _userDoc = userDocumentWriter,
         _profileReader = userProfileReader,
         _patients = patientsRepository,
+        _clinicianProfilePhotoLocalStore = clinicianProfilePhotoLocalStore,
         _clearPushRegistration = clearPushRegistration,
         _analytics = analytics,
         _crashReporter = crashReporter,
         super(const AuthState()) {
+    _seedClinicianAvatarFromDisk();
     _subscription = _auth.authStateChanges.listen(_onAuthChanged);
     unawaited(_emitMergedFromAuth());
   }
@@ -69,10 +78,16 @@ class AuthCubit extends Cubit<AuthState> {
   final UserDocumentWriter _userDoc;
   final UserProfileReader _profileReader;
   final PatientsRepository _patients;
+  final ClinicianProfilePhotoLocalStore _clinicianProfilePhotoLocalStore;
   final Future<void> Function()? _clearPushRegistration;
   final CliniciansAnalytics? _analytics;
   final CrashReporter? _crashReporter;
   late final StreamSubscription<AuthUser?> _subscription;
+  // Atribuído em [_startProfileWatch].
+  // Cancelado em [_stopProfileWatch] e [close].
+  // ignore: cancel_subscriptions
+  StreamSubscription<UserProfileSnapshot>? _profileSnapSub;
+  String? _watchedProfileUid;
 
   /// Chamado após upload bem-sucedido da foto de perfil.
   void Function(AuthUser)? onProfilePhotoUpdated;
@@ -80,49 +95,218 @@ class AuthCubit extends Cubit<AuthState> {
   bool _profilePhotoUploadInProgress = false;
   Timer? _profilePhotoUploadGuardTimer;
 
-  void _onAuthChanged(AuthUser? user) {
-    if (user == null) {
-      _profilePhotoUploadInProgress = false;
-      _profilePhotoUploadGuardTimer?.cancel();
-      emit(const AuthState());
+  /// Antes do primeiro evento do Auth, repõe URL guardada em disco (rebuild).
+  void _seedClinicianAvatarFromDisk() {
+    final cur = _auth.currentUser;
+    if (cur == null) return;
+    final disk = _clinicianProfilePhotoLocalStore.readForUid(cur.uid);
+    if (disk == null) {
+      logClinicianProfilePhoto('auth.seed skip disk miss uid=${cur.uid}');
       return;
     }
-    if (_profilePhotoUploadInProgress) return;
-    final preserved = state.user?.photoUrl;
-    final merged = preserved != null &&
-            preserved.isNotEmpty &&
-            (user.photoUrl == null || user.photoUrl!.isEmpty)
-        ? user.copyWith(photoUrl: preserved)
-        : user;
-    emit(AuthState(user: merged));
+    final authHasPhoto = cur.photoUrl != null && cur.photoUrl!.isNotEmpty;
+    if (authHasPhoto) {
+      logClinicianProfilePhoto(
+        'auth.seed skip auth already has photo uid=${cur.uid} '
+        'url=${clinicianProfilePhotoUrlHint(cur.photoUrl)}',
+      );
+      return;
+    }
+    logClinicianProfilePhoto(
+      'auth.seed apply disk uid=${cur.uid} '
+      'url=${clinicianProfilePhotoUrlHint(disk.url)} '
+      'token=${disk.cacheToken ?? '(null)'}',
+    );
+    emit(
+      AuthState(
+        user: cur.copyWith(photoUrl: disk.url),
+        profileFirestoreCacheToken: disk.cacheToken,
+      ),
+    );
   }
 
-  Future<AuthUser> _withFirestorePhoto(AuthUser user) async {
-    try {
-      final url = await _profileReader.getPhotoUrl(user.uid);
-      if (url != null && url.isNotEmpty) {
-        return user.copyWith(photoUrl: url);
-      }
-    } on Object catch (e, st) {
-      debugPrint('AuthCubit _withFirestorePhoto: $e $st');
-      _crashReporter?.call(
-        e,
-        st,
-        feature: 'settings_auth',
-        hint: 'firestore_photo',
-      );
+  void _persistClinicianAvatarToDisk() {
+    final u = state.user;
+    if (u == null) {
+      logClinicianProfilePhoto('auth.persist skip no state.user');
+      return;
     }
-    return user;
+    final url = u.photoUrl;
+    if (url == null || url.isEmpty) {
+      logClinicianProfilePhoto('auth.persist skip empty photoUrl uid=${u.uid}');
+      return;
+    }
+    final bust = state.profilePhotoCacheBuster;
+    final token = bust != null
+        ? 'u$bust'
+        : (state.profileFirestoreCacheToken != null &&
+                state.profileFirestoreCacheToken!.isNotEmpty
+            ? state.profileFirestoreCacheToken
+            : null);
+    unawaited(
+      _clinicianProfilePhotoLocalStore.write(
+        uid: u.uid,
+        url: url,
+        cacheToken: token,
+      ),
+    );
+  }
+
+  AuthUser _withPreservedPhoto(AuthUser fromAuth) {
+    final preserved = state.user?.photoUrl;
+    if (preserved != null &&
+        preserved.isNotEmpty &&
+        (fromAuth.photoUrl == null || fromAuth.photoUrl!.isEmpty)) {
+      return fromAuth.copyWith(photoUrl: preserved);
+    }
+    return fromAuth;
+  }
+
+  AuthUser _applySnapshotToAuth(AuthUser base, UserProfileSnapshot snap) {
+    if (snap.photoUrl != null && snap.photoUrl!.isNotEmpty) {
+      return base.copyWith(photoUrl: snap.photoUrl);
+    }
+    return base;
+  }
+
+  void _stopProfileWatch() {
+    final prev = _watchedProfileUid;
+    _watchedProfileUid = null;
+    final sub = _profileSnapSub;
+    _profileSnapSub = null;
+    if (sub != null) {
+      logClinicianProfilePhoto(
+        'auth.profileWatch stop uid=${prev ?? '(null)'}',
+      );
+      unawaited(sub.cancel());
+    }
+  }
+
+  void _startProfileWatch(String userId) {
+    if (_watchedProfileUid == userId && _profileSnapSub != null) {
+      logClinicianProfilePhoto(
+        'auth.profileWatch already uid=$userId (no-op)',
+      );
+      return;
+    }
+    _stopProfileWatch();
+    _watchedProfileUid = userId;
+    logClinicianProfilePhoto('auth.profileWatch start uid=$userId');
+    _profileSnapSub = _profileReader.watchSnapshot(userId).listen(
+      _onProfileSnapshot,
+      onError: (Object e, StackTrace st) {
+        _crashReporter?.call(
+          e,
+          st,
+          feature: 'settings_auth',
+          hint: 'profile_watch',
+        );
+      },
+    );
+  }
+
+  void _onProfileSnapshot(UserProfileSnapshot snap) {
+    if (isClosed) return;
+    if (_profilePhotoUploadInProgress) {
+      logClinicianProfilePhoto(
+        'auth.onProfileSnapshot skip upload in progress '
+        'url=${clinicianProfilePhotoUrlHint(snap.photoUrl)}',
+      );
+      return;
+    }
+    final authUser = _auth.currentUser;
+    if (authUser == null) {
+      logClinicianProfilePhoto('auth.onProfileSnapshot skip no currentUser');
+      return;
+    }
+    final user = _applySnapshotToAuth(_withPreservedPhoto(authUser), snap);
+    logClinicianProfilePhoto(
+      'auth.onProfileSnapshot uid=${authUser.uid} '
+      'mergedUrl=${clinicianProfilePhotoUrlHint(user.photoUrl)} '
+      'snapUrl=${clinicianProfilePhotoUrlHint(snap.photoUrl)} '
+      'token=${snap.cacheToken ?? '(null)'}',
+    );
+    if (!isClosed) {
+      emit(
+        AuthState(
+          user: user,
+          profileFirestoreCacheToken: snap.cacheToken,
+          profilePhotoCacheBuster: state.profilePhotoCacheBuster,
+          profilePhotoUploading: state.profilePhotoUploading,
+          isLoading: state.isLoading,
+        ),
+      );
+      _persistClinicianAvatarToDisk();
+    }
+  }
+
+  Future<void> _emitFullyMerged(AuthUser fromAuth) async {
+    if (isClosed) return;
+    if (_profilePhotoUploadInProgress) {
+      logClinicianProfilePhoto(
+        'auth.emitFullyMerged skip upload in progress uid=${fromAuth.uid}',
+      );
+      return;
+    }
+    logClinicianProfilePhoto(
+      'auth.emitFullyMerged readSnapshot uid=${fromAuth.uid}',
+    );
+    final snap = await _profileReader.readSnapshot(fromAuth.uid);
+    final user = _applySnapshotToAuth(_withPreservedPhoto(fromAuth), snap);
+    logClinicianProfilePhoto(
+      'auth.emitFullyMerged done uid=${fromAuth.uid} '
+      'mergedUrl=${clinicianProfilePhotoUrlHint(user.photoUrl)} '
+      'token=${snap.cacheToken ?? '(null)'}',
+    );
+    if (!isClosed) {
+      emit(
+        AuthState(
+          user: user,
+          profileFirestoreCacheToken: snap.cacheToken,
+          profilePhotoCacheBuster: state.profilePhotoCacheBuster,
+          profilePhotoUploading: state.profilePhotoUploading,
+          isLoading: state.isLoading,
+        ),
+      );
+      _persistClinicianAvatarToDisk();
+    }
+  }
+
+  void _onAuthChanged(AuthUser? user) {
+    if (user == null) {
+      logClinicianProfilePhoto(
+        'auth.onAuthChanged signed out: clear watch + disk',
+      );
+      _stopProfileWatch();
+      _profilePhotoUploadInProgress = false;
+      _profilePhotoUploadGuardTimer?.cancel();
+      unawaited(_clinicianProfilePhotoLocalStore.clear());
+      if (!isClosed) emit(const AuthState());
+      return;
+    }
+    if (_profilePhotoUploadInProgress) {
+      logClinicianProfilePhoto(
+        'auth.onAuthChanged skip merge (upload) uid=${user.uid}',
+      );
+      return;
+    }
+    logClinicianProfilePhoto(
+      'auth.onAuthChanged uid=${user.uid} '
+      'photoUrl=${clinicianProfilePhotoUrlHint(user.photoUrl)}',
+    );
+    _startProfileWatch(user.uid);
+    unawaited(_emitFullyMerged(user));
   }
 
   Future<void> _emitMergedFromAuth() async {
     final user = _auth.currentUser;
     if (user == null) {
+      _stopProfileWatch();
       if (!isClosed) emit(const AuthState());
       return;
     }
-    final merged = await _withFirestorePhoto(user);
-    if (!isClosed) emit(AuthState(user: merged));
+    _startProfileWatch(user.uid);
+    await _emitFullyMerged(user);
   }
 
   Future<void> signInWithGoogle() async {
@@ -142,8 +326,24 @@ class AuthCubit extends Cubit<AuthState> {
           method: 'google',
           success: true,
         );
-        final merged = await _withFirestorePhoto(current);
-        emit(AuthState(user: merged));
+        _startProfileWatch(current.uid);
+        logClinicianProfilePhoto(
+          'auth.signInGoogle readSnapshot uid=${current.uid}',
+        );
+        final snap = await _profileReader.readSnapshot(current.uid);
+        final merged = _applySnapshotToAuth(_withPreservedPhoto(current), snap);
+        logClinicianProfilePhoto(
+          'auth.signInGoogle merged '
+          'url=${clinicianProfilePhotoUrlHint(merged.photoUrl)} '
+          'token=${snap.cacheToken ?? '(null)'}',
+        );
+        emit(
+          AuthState(
+            user: merged,
+            profileFirestoreCacheToken: snap.cacheToken,
+          ),
+        );
+        _persistClinicianAvatarToDisk();
       }
     } on AuthException catch (e) {
       _analytics?.logAuthResult(
@@ -190,8 +390,24 @@ class AuthCubit extends Cubit<AuthState> {
           method: 'apple',
           success: true,
         );
-        final merged = await _withFirestorePhoto(current);
-        emit(AuthState(user: merged));
+        _startProfileWatch(current.uid);
+        logClinicianProfilePhoto(
+          'auth.signInApple readSnapshot uid=${current.uid}',
+        );
+        final snap = await _profileReader.readSnapshot(current.uid);
+        final merged = _applySnapshotToAuth(_withPreservedPhoto(current), snap);
+        logClinicianProfilePhoto(
+          'auth.signInApple merged '
+          'url=${clinicianProfilePhotoUrlHint(merged.photoUrl)} '
+          'token=${snap.cacheToken ?? '(null)'}',
+        );
+        emit(
+          AuthState(
+            user: merged,
+            profileFirestoreCacheToken: snap.cacheToken,
+          ),
+        );
+        _persistClinicianAvatarToDisk();
       }
     } on AuthException catch (e) {
       _analytics?.logAuthResult(
@@ -256,6 +472,8 @@ class AuthCubit extends Cubit<AuthState> {
       await _photoUpload.deleteProfilePhotos(userId: user.uid);
       await _auth.deleteAccount();
       _analytics?.logAccountDeleteComplete();
+      logClinicianProfilePhoto('auth.deleteAccount clear local avatar cache');
+      unawaited(_clinicianProfilePhotoLocalStore.clear());
       emit(const AuthState());
     } on AuthRequiresRecentLoginException {
       emit(
@@ -292,7 +510,10 @@ class AuthCubit extends Cubit<AuthState> {
     if (name.trim().isEmpty) return;
     try {
       await _auth.updateDisplayName(name);
-      unawaited(_emitMergedFromAuth());
+      final u = _auth.currentUser;
+      if (u != null) {
+        unawaited(_emitFullyMerged(u));
+      }
     } on Object catch (e, st) {
       debugPrint('updateDisplayName: $e $st');
       _crashReporter?.call(
@@ -309,18 +530,31 @@ class AuthCubit extends Cubit<AuthState> {
   /// Retorna `true` se concluiu com sucesso.
   Future<bool> uploadProfilePhoto(String localPath) async {
     final user = _auth.currentUser;
-    if (user == null) return false;
+    if (user == null) {
+      logClinicianProfilePhoto('auth.upload skip not signed in');
+      return false;
+    }
+    logClinicianProfilePhoto(
+      'auth.upload start uid=${user.uid} pathLen=${localPath.length}',
+    );
     _profilePhotoUploadInProgress = true;
-    emit(AuthState(
-      user: state.user ?? user,
-      profilePhotoUploading: true,
-    ));
+    emit(
+      AuthState(
+        user: state.user ?? user,
+        profilePhotoUploading: true,
+        profileFirestoreCacheToken: state.profileFirestoreCacheToken,
+        profilePhotoCacheBuster: state.profilePhotoCacheBuster,
+      ),
+    );
     try {
       final uploadResult = await _photoUpload.uploadProfilePhoto(
         userId: user.uid,
         localPath: localPath,
       );
       if (!uploadResult.isSuccess) {
+        logClinicianProfilePhoto(
+          'auth.upload fail code=${uploadResult.failureCode}',
+        );
         _profilePhotoUploadInProgress = false;
         final err = switch (uploadResult.failureCode) {
           'unauthenticated' => kProfilePhotoNeedSignIn,
@@ -328,16 +562,27 @@ class AuthCubit extends Cubit<AuthState> {
           'token' => kProfilePhotoTokenFailed,
           _ => kProfilePhotoUploadFailed,
         };
-        emit(AuthState(
-          user: _auth.currentUser ?? user,
-          errorMessage: err,
-        ));
+        emit(
+          AuthState(
+            user: _auth.currentUser ?? user,
+            errorMessage: err,
+            profileFirestoreCacheToken: state.profileFirestoreCacheToken,
+            profilePhotoCacheBuster: state.profilePhotoCacheBuster,
+          ),
+        );
         return false;
       }
       final url = uploadResult.url!;
+      logClinicianProfilePhoto(
+        'auth.upload storage ok url=${clinicianProfilePhotoUrlHint(url)}',
+      );
       try {
         await _auth.updatePhotoUrl(url);
       } on Object catch (e, st) {
+        logClinicianProfilePhoto(
+          'auth.upload updatePhotoUrl (Auth) failed, '
+          'continuing with Firestore: $e',
+        );
         debugPrint('updatePhotoUrl (Auth) failed, using Firestore: $e $st');
         _crashReporter?.call(
           e,
@@ -355,17 +600,36 @@ class AuthCubit extends Cubit<AuthState> {
       final updatedUser = (state.user ?? _auth.currentUser ?? user).copyWith(
         photoUrl: url,
       );
+      logClinicianProfilePhoto(
+        'auth.upload readSnapshot after write uid=${user.uid}',
+      );
+      final postSnap = await _profileReader.readSnapshot(user.uid);
+      final bust = DateTime.now().millisecondsSinceEpoch;
+      logClinicianProfilePhoto(
+        'auth.upload success bust=$bust '
+        'firestoreToken=${postSnap.cacheToken ?? '(null)'} '
+        'url=${clinicianProfilePhotoUrlHint(url)}',
+      );
       _profilePhotoUploadGuardTimer?.cancel();
       _profilePhotoUploadGuardTimer = Timer(const Duration(seconds: 3), () {
         _profilePhotoUploadInProgress = false;
+        final u = _auth.currentUser;
+        if (u != null && !isClosed) {
+          unawaited(_emitFullyMerged(u));
+        }
       });
-      emit(AuthState(
-        user: updatedUser,
-        profilePhotoCacheBuster: DateTime.now().millisecondsSinceEpoch,
-      ));
+      emit(
+        AuthState(
+          user: updatedUser,
+          profilePhotoCacheBuster: bust,
+          profileFirestoreCacheToken: postSnap.cacheToken,
+        ),
+      );
+      _persistClinicianAvatarToDisk();
       onProfilePhotoUpdated?.call(updatedUser);
       return true;
     } on Object catch (e, st) {
+      logClinicianProfilePhoto('auth.upload exception $e');
       debugPrint('uploadProfilePhoto: $e $st');
       _crashReporter?.call(
         e,
@@ -374,10 +638,14 @@ class AuthCubit extends Cubit<AuthState> {
         hint: 'upload_profile_photo',
       );
       _profilePhotoUploadInProgress = false;
-      emit(AuthState(
-        user: _auth.currentUser ?? user,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        AuthState(
+          user: _auth.currentUser ?? user,
+          errorMessage: e.toString(),
+          profileFirestoreCacheToken: state.profileFirestoreCacheToken,
+          profilePhotoCacheBuster: state.profilePhotoCacheBuster,
+        ),
+      );
       return false;
     }
   }
@@ -385,6 +653,7 @@ class AuthCubit extends Cubit<AuthState> {
   @override
   Future<void> close() async {
     _profilePhotoUploadGuardTimer?.cancel();
+    _stopProfileWatch();
     await _subscription.cancel();
     return super.close();
   }
@@ -397,6 +666,7 @@ extension on AuthState {
     String? errorMessage,
     bool? profilePhotoUploading,
     int? profilePhotoCacheBuster,
+    String? profileFirestoreCacheToken,
   }) {
     return AuthState(
       user: user ?? this.user,
@@ -406,6 +676,8 @@ extension on AuthState {
           profilePhotoUploading ?? this.profilePhotoUploading,
       profilePhotoCacheBuster:
           profilePhotoCacheBuster ?? this.profilePhotoCacheBuster,
+      profileFirestoreCacheToken:
+          profileFirestoreCacheToken ?? this.profileFirestoreCacheToken,
     );
   }
 }

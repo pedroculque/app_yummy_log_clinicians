@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persistence_foundation/persistence_foundation.dart';
+import 'package:settings_feature/src/constants/legal_urls.dart';
 import 'package:settings_feature/src/cubit/auth_cubit.dart'
     show
         AuthCubit,
@@ -28,6 +29,7 @@ import 'package:settings_feature/src/data/notification_push_preferences_reposito
 import 'package:settings_feature/src/settings_page_dependencies.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 String _restoreOutcomeAnalyticsValue(SubscriptionRestoreOutcome o) =>
@@ -37,6 +39,28 @@ String _restoreOutcomeAnalyticsValue(SubscriptionRestoreOutcome o) =>
       SubscriptionRestoreOutcome.notConfigured => 'not_configured',
       SubscriptionRestoreOutcome.failed => 'failed',
     };
+
+Future<void> _openPrivacyPolicyInBrowser(BuildContext context) async {
+  final uri = Uri.parse(AppLegalUrls.privacyPolicy);
+  try {
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && context.mounted) {
+      uiSnackBar(
+        context: context,
+        message: context.l10n.somethingWentWrong,
+        type: UiSnackbarType.error,
+      );
+    }
+  } on Object {
+    if (context.mounted) {
+      uiSnackBar(
+        context: context,
+        message: context.l10n.somethingWentWrong,
+        type: UiSnackbarType.error,
+      );
+    }
+  }
+}
 
 Future<void> _restoreSubscriptionPurchases(BuildContext context) async {
   final cubit = context.read<SubscriptionEntitlementCubit>();
@@ -223,6 +247,8 @@ class SettingsPage extends StatelessWidget {
                             email: state.user!.email ?? state.user!.uid,
                             photoUrl: state.user!.photoUrl,
                             displayName: state.user!.displayName,
+                            profilePhotoCacheKey:
+                                _settingsAvatarNetworkCacheKey(state),
                             profilePhotoUploading: state.profilePhotoUploading,
                             onLogout: () => unawaited(
                               context.read<AuthCubit>().signOut(),
@@ -361,7 +387,8 @@ class SettingsPage extends StatelessWidget {
                           size: 16,
                           color: appColors.gray,
                         ),
-                        onTap: () {},
+                        onTap: () =>
+                            unawaited(_openPrivacyPolicyInBrowser(context)),
                       ),
                     ],
                   ),
@@ -1069,12 +1096,21 @@ class _LoggedOutSection extends StatelessWidget {
 // AVATAR TOCÁVEL COM OVERLAY DE LOADING (foto de perfil)
 // ---------------------------------------------------------------------------
 
+String? _settingsAvatarNetworkCacheKey(AuthState state) {
+  final bust = state.profilePhotoCacheBuster;
+  if (bust != null) return 'u$bust';
+  final t = state.profileFirestoreCacheToken;
+  if (t != null && t.isNotEmpty) return t;
+  return null;
+}
+
 class _ProfileAvatarTile extends StatelessWidget {
   const _ProfileAvatarTile({
     required this.userId,
     required this.email,
     this.authPhotoUrl,
     this.displayName,
+    this.profilePhotoCacheKey,
     this.isUploading = false,
     this.onTap,
   });
@@ -1083,17 +1119,22 @@ class _ProfileAvatarTile extends StatelessWidget {
   final String email;
   final String? authPhotoUrl;
   final String? displayName;
+  final String? profilePhotoCacheKey;
   final bool isUploading;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
-    final child = _AccountAvatar(
-      userId: userId,
-      email: email,
-      authPhotoUrl: authPhotoUrl,
-      displayName: displayName,
+    final child = UserAvatar(
+      user: AuthUser(
+        uid: userId,
+        email: email,
+        displayName: displayName,
+        photoUrl: authPhotoUrl,
+      ),
+      size: 48,
+      networkImageCacheKey: profilePhotoCacheKey,
     );
     final wrapped = onTap != null
         ? Material(
@@ -1134,81 +1175,6 @@ class _ProfileAvatarTile extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// AVATAR COM FALLBACK FIRESTORE (Auth às vezes não persiste photoURL)
-// ---------------------------------------------------------------------------
-
-class _AccountAvatar extends StatefulWidget {
-  const _AccountAvatar({
-    required this.userId,
-    required this.email,
-    this.authPhotoUrl,
-    this.displayName,
-  });
-
-  final String userId;
-  final String email;
-  final String? authPhotoUrl;
-  final String? displayName;
-
-  @override
-  State<_AccountAvatar> createState() => _AccountAvatarState();
-}
-
-class _AccountAvatarState extends State<_AccountAvatar> {
-  String? _photoUrlFromFirestore;
-
-  @override
-  void initState() {
-    super.initState();
-    if (_needsFirestoreFallback) {
-      unawaited(_fetchPhotoFromFirestore());
-    }
-  }
-
-  bool get _needsFirestoreFallback =>
-      widget.authPhotoUrl == null || widget.authPhotoUrl!.isEmpty;
-
-  Future<void> _fetchPhotoFromFirestore() async {
-    try {
-      final doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .get();
-      final url = doc.data()?['photoUrl'] as String?;
-      if (url != null && url.isNotEmpty && mounted) {
-        setState(() => _photoUrlFromFirestore = url);
-      }
-    } on Object catch (_) {
-      // Ignora; avatar fica com placeholder
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant _AccountAvatar oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.userId != widget.userId ||
-        oldWidget.authPhotoUrl != widget.authPhotoUrl) {
-      _photoUrlFromFirestore = null;
-      if (_needsFirestoreFallback) {
-        unawaited(_fetchPhotoFromFirestore());
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final url = widget.authPhotoUrl ?? _photoUrlFromFirestore;
-    final user = AuthUser(
-      uid: widget.userId,
-      email: widget.email,
-      displayName: widget.displayName,
-      photoUrl: url,
-    );
-    return UserAvatar(user: user, size: 48);
-  }
-}
-
-// ---------------------------------------------------------------------------
 // LOGGED IN SECTION
 // ---------------------------------------------------------------------------
 
@@ -1220,6 +1186,7 @@ class _LoggedInSection extends StatelessWidget {
     required this.onDeleteAccount,
     this.photoUrl,
     this.displayName,
+    this.profilePhotoCacheKey,
     this.profilePhotoUploading = false,
     this.onSetDisplayName,
     this.onProfilePhotoTap,
@@ -1229,6 +1196,7 @@ class _LoggedInSection extends StatelessWidget {
   final String email;
   final String? photoUrl;
   final String? displayName;
+  final String? profilePhotoCacheKey;
   final bool profilePhotoUploading;
   final VoidCallback onLogout;
   final VoidCallback onDeleteAccount;
@@ -1257,6 +1225,7 @@ class _LoggedInSection extends StatelessWidget {
                 email: email,
                 authPhotoUrl: photoUrl,
                 displayName: displayName,
+                profilePhotoCacheKey: profilePhotoCacheKey,
                 isUploading: profilePhotoUploading,
                 onTap: onProfilePhotoTap,
               ),

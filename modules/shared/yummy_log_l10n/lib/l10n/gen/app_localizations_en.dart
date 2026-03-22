@@ -5,6 +5,8 @@
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
@@ -871,7 +873,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get insightsFreeTeaserTitle => 'Dashboard preview';
 
   @override
-  String get insightsFreeTeaserBody => 'Recent alerts, attention ranking, and per-patient deep dives (30- and 90-day windows) are part of the Clinicians plan.';
+  String get insightsFreeTeaserBody => 'You already get a preview of alerts, who needs attention, and one patient\'s analysis (last 7 days). Full lists, 30/90-day windows, and the operational overview are part of the Clinicians plan.';
+
+  @override
+  String get insightsFreeTruncatedAlertsHint => 'Preview: up to 3 alerts. Full history on the Clinicians plan.';
+
+  @override
+  String get insightsFreeTruncatedAttentionHint => 'Preview: up to 2 patients in the list. Full ranking on the Clinicians plan.';
+
+  @override
+  String get insightsFreeTruncatedAnalyticsHint => 'Preview: 1 patient. Trends and charts for everyone on the Clinicians plan.';
+
+  @override
+  String get insightsProRemainderTitle => 'Also on the Clinicians plan';
+
+  @override
+  String get insightsProRemainderBody => 'Operational summary (reviews, stable, worsening), expanded clinical prioritization, 30- and 90-day windows, and full analysis for every patient.';
 
   @override
   String get insightsProLockedAttentionTitle => 'Needs attention';

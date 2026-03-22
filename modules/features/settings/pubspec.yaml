@@ -37,6 +37,7 @@ dependencies:
     git:
       url: https://github.com/pedroculque/flutter_ui_kit.git
       ref: main
+  url_launcher: ^6.3.1
   yummy_log_l10n:
     path: ../../shared/yummy_log_l10n
 

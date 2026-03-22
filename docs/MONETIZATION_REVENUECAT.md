@@ -26,7 +26,7 @@ Hoje só existe **gate** explícito de assinatura para **limite de pacientes**:
 | **Aba Pacientes** (lista, convite, diário read-only, swipe remover) | Sim (até 2) | Sim |
 | **Diário do paciente** (timeline, calendário, detalhes, tags de risco) | Sim (para os pacientes que tens) | Sim |
 | **Configurar formulário de comportamento** por paciente | Sim | Sim |
-| **Aba Insights** (dashboard, métricas, gráficos, ranking, 3.2 / 3.3) | **Teaser:** KPIs + **7 dias**; sem operacional/prioridade/alertas/ranking/análise por paciente; rotas Pro mostram upsell | **Completo** (7/30/90 dias, todas as secções) |
+| **Aba Insights** (dashboard, métricas, gráficos, ranking, 3.2 / 3.3) | **Teaser:** KPIs + **7 dias**; **prévia** limitada: até **3** alertas, **2** pacientes em “Precisam de atenção”, **1** cartão de análise por paciente; **sem** resumo operacional nem bloco de prioridade clínica (tune); 30/90 dias só Pro; cartão “Também no plano Clínicos”; rotas Pro mostram upsell | **Completo** (7/30/90 dias, todas as secções) |
 | **Notificações push** (novas entradas / alertas de risco) | **Sim** (se login + prefs; não há `isPro` no fluxo) | Sim |
 | **Tela de planos + restaurar compras** | Sim | Sim |
 
@@ -40,7 +40,7 @@ Decisões de produto acordadas (**gate de Insights** no cliente; ver tabela “E
 
 | Tema | Decisão |
 |------|---------|
-| **Insights** | **Pro:** dashboard completo (métricas, períodos longos, ranking de atenção, análises 3.2 / 3.3). **Grátis:** **teaser** — resumo limitado (ex.: janela curta tipo 7 dias, poucos KPIs), **sem** o painel completo; sempre com **CTA** para subscrever. Objetivo: prova de valor sem ecrã vazio nem dar tudo de borla. |
+| **Insights** | **Pro:** dashboard completo (métricas, períodos longos, ranking de atenção, análises 3.2 / 3.3). **Grátis:** **teaser** — janela **7 dias**, KPIs, **prévia** de alertas/lista de atenção/análise (limites no cliente: 3 / 2 / 1), **sem** operacional/prioridade clínica expandida nem 30/90 dias; **CTA** para subscrever. Objetivo: prova de valor sem ecrã vazio nem dar o painel completo de borla. |
 | **Push** | Mantém-se para **todos os utilizadores com login** (grátis e Pro), com as preferências atuais. Rever no futuro se custo ou política de produto justificarem restringir ao Pro. |
 | **Formulário de comportamento** | Mantém-se no **plano grátis** (até 2 pacientes), como gancho de valor clínico; Pro continua a pagar sobretudo por **escala de pacientes** + **Insights completo**. |
 | **Preço** | Manter **R\$ 24,90/mês** e **R\$ 179,90/ano** (alinhado à UI e às lojas) ao introduzir os gates de Insights. **Rever** trimestralmente com métricas: conversão free→Pro, churn, custo médio Firebase/Functions por clínico ativo. |

@@ -17,6 +17,10 @@ import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
+bool _insightsFreePatientAnalyticsTruncated(List<PatientInsight> patients) {
+  return patients.length > 1;
+}
+
 class InsightsPage extends StatefulWidget {
   const InsightsPage({super.key, this.scoreHelpMode = false});
 
@@ -201,22 +205,42 @@ class _InsightsContent extends StatelessWidget {
             l10n: l10n,
           ),
         ],
-        if (!isPro) ...[
-          _InsightsProLockedFeatureCard(
-            icon: Icons.priority_high_rounded,
-            title: l10n.insightsProLockedAttentionTitle,
-            body: l10n.insightsProLockedAttentionBody,
+        if (!isPro && summary.hasAlerts) ...[
+          _AlertsSection(
+            alerts: summary.recentAlerts,
             appColors: appColors,
             l10n: l10n,
+            maxItems: 3,
+            truncatedHint: summary.recentAlerts.length > 3
+                ? l10n.insightsFreeTruncatedAlertsHint
+                : null,
+          ),
+          const SizedBox(height: 24),
+        ],
+        if (!isPro) ...[
+          _AttentionSection(
+            patients: summary.patientsNeedingAttention,
+            appColors: appColors,
+            l10n: l10n,
+            maxVisiblePatients: 2,
+            truncatedHint: summary.patientsNeedingAttention.length > 2
+                ? l10n.insightsFreeTruncatedAttentionHint
+                : null,
+          ),
+          const SizedBox(height: 24),
+          _PatientAnalyticsSection(
+            patients: summary.patientInsights,
+            appColors: appColors,
+            l10n: l10n,
+            maxCards: 1,
+            truncatedHint: _insightsFreePatientAnalyticsTruncated(
+                  summary.patientInsights,
+                )
+                ? l10n.insightsFreeTruncatedAnalyticsHint
+                : null,
           ),
           const SizedBox(height: 16),
-          _InsightsProLockedFeatureCard(
-            icon: Icons.analytics_outlined,
-            title: l10n.insightsProLockedAnalyticsTitle,
-            body: l10n.insightsProLockedAnalyticsBody,
-            appColors: appColors,
-            l10n: l10n,
-          ),
+          _InsightsProRemainderCard(appColors: appColors, l10n: l10n),
         ],
       ],
     );
@@ -281,18 +305,12 @@ class _InsightsFreeTeaserBanner extends StatelessWidget {
   }
 }
 
-class _InsightsProLockedFeatureCard extends StatelessWidget {
-  const _InsightsProLockedFeatureCard({
-    required this.icon,
-    required this.title,
-    required this.body,
+class _InsightsProRemainderCard extends StatelessWidget {
+  const _InsightsProRemainderCard({
     required this.appColors,
     required this.l10n,
   });
 
-  final IconData icon;
-  final String title;
-  final String body;
   final AppColors appColors;
   final AppLocalizations l10n;
 
@@ -311,13 +329,15 @@ class _InsightsProLockedFeatureCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: appColors.gray, size: 22),
+              Icon(
+                Icons.workspace_premium_outlined,
+                color: appColors.secondary,
+                size: 22,
+              ),
               const SizedBox(width: 8),
-              Icon(Icons.lock_outline, color: appColors.gray, size: 18),
-              const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  title,
+                  l10n.insightsProRemainderTitle,
                   style: AppTextStyles.body1.copyWith(
                     color: appColors.neutralBlack,
                     fontWeight: FontWeight.w600,
@@ -328,7 +348,7 @@ class _InsightsProLockedFeatureCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            body,
+            l10n.insightsProRemainderBody,
             style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
           ),
           const SizedBox(height: 12),
@@ -589,17 +609,21 @@ class _PatientAnalyticsSection extends StatelessWidget {
     required this.patients,
     required this.appColors,
     required this.l10n,
+    this.maxCards = 3,
+    this.truncatedHint,
   });
 
   final List<PatientInsight> patients;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final int maxCards;
+  final String? truncatedHint;
 
   @override
   Widget build(BuildContext context) {
     final sortedPatients = [...patients]
       ..sort((a, b) => b.attentionScore.compareTo(a.attentionScore));
-    final topPatients = sortedPatients.take(3).toList();
+    final topPatients = sortedPatients.take(maxCards).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -630,6 +654,13 @@ class _PatientAnalyticsSection extends StatelessWidget {
               l10n: l10n,
             ),
           ),
+        if (truncatedHint != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            truncatedHint!,
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+        ],
       ],
     );
   }
@@ -1983,11 +2014,15 @@ class _AlertsSection extends StatelessWidget {
     required this.alerts,
     required this.appColors,
     required this.l10n,
+    this.maxItems = 5,
+    this.truncatedHint,
   });
 
   final List<RiskAlert> alerts;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final int maxItems;
+  final String? truncatedHint;
 
   @override
   Widget build(BuildContext context) {
@@ -2006,11 +2041,18 @@ class _AlertsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         ...alerts
-            .take(5)
+            .take(maxItems)
             .map(
               (alert) =>
                   _AlertCard(alert: alert, appColors: appColors, l10n: l10n),
             ),
+        if (truncatedHint != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            truncatedHint!,
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+        ],
       ],
     );
   }
@@ -2203,15 +2245,22 @@ class _AttentionSection extends StatelessWidget {
     required this.patients,
     required this.appColors,
     required this.l10n,
+    this.maxVisiblePatients,
+    this.truncatedHint,
   });
 
   final List<PatientInsight> patients;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final int? maxVisiblePatients;
+  final String? truncatedHint;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final visible = maxVisiblePatients == null
+        ? patients
+        : patients.take(maxVisiblePatients!).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -2226,10 +2275,10 @@ class _AttentionSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        if (patients.isEmpty)
+        if (visible.isEmpty)
           _NoAttentionCard(appColors: appColors, l10n: l10n)
         else
-          ...patients.map(
+          ...visible.map(
             (patient) => _PatientAttentionCard(
               insight: patient,
               appColors: appColors,
@@ -2237,6 +2286,13 @@ class _AttentionSection extends StatelessWidget {
               colorScheme: colorScheme,
             ),
           ),
+        if (truncatedHint != null) ...[
+          const SizedBox(height: 10),
+          Text(
+            truncatedHint!,
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+        ],
       ],
     );
   }

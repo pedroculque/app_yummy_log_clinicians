@@ -11,7 +11,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
 - **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.
 - **Pacientes:** Feature `patients_feature` implementada com:
-  - Header com saudação personalizada (nome do clínico); foto do clínico alinhada à **Conta**: escuta `users/{uid}` e, se existir `photoUrl` no Firestore, usa essa URL no cabeçalho (o Auth por vezes fica desatualizado após upload de perfil)
+  - Header com saudação personalizada (nome do clínico); foto do clínico alinhada à **Conta**: escuta em tempo real `users/{uid}`; se existir `photoUrl` no Firestore, prioriza essa URL (fonte de verdade após upload; o Auth pode ficar desatualizado). `CachedNetworkImage` usa `cacheKey` derivado de `updatedAt` do doc para invalidar cache quando o ficheiro no Storage é sobrescrito no mesmo path
   - Lista de pacientes (cards com avatar/foto de perfil ou iniciais, nome destacado, data de vínculo); fotos remotas com **cache em disco** (`CachedNetworkImage`) e placeholder a carregar (evita “círculo branco”)
   - Swipe-to-remove com confirmação via bottom sheet
   - Tap no card → abre diário do paciente
@@ -36,13 +36,13 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Persistência em `users/{patientId}/form_config/behavior`
   - Histórico de alterações (quem alterou e quando)
 - **Monetização:** Sistema de planos implementado (RevenueCat + paywall); **oferta comercial** em [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md):
-  - Grátis: até 2 pacientes; formulário de comportamento e push (com login); **Insights em teaser** (só janela de 7 dias, KPIs resumidos, sem ranking/alertas/análise por paciente no dashboard; CTA para `/plans`)
+  - Grátis: até 2 pacientes; formulário de comportamento e push (com login); **Insights em teaser** (7 dias, KPIs; prévia limitada: até 3 alertas, 2 em “Precisam de atenção”, 1 análise por paciente; sem operacional/prioridade clínica expandida; CTA para `/plans`)
   - Pro: pacientes ilimitados; Insights **completo** (7/30/90 dias, todas as secções e rotas de análise); preços R$ 24,90/mês ou R$ 179,90/ano (rever trimestralmente)
   - Paywall: bullets focam escala + insights Pro + push (diário e formulário **não** são vendidos como exclusivos Pro)
   - Seção "Assinatura" e `PlansPage`; ecrã Pro ativo menciona dashboard de insights completo
 - **Insights:** Feature `insights_feature` com `SubscriptionEntitlementCubit`; **Pro** vê:
   - Dashboard resumo, seletor 7/30/90 dias, operacional, prioridade clínica, alertas, ranking, análises por paciente e avançadas
-  - **Grátis:** mesmos dados agregados só para **7 dias** no repositório; UI mostra cartões resumo + teaser e cartões bloqueados para funcionalidades Pro
+  - **Grátis:** mesmos dados agregados só para **7 dias** no repositório; UI: resumo + teaser + prévias truncadas + cartão do que resta no Pro (ver `MONETIZATION_REVENUECAT.md`)
 - **Configurações:** Adaptado do app paciente + seção de Assinatura + **exclusão de conta** (requisito Apple para apps com login): fluxo in-app com confirmação; remove dados do clínico no Firestore (`clinicians/*`, `clinician_codes`, `users/{uid}` se existir), tokens de push, avatar no Storage e usuário no Firebase Auth. **ID de Suporte** (Firebase UID) na secção Suporte quando logado — copiável; alinhado ao `SessionLogger` e tags Sentry `user` / `support_id` — ver [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md).
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`; nome do app e textos de assinatura/Pro alinhados à identidade **Clinicians** (stores + strings nativas Android por locale).
@@ -63,7 +63,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 
 ## Decisões recentes
 
-- **Auth / avatares:** `FirebaseAuthRepository.authStateChanges` usa o stream **`userChanges`** do Firebase Auth, para refletir atualizações de perfil em todo o app que escuta o repositório. Avatares com URL remota (auth `UserAvatar`, lista Pacientes, Insights) usam **`CachedNetworkImage`** onde aplicável.
+- **Auth / avatares:** `FirebaseAuthRepository.authStateChanges` usa **`userChanges`** do Firebase Auth. **`AuthCubit`** (Configurações) funde sempre com `users/{uid}` via `UserProfileReader.readSnapshot` e **`watchSnapshot`** (outro dispositivo altera a foto → UI atualiza). `UserAvatar` aceita `networkImageCacheKey` (upload bust ou `updatedAt` do Firestore) para não mostrar imagem antiga em cache quando o path no Storage é reutilizado. Cabeçalho de **Pacientes** segue o mesmo doc com listener + token de cache.
 - **App Rating:** Regras de elegibilidade, triggers, UI do modal, origens (`origin`) e pontos de integração estão documentados em [docs/APP_RATING.md](docs/APP_RATING.md).
 - **Analytics:** Integração com `package_analytics` / `package_firebase_analytics` (mobile-foundation), observer de rotas, vínculo `setUserId`/`reset` com auth — ver [docs/ANALYTICS.md](docs/ANALYTICS.md).
 - **Observabilidade (Sentry + session logger):** `launchClinicianApp` chama `SentryFlutter.init` e, no `appRunner`, `initPersistence` → `registerSessionLogger` → `registerCrashReporterIfNeeded` (`SessionLoggerErrorReporter` → só `SessionLogger.error`) → auth/sync/DI → `bootstrap`. Em `bootstrap`, `FlutterError`, `PlatformDispatcher` e **`BlocObserver.onError`** enviam para `SessionLogger` quando registado. `SessionLoggerConfig.appVersion` inclui build number (`version+build`). Erros de sessão chegam ao Sentry via `session_sentry` (`SentrySessionClient`, fingerprint estável; `beforeSend` para compra cancelada). Utilizador no Sentry: `init_session_logger_user_binding` com `AuthUser.uid` (mesmo valor do ID de Suporte na UI). Ver [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) e [lib/core/observability/README.md](lib/core/observability/README.md).

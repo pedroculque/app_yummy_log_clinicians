@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:persistence_foundation/persistence_foundation.dart'
+    show clinicianProfilePhotoUrlHint, logClinicianProfilePhoto;
 
 enum _AuthUploadReady { ok, noUser, mismatch, tokenFailed }
 
@@ -203,8 +205,14 @@ class PhotoUploadService {
     required String localPath,
   }) async {
     try {
+      logClinicianProfilePhoto(
+        'storage.upload start uid=$userId pathLen=${localPath.length}',
+      );
       final absolutePath = await _resolveLocalPath(localPath);
       if (absolutePath == null) {
+        logClinicianProfilePhoto(
+          'storage.upload fail local file not found path=$localPath',
+        );
         debugPrint(
           '[PhotoUploadService] profile: local file not found: $localPath',
         );
@@ -212,6 +220,9 @@ class PhotoUploadService {
       }
       final file = File(absolutePath);
       if (!file.existsSync()) {
+        logClinicianProfilePhoto(
+          'storage.upload fail file missing abs=$absolutePath',
+        );
         debugPrint(
           '[PhotoUploadService] profile: file missing: $absolutePath',
         );
@@ -220,16 +231,21 @@ class PhotoUploadService {
       final extension = p.extension(localPath).toLowerCase();
       final ext = extension.isNotEmpty ? extension : '.jpg';
       final storagePath = 'users/$userId/profile/avatar$ext';
+      logClinicianProfilePhoto('storage.upload put $storagePath');
       debugPrint('[PhotoUploadService] profile upload → $storagePath');
-      switch (await _ensureAuthForUpload(userId)) {
+      final authReady = await _ensureAuthForUpload(userId);
+      switch (authReady) {
         case _AuthUploadReady.noUser:
+          logClinicianProfilePhoto('storage.upload auth gate: noUser');
           return const ProfilePhotoUploadResult.failure('unauthenticated');
         case _AuthUploadReady.mismatch:
+          logClinicianProfilePhoto('storage.upload auth gate: user_mismatch');
           return const ProfilePhotoUploadResult.failure('user_mismatch');
         case _AuthUploadReady.tokenFailed:
+          logClinicianProfilePhoto('storage.upload auth gate: tokenFailed');
           return const ProfilePhotoUploadResult.failure('token');
         case _AuthUploadReady.ok:
-          break;
+          logClinicianProfilePhoto('storage.upload auth gate: ok');
       }
       final ref = _storage.ref(storagePath);
       await ref.putFile(
@@ -243,9 +259,16 @@ class PhotoUploadService {
         ),
       );
       final downloadUrl = await ref.getDownloadURL();
+      logClinicianProfilePhoto(
+        'storage.upload success '
+        'url=${clinicianProfilePhotoUrlHint(downloadUrl)}',
+      );
       debugPrint('[PhotoUploadService] profile SUCCESS');
       return ProfilePhotoUploadResult.success(downloadUrl);
     } on FirebaseException catch (e, st) {
+      logClinicianProfilePhoto(
+        'storage.upload FirebaseException code=${e.code}',
+      );
       debugPrint(
         '[PhotoUploadService] profile FirebaseException: ${e.code}',
       );
@@ -254,6 +277,7 @@ class PhotoUploadService {
         e.code == 'unauthenticated' ? 'unauthenticated' : 'storage',
       );
     } on Object catch (e, st) {
+      logClinicianProfilePhoto('storage.upload error $e');
       debugPrint('[PhotoUploadService] profile ERROR - $e');
       _report(e, st, 'profile_upload');
       return const ProfilePhotoUploadResult.failure('storage');

@@ -102,6 +102,9 @@ Future<void> configureDependencies({
     ..registerSingleton<AppBuildFlavorConfig>(AppBuildFlavorConfig(flavor))
     ..registerSingleton<ProfilePhotoSheet>(
       createProfilePhotoSheet(getIt),
+    )
+    ..registerSingleton<ClinicianProfilePhotoLocalStore>(
+      ClinicianProfilePhotoLocalStore(prefs),
     );
 
   PatientsFeature().registerDependencies(getIt);
@@ -142,6 +145,8 @@ Future<void> configureDependencies({
         userDocumentWriter: getIt<UserDocumentWriter>(),
         userProfileReader: getIt<UserProfileReader>(),
         patientsRepository: getIt<PatientsRepository>(),
+        clinicianProfilePhotoLocalStore:
+            getIt<ClinicianProfilePhotoLocalStore>(),
         clearPushRegistration: () =>
             getIt<ClinicianNotificationService>().clearCurrentToken(),
         analytics: getIt.isRegistered<CliniciansAnalytics>()

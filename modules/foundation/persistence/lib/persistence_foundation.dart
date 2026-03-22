@@ -1,3 +1,6 @@
+export 'src/clinician_profile_photo_local_store.dart';
+export 'src/clinician_profile_photo_log.dart'
+    show clinicianProfilePhotoUrlHint, logClinicianProfilePhoto;
 export 'src/connection_local_data_source.dart';
 export 'src/locale_local_data_source.dart';
 export 'src/locale_service.dart';

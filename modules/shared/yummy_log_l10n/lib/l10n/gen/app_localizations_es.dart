@@ -5,6 +5,8 @@
 import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
+// ignore_for_file: type=lint
+
 /// The translations for Spanish Castilian (`es`).
 class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
@@ -871,7 +873,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get insightsFreeTeaserTitle => 'Vista previa del panel';
 
   @override
-  String get insightsFreeTeaserBody => 'Alertas recientes, ranking de atención y análisis detallado por paciente (ventanas de 30 y 90 días) forman parte del plan Clínicos.';
+  String get insightsFreeTeaserBody => 'Ya mostramos una vista previa de alertas, de quién necesita atención y de un paciente con análisis (últimos 7 días). Listas completas, ventanas de 30/90 días y el resumen operativo están en el plan Clínicos.';
+
+  @override
+  String get insightsFreeTruncatedAlertsHint => 'Vista previa: hasta 3 alertas. Historial completo en el plan Clínicos.';
+
+  @override
+  String get insightsFreeTruncatedAttentionHint => 'Vista previa: hasta 2 pacientes en la lista. Ranking completo en el plan Clínicos.';
+
+  @override
+  String get insightsFreeTruncatedAnalyticsHint => 'Vista previa: 1 paciente. Tendencias y gráficos para todos en el plan Clínicos.';
+
+  @override
+  String get insightsProRemainderTitle => 'También en el plan Clínicos';
+
+  @override
+  String get insightsProRemainderBody => 'Resumen operativo (revisiones, estables, en empeoramiento), priorización clínica ampliada, ventanas de 30 y 90 días y análisis completo para cada paciente.';
 
   @override
   String get insightsProLockedAttentionTitle => 'Necesitan atención';

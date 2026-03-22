@@ -7,6 +7,7 @@ import 'package:feature_contract/feature_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:patients_feature/patients_feature.dart'
@@ -14,11 +15,22 @@ import 'package:patients_feature/patients_feature.dart'
 import 'package:patients_feature/src/cubit/patients_cubit.dart';
 import 'package:patients_feature/src/cubit/patients_state.dart';
 import 'package:patients_feature/src/data/patient.dart';
+import 'package:persistence_foundation/persistence_foundation.dart'
+    show ClinicianProfilePhotoLocalStore, clinicianProfilePhotoUrlHint,
+        logClinicianProfilePhoto;
 import 'package:share_plus/share_plus.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
+
+String? _profileDocCacheToken(Map<String, dynamic>? data) {
+  if (data == null) return null;
+  final v = data['updatedAt'];
+  if (v == null) return null;
+  if (v is Timestamp) return v.millisecondsSinceEpoch.toString();
+  return v.toString();
+}
 
 class PatientsPage extends StatefulWidget {
   const PatientsPage({
@@ -43,6 +55,9 @@ class _PatientsPageState extends State<PatientsPage> {
   /// `photoUrl` em `users/{uid}` — alinhado à secção Conta nas Configurações.
   String? _firestoreProfilePhotoUrl;
 
+  /// `updatedAt` do mesmo documento — invalida cache se a URL se repetir.
+  String? _firestoreProfilePhotoCacheToken;
+
   StreamSubscription<AuthUser?>? _authSubscription;
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
       _firestoreProfileSubscription;
@@ -54,6 +69,11 @@ class _PatientsPageState extends State<PatientsPage> {
     final authRepo = context.read<AuthRepository>();
     _authSubscription = authRepo.authStateChanges.listen(_onAuthStream);
     _onAuthStream(authRepo.currentUser);
+    unawaited(_hydrateClinicianProfileFromDisk());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _persistHeaderPhotoAfterFrame();
+    });
   }
 
   @override
@@ -70,6 +90,10 @@ class _PatientsPageState extends State<PatientsPage> {
   void _onAuthStream(AuthUser? user) {
     final previousUid = _authUser?.uid;
     final uidChanged = user?.uid != previousUid;
+    logClinicianProfilePhoto(
+      'patients.authStream prev=${previousUid ?? '(null)'} '
+      'now=${user?.uid ?? '(signed out)'} uidChanged=$uidChanged',
+    );
     if (uidChanged) {
       final old = _firestoreProfileSubscription;
       _firestoreProfileSubscription = null;
@@ -78,7 +102,10 @@ class _PatientsPageState extends State<PatientsPage> {
     if (!mounted) return;
     setState(() {
       _authUser = user;
-      if (uidChanged) _firestoreProfilePhotoUrl = null;
+      if (uidChanged) {
+        _firestoreProfilePhotoUrl = null;
+        _firestoreProfilePhotoCacheToken = null;
+      }
     });
     _onAuthUserChanged(user);
     if (user != null &&
@@ -90,22 +117,138 @@ class _PatientsPageState extends State<PatientsPage> {
           .doc(user.uid)
           .snapshots()
           .listen((snap) {
-        final url = snap.data()?['photoUrl'] as String?;
+        final data = snap.data();
+        final url = data?['photoUrl'] as String?;
+        final token = _profileDocCacheToken(data);
+        logClinicianProfilePhoto(
+          'patients.firestore.users doc uid=${user.uid} '
+          'fromCache=${snap.metadata.isFromCache} '
+          'pendingWrites=${snap.metadata.hasPendingWrites} '
+          'url=${clinicianProfilePhotoUrlHint(url)} token=${token ?? '(null)'}',
+        );
         if (!mounted) return;
-        setState(() => _firestoreProfilePhotoUrl = url);
+        setState(() {
+          _firestoreProfilePhotoUrl = url;
+          _firestoreProfilePhotoCacheToken = token;
+        });
+        if (url != null && url.isNotEmpty) {
+          _persistClinicianHeaderPhotoToDisk(user.uid, url, token);
+        }
       });
+      logClinicianProfilePhoto(
+        'patients.firestore.users subscribe uid=${user.uid}',
+      );
     }
+  }
+
+  String? _effectiveHeaderPhotoUrl() {
+    final u = _authUser;
+    if (u == null) return null;
+    final fs = _firestoreProfilePhotoUrl;
+    if (fs != null && fs.isNotEmpty) return fs;
+    final a = u.photoUrl;
+    if (a != null && a.isNotEmpty) return a;
+    return null;
   }
 
   /// Cabeçalho: prioriza `photoUrl` do Firestore (upload de perfil).
   AuthUser? get _userForHeader {
     final u = _authUser;
     if (u == null) return null;
+    final effective = _effectiveHeaderPhotoUrl();
+    if (effective == null) return u;
+    return u.copyWith(photoUrl: effective);
+  }
+
+  /// Token de cache quando há URL vinda do doc Firestore ou disco (hidratação).
+  String? get _headerPhotoCacheKey {
     final fromFs = _firestoreProfilePhotoUrl;
     if (fromFs != null && fromFs.isNotEmpty) {
-      return u.copyWith(photoUrl: fromFs);
+      return _firestoreProfilePhotoCacheToken;
     }
-    return u;
+    return null;
+  }
+
+  Future<void> _hydrateClinicianProfileFromDisk() async {
+    if (!GetIt.instance.isRegistered<ClinicianProfilePhotoLocalStore>()) {
+      logClinicianProfilePhoto('patients.hydrate skip store not registered');
+      return;
+    }
+    final store = GetIt.instance<ClinicianProfilePhotoLocalStore>();
+    final uid = context.read<AuthRepository>().currentUser?.uid;
+    if (uid == null) {
+      logClinicianProfilePhoto('patients.hydrate skip no uid');
+      return;
+    }
+    final cached = store.readForUid(uid);
+    if (cached == null || !mounted) return;
+    final fs = _firestoreProfilePhotoUrl;
+    final hasFs = fs != null && fs.isNotEmpty;
+    final auth = _authUser;
+    final hasAuth =
+        auth?.photoUrl != null && auth!.photoUrl!.isNotEmpty;
+    if (hasFs || hasAuth) {
+      logClinicianProfilePhoto(
+        'patients.hydrate skip already have source '
+        'hasFs=$hasFs hasAuth=$hasAuth uid=$uid',
+      );
+      return;
+    }
+    logClinicianProfilePhoto(
+      'patients.hydrate apply disk uid=$uid '
+      'url=${clinicianProfilePhotoUrlHint(cached.url)} '
+      'token=${cached.cacheToken ?? '(null)'}',
+    );
+    setState(() {
+      _firestoreProfilePhotoUrl = cached.url;
+      _firestoreProfilePhotoCacheToken = cached.cacheToken;
+    });
+  }
+
+  void _persistClinicianHeaderPhotoToDisk(
+    String uid,
+    String url,
+    String? cacheToken,
+  ) {
+    if (!GetIt.instance.isRegistered<ClinicianProfilePhotoLocalStore>()) {
+      logClinicianProfilePhoto(
+        'patients.persistHeader skip store not registered uid=$uid',
+      );
+      return;
+    }
+    logClinicianProfilePhoto(
+      'patients.persistHeader uid=$uid '
+      'url=${clinicianProfilePhotoUrlHint(url)} '
+      'token=${cacheToken ?? '(null)'}',
+    );
+    unawaited(
+      GetIt.instance<ClinicianProfilePhotoLocalStore>().write(
+        uid: uid,
+        url: url,
+        cacheToken: cacheToken,
+      ),
+    );
+  }
+
+  void _persistHeaderPhotoAfterFrame() {
+    final u = _authUser;
+    if (u == null) {
+      logClinicianProfilePhoto('patients.persistAfterFrame skip no auth user');
+      return;
+    }
+    final url = _effectiveHeaderPhotoUrl();
+    if (url == null || url.isEmpty) {
+      logClinicianProfilePhoto(
+        'patients.persistAfterFrame skip empty url uid=${u.uid}',
+      );
+      return;
+    }
+    logClinicianProfilePhoto('patients.persistAfterFrame uid=${u.uid}');
+    _persistClinicianHeaderPhotoToDisk(
+      u.uid,
+      url,
+      _headerPhotoCacheKey,
+    );
   }
 
   void _loadIfLoggedIn() {
@@ -142,6 +285,7 @@ class _PatientsPageState extends State<PatientsPage> {
             ? _buildLoggedInContent(
                 user,
                 headerUser: _userForHeader ?? user,
+                headerPhotoCacheKey: _headerPhotoCacheKey,
               )
             : _buildLoggedOutContent(),
       ),
@@ -167,6 +311,7 @@ class _PatientsPageState extends State<PatientsPage> {
   Widget _buildLoggedInContent(
     AuthUser user, {
     required AuthUser headerUser,
+    String? headerPhotoCacheKey,
   }) {
     return BlocConsumer<PatientsCubit, PatientsState>(
       listenWhen: (previous, current) =>
@@ -209,6 +354,7 @@ class _PatientsPageState extends State<PatientsPage> {
               clinicianName: headerUser.displayName,
               l10n: context.l10n,
               user: headerUser,
+              clinicianPhotoCacheKey: headerPhotoCacheKey,
               showSyncIndicator: true,
               isSynced: state.status == PatientsStatus.loaded
                   && !state.isRefreshing,
@@ -586,6 +732,7 @@ class _PageHeader extends StatelessWidget {
     required this.l10n,
     this.clinicianName,
     this.user,
+    this.clinicianPhotoCacheKey,
     this.showSyncIndicator = false,
     this.isSynced = false,
     this.isSyncing = false,
@@ -597,6 +744,7 @@ class _PageHeader extends StatelessWidget {
   final AppLocalizations l10n;
   final String? clinicianName;
   final AuthUser? user;
+  final String? clinicianPhotoCacheKey;
   final bool showSyncIndicator;
   final bool isSynced;
   final bool isSyncing;
@@ -621,7 +769,11 @@ class _PageHeader extends StatelessWidget {
             : l10n.patientsConnectedCount(patientCount);
 
     final avatar = user != null
-        ? UserAvatar(user: user!, size: 48)
+        ? UserAvatar(
+            user: user!,
+            size: 48,
+            networkImageCacheKey: clinicianPhotoCacheKey,
+          )
         : null;
     final leading = avatar != null && onProfilePhotoTap != null
         ? GestureDetector(

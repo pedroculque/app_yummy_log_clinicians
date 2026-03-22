@@ -11,6 +11,8 @@ import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
 import 'app_localizations_pt.dart';
 
+// ignore_for_file: type=lint
+
 /// Callers can lookup localized strings with an instance of AppLocalizations
 /// returned by `AppLocalizations.of(context)`.
 ///
@@ -1786,8 +1788,38 @@ abstract class AppLocalizations {
   /// No description provided for @insightsFreeTeaserBody.
   ///
   /// In en, this message translates to:
-  /// **'Recent alerts, attention ranking, and per-patient deep dives (30- and 90-day windows) are part of the Clinicians plan.'**
+  /// **'You already get a preview of alerts, who needs attention, and one patient\'s analysis (last 7 days). Full lists, 30/90-day windows, and the operational overview are part of the Clinicians plan.'**
   String get insightsFreeTeaserBody;
+
+  /// No description provided for @insightsFreeTruncatedAlertsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview: up to 3 alerts. Full history on the Clinicians plan.'**
+  String get insightsFreeTruncatedAlertsHint;
+
+  /// No description provided for @insightsFreeTruncatedAttentionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview: up to 2 patients in the list. Full ranking on the Clinicians plan.'**
+  String get insightsFreeTruncatedAttentionHint;
+
+  /// No description provided for @insightsFreeTruncatedAnalyticsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview: 1 patient. Trends and charts for everyone on the Clinicians plan.'**
+  String get insightsFreeTruncatedAnalyticsHint;
+
+  /// No description provided for @insightsProRemainderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Also on the Clinicians plan'**
+  String get insightsProRemainderTitle;
+
+  /// No description provided for @insightsProRemainderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational summary (reviews, stable, worsening), expanded clinical prioritization, 30- and 90-day windows, and full analysis for every patient.'**
+  String get insightsProRemainderBody;
 
   /// No description provided for @insightsProLockedAttentionTitle.
   ///

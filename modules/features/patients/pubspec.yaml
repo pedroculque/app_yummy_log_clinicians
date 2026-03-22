@@ -31,6 +31,8 @@ dependencies:
       path: packages/app_rating_core
   path: ^1.9.0
   path_provider: ^2.1.5
+  persistence_foundation:
+    path: ../../foundation/persistence
   share_plus: ^10.1.4
   subscription_foundation:
     path: ../../foundation/subscription
