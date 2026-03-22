@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_contract/crash_reporter.dart';
@@ -49,6 +50,7 @@ class ClinicianNotificationService {
     }
     // Sync ao entrar no shell (2º login: _started true, tenta token de novo).
     unawaited(_syncCurrentUserToken());
+    unawaited(_clearLauncherBadge());
   }
 
   Future<void> attachRouter(GoRouter router) async {
@@ -73,6 +75,7 @@ class ClinicianNotificationService {
 
   void _onAppBecameActive() {
     _retryCount = 0;
+    unawaited(_clearLauncherBadge());
     unawaited(_syncCurrentUserToken());
   }
 
@@ -187,6 +190,7 @@ class ClinicianNotificationService {
   }
 
   void _handleMessage(RemoteMessage message) {
+    unawaited(_clearLauncherBadge());
     final router = _router;
     if (router == null) {
       return;
@@ -232,6 +236,24 @@ class ClinicianNotificationService {
           'updatedAt': FieldValue.serverTimestamp(),
           'createdAt': FieldValue.serverTimestamp(),
         }, SetOptions(merge: true));
+  }
+
+  /// iOS/Android: o SO não zera o badge ao abrir o app; o payload FCM define
+  /// `badge` e precisamos repor a zero quando o utilizador entra na app.
+  Future<void> _clearLauncherBadge() async {
+    try {
+      if (await AppBadgePlus.isSupported()) {
+        await AppBadgePlus.updateBadge(0);
+      }
+    } on Object catch (e, st) {
+      debugPrint('[Notifications] clear launcher badge: $e');
+      _crashReporter?.call(
+        e,
+        st,
+        feature: 'notifications',
+        hint: 'clear_badge',
+      );
+    }
   }
 
   Future<void> clearCurrentToken() async {

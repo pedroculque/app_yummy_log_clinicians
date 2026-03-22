@@ -8,6 +8,7 @@ environment:
   flutter: ^3.41.0
 
 dependencies:
+  app_badge_plus: ^1.2.7
   auth_foundation:
     path: modules/foundation/auth
   bloc: ^9.2.0
