@@ -127,6 +127,8 @@ Se o documento não existir, o app do paciente **não exibe** a seção de compo
 
 ## Regras Firestore (resumo)
 
+Documento canônico das regras do repositório (incluindo documento raiz `users/{userId}` e leituras cruzadas): [FIRESTORE_RULES.md](FIRESTORE_RULES.md).
+
 - **Leitura** de `users/{patientId}/form_config`: usuário autenticado seja o próprio paciente (`auth.uid == patientId`) **ou** um clínico que tenha esse paciente na lista (`exists(clinicians/(auth.uid)/patients/(patientId))`).
 - **Escrita** em `users/{patientId}/form_config`: qualquer clínico que tenha o paciente vinculado (`exists(clinicians/(auth.uid)/patients/(patientId))`). Todos podem alterar; usar `changeLog` para registrar quem alterou e quando.
 
@@ -172,6 +174,7 @@ A lógica foi implementada no app do paciente.
 ## Referências
 
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura `clinicians/.../patients` e regras.
+- [FIRESTORE_RULES.md](FIRESTORE_RULES.md) – Regras globais e perfil `users/{userId}`.
 - [ROADMAP.md](ROADMAP.md) – Fase "Configuração do formulário de comportamento".
 - `MealEntry` (`meal_domain`) – Campos atuais: `hiddenFood`, `regurgitated`, `forcedVomit`, `ateInSecret`, `usedLaxatives`.
 - `modules/features/patients` – Lista de pacientes, diário do paciente; ponto de entrada do botão "Configurar formulário".

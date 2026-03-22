@@ -50,6 +50,16 @@ Documento que descreve a estrutura Firestore e o fluxo de vínculo entre pacient
 
 - Mantido pelo app do paciente (sync). Após o backend Conectar, o documento pode incluir `clinicianUid` e `displayName` vindos de `clinician_codes`.
 
+### Documento raiz `users/{userId}` (perfil)
+
+- **Caminho:** documento **`users/{userId}`** (não confundir com subcoleções `meals`, `connections`, `form_config`).
+- **Campos típicos:** `displayName`, `photoUrl`, `updatedAt`, etc. (o que o produto persistir no perfil).
+- **Quem escreve:** apenas o dono (`request.auth.uid == userId`).
+- **Quem lê (além do dono):**
+  - **Paciente** autenticado pode ler o doc do **clínico** se existir `clinicians/{clinicianUid}/patients/{patientUid}` com `clinicianUid == userId` e `patientUid == request.auth.uid` (ex.: app paciente — tela Conectar, foto/nome do profissional).
+  - **Clínico** autenticado pode ler o doc do **paciente** se existir `clinicians/{clinicianUid}/patients/{patientUid}` com `clinicianUid == request.auth.uid` e `patientUid == userId` (ex.: app clínico — lista de pacientes, `get` em `users/{patientId}`).
+- **Documentação detalhada:** [FIRESTORE_RULES.md](FIRESTORE_RULES.md) (matriz de acesso, Storage vs Firestore, checklist `permission-denied`).
+
 ### `users/{patientId}/form_config/behavior`
 
 - **Caminho:** documento único em `users/{patientId}/form_config/behavior`.
@@ -128,12 +138,13 @@ Além de `notifyCliniciansOnNewMeal`, o backend inclui triggers na subcoleção 
 
 ### Regras de leitura para o clínico
 
-As regras em `firestore.rules` já permitem:
+As regras em `firestore.rules` já permitem (sempre com vínculo `clinicians/{clinicianUid}/patients/{patientId}` onde `clinicianUid == request.auth.uid`):
 
-- **Leitura de refeições do paciente:** `users/{patientId}/meals/{mealId}` → permitido se existir `clinicians/(auth.uid)/patients/(patientId)`.
-- **Leitura de conexões do paciente:** `users/{patientId}/connections/{connectionId}` → mesma condição.
+- **Documento raiz do paciente:** `users/{patientId}` → leitura do perfil (`displayName`, `photoUrl`, …) para montar a lista e a UI.
+- **Refeições:** `users/{patientId}/meals/{mealId}`.
+- **Conexões:** `users/{patientId}/connections/{connectionId}`.
 
-Ou seja: quando existe documento em `clinicians/{clinicianUid}/patients/{patientId}`, o clínico com UID `clinicianUid` pode ler meals e connections daquele paciente.
+Ou seja: quando existe documento em `clinicians/{clinicianUid}/patients/{patientId}`, o clínico com UID `clinicianUid` pode ler o perfil Firestore desse paciente, as meals e as connections. Detalhes e checklist de erros: [FIRESTORE_RULES.md](FIRESTORE_RULES.md).
 
 ---
 
@@ -157,7 +168,7 @@ Ou seja: quando existe documento em `clinicians/{clinicianUid}/patients/{patient
    - `clinicianUid`: seu Firebase Auth UID.
    - `displayName` (opcional): nome exibido para o paciente.
 3. **Listar pacientes:** ler a subcoleção `clinicians/{seuUid}/patients` (cada doc id = `patientId`).
-4. **Ler diário do paciente:** com o `patientId`, ler `users/{patientId}/meals` e, se necessário, `users/{patientId}/connections` (as regras permitem se existir o vínculo em `clinicians/{uid}/patients/{patientId}`).
+4. **Ler diário e perfil do paciente:** com o `patientId`, ler `users/{patientId}` (perfil), `users/{patientId}/meals` e, se necessário, `users/{patientId}/connections` — desde que exista o vínculo em `clinicians/{seuUid}/patients/{patientId}` (ver [FIRESTORE_RULES.md](FIRESTORE_RULES.md)).
 
 ---
 
@@ -190,7 +201,8 @@ Documentação de produto: [STATE.md](../STATE.md), [REQUIREMENTS.md](../REQUIRE
 
 ## Referências
 
-- [firestore.rules](../firestore.rules) – regras de `clinician_codes`, `clinicians/.../patients` e `form_config`
+- [firestore.rules](../firestore.rules) – regras completas (coleções acima + `clinician_codes`, `users/...`)
+- [FIRESTORE_RULES.md](FIRESTORE_RULES.md) – modelo de acesso, `users/{userId}` cruzado, Storage vs Firestore, diagnóstico
 - [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) – Configuração do formulário de comportamento
 - [sync_foundation](../modules/foundation/sync) – `ClinicianLinkService` (resolve código, add/remove paciente)
 - [ROADMAP.md](ROADMAP.md) – Fases e entregáveis

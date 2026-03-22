@@ -115,6 +115,15 @@ O app do clínico usa `firebase_messaging` e a Cloud Function `notifyCliniciansO
 
 ---
 
+## Regras de segurança (Firestore)
+
+O backend partilhado usa o ficheiro **`firestore.rules`** na raiz deste repositório (publicado no projeto **`app-yummy-log-diary`**). Qualquer alteração às regras exige **deploy** para produzir efeito no app do paciente e no app do clínico.
+
+- **Documentação:** [FIRESTORE_RULES.md](FIRESTORE_RULES.md) — leituras cruzadas em `users/{userId}`, vínculo `clinicians/.../patients/...`, diferença face ao Storage, checklist `permission-denied`.
+- **Comando típico:** `firebase deploy --project app-yummy-log-diary --only firestore:rules` (ver [DEPLOY.md](DEPLOY.md)).
+
+---
+
 ## Alternativa: FlutterFire CLI
 
 Se preferir usar o [FlutterFire CLI](https://firebase.flutter.dev/docs/cli/):
@@ -142,5 +151,6 @@ Se quiser manter o fluxo atual (sem `firebase_options.dart`), basta seguir os pa
 | Registrar app iOS | Bundle ID: `com.yummylogdiaryforclinicians.app` |
 | Colocar config Android | `android/app/google-services.json` |
 | Colocar config iOS | `ios/Runner/config/{dev,stg,prod}/GoogleService-Info.plist` (ver config/README.md) |
+| Regras Firestore | `firestore.rules` + deploy — [FIRESTORE_RULES.md](FIRESTORE_RULES.md) |
 
 Depois de substituir os arquivos e rodar o app, o login e o uso do Firestore (código de convite, lista de pacientes) devem funcionar com o app do clínico.

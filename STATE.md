@@ -75,6 +75,7 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Swipe-to-remove:** Confirmação via bottom sheet antes de remover paciente.
 - **Login NÃO obrigatório:** Usuário pode navegar pelo app sem login. Login é solicitado apenas ao tentar convidar pacientes.
 - **Mesmo projeto Firebase:** Compartilha Firestore e Auth com o app paciente para acesso às mesmas coleções.
+- **Firestore `users/{userId}` (perfil):** regras permitem leitura cruzada **só com vínculo** em `clinicians/.../patients/...`: paciente lê perfil do clínico (app paciente — Conectar); clínico lê perfil do paciente (lista/diário). Documentação: [docs/FIRESTORE_RULES.md](docs/FIRESTORE_RULES.md). Deploy das regras: projeto `app-yummy-log-diary`.
 - **Bundle ID:** `com.yummylogdiaryforclinicians.app` (produção), `.dev` e `.stg` para flavors.
 - **Remoção paciente (lista do clínico):** ao apagar `clinicians/{clinicianUid}/patients/{patientId}`, a CF **`onClinicianPatientRemoved`** limpa `users/{patientId}/connections` onde `clinicianUid` coincide (SDK Admin).
 - **Exclusão de conta do clínico (Auth delete) — gap C38:** conexões em `users/{patientId}/connections` **não** são limpas só pelo fluxo in-app de apagar conta (ordem client vs dados em `clinicians/.../patients`). **Backlog:** CF em `auth.user().onDelete()` ou extensão *Delete User Data* com `collectionGroup('connections')` filtrado por `clinicianUid`. Ver [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md).
@@ -102,5 +103,6 @@ Nenhum no momento.
 - [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) – Session logger, Sentry, ID de Suporte
 - [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md) – ID de Suporte (detalhe de produto/UI)
 - [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) – Estrutura Firestore, fluxo de notificações push e vínculo paciente–clínico
+- [docs/FIRESTORE_RULES.md](docs/FIRESTORE_RULES.md) – Regras `users/{userId}`, leituras cruzadas, Storage vs Firestore
 - [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md) – Configurar Firebase (registrar app do clínico)
 - [REQUIREMENTS.md](REQUIREMENTS.md) – Requisitos v1/v2/v3

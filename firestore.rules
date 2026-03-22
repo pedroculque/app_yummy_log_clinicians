@@ -1,45 +1,56 @@
+// Firestore security rules — projeto Firebase: app-yummy-log-diary (partilhado com o app do paciente).
+// Documentação do modelo de acesso (users/{userId} cruzado, Storage, checklist): docs/FIRESTORE_RULES.md
+// Deploy: firebase deploy --project app-yummy-log-diary --only firestore:rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Documento do usuário (para aparecer no console e guardar perfil).
-    // Clínico pode ler users/{patientId} se o paciente estiver em clinicians/{clinicianUid}/patients.
+    // Documento raiz users/{userId} (perfil: photoUrl, displayName, …)
+    // — Dono: read+write
+    // — Paciente lê clínico: exists clinicians/{userId}/patients/{request.auth.uid}
+    // — Clínico lê paciente: exists clinicians/{request.auth.uid}/patients/{userId}
+    // Ver docs/FIRESTORE_RULES.md
     match /users/{userId} {
+      // Dono lê/escreve tudo
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+      // Paciente vinculado pode ler perfil do clínico (foto/nome no Conectar)
       allow read: if request.auth != null
-                  && (request.auth.uid == userId
-                      || exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(userId)));
-      allow write: if request.auth != null
-                   && request.auth.uid == userId;
+          && exists(/databases/$(database)/documents/clinicians/$(userId)/patients/$(request.auth.uid));
+      // Clínico vinculado pode ler perfil do paciente (nome/foto na lista e detalhes)
+      allow read: if request.auth != null
+          && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(userId));
     }
 
-    // Config do formulário de comportamento: clínico (vinculado) escreve; paciente lê.
-    match /users/{patientId}/form_config/{docId} {
-      allow read: if request.auth != null
-                 && (request.auth.uid == patientId
-                     || exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId)));
-      allow write: if request.auth != null
-                  && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
-    }
-
-    // Paciente lê/escreve seus próprios dados (subcoleções), exceto form_config (só clínico escreve).
-    match /users/{userId}/{document=**} {
+    // Refeições: dono do usuário (substitui users/{uid}/** para meals).
+    match /users/{userId}/meals/{mealId} {
       allow read, write: if request.auth != null
-                         && request.auth.uid == userId
-                         && !request.path.matches('.*/form_config/.*');
+                         && request.auth.uid == userId;
     }
 
-    // Refeições: paciente lê/escreve as próprias; clínico vinculado só lê.
+    // Vínculos: ID do documento = clinicianUid (um doc por profissional).
+    // Deploy: publique o app com migração antes de publicar estas regras,
+    // senão clientes antigos falham ao gravar connections.
+    match /users/{userId}/connections/{connectionId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == userId
+        || exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(userId))
+      );
+      allow create: if request.auth != null && request.auth.uid == userId
+          && request.resource.data.clinicianUid is string
+          && request.resource.data.id is string
+          && request.resource.data.clinicianUid == connectionId
+          && request.resource.data.id == connectionId;
+      allow update: if request.auth != null && request.auth.uid == userId
+          && request.resource.data.clinicianUid is string
+          && request.resource.data.id is string
+          && request.resource.data.clinicianUid == connectionId
+          && request.resource.data.id == connectionId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Clínico lê refeições de pacientes vinculados
     match /users/{patientId}/meals/{mealId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == patientId;
-      allow read: if request.auth != null
-                  && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
-    }
-
-    // Conexões: paciente lê/escreve as próprias; clínico vinculado só lê.
-    match /users/{patientId}/connections/{connectionId} {
-      allow read, write: if request.auth != null
-                         && request.auth.uid == patientId;
       allow read: if request.auth != null
                   && exists(/databases/$(database)/documents/clinicians/$(request.auth.uid)/patients/$(patientId));
     }

@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:io' show Platform;
 
 import 'package:feature_contract/app_build_flavor.dart';
@@ -32,4 +33,44 @@ Future<void> configureRevenueCat(AppBuildFlavor flavor) async {
   }
 
   await Purchases.configure(PurchasesConfiguration(apiKey));
+
+  if (kDebugMode && Platform.isIOS) {
+    unawaited(_debugLogStoreKitProductResolution());
+  }
+}
+
+/// Só em debug iOS: confirma se StoreKit/App Store devolve os IDs esperados
+/// (o erro CONFIGURATION_ERROR no paywall costuma ser 0 produtos aqui).
+Future<void> _debugLogStoreKitProductResolution() async {
+  const ids = <String>['clinicians_monthly', 'clinicians_annual'];
+  try {
+    final products = await Purchases.getProducts(ids);
+    if (products.length >= ids.length) {
+      debugPrint(
+        'RevenueCat [debug] StoreKit: ${products.length} produto(s) — '
+        '${products.map((p) => p.identifier).join(', ')}',
+      );
+    } else if (products.isEmpty) {
+      debugPrint(
+        'RevenueCat [debug] StoreKit: 0 produtos para $ids → offerings/compras '
+        'falham com CONFIGURATION_ERROR. Causas comuns: '
+        '(A) `flutter run` / hot restart — o .storekit do scheme costuma só '
+        'atuar ao dar Run pelo Xcode (abrir ios/Runner.xcworkspace, scheme '
+        '`development`, Product → Run; Options → StoreKit = '
+        'YummyLogClinicians.storekit). '
+        '(B) RevenueCat: app iOS com bundle = '
+        'com.yummylogdiaryforclinicians.app.dev e os mesmos product IDs. '
+        '(C) App Store Connect + contrato Paid Apps (dispositivo + sandbox). '
+        'Ver docs/MONETIZATION_REVENUECAT.md.',
+      );
+    } else {
+      debugPrint(
+        'RevenueCat [debug] StoreKit: parcial (${products.length}/${ids.length}) — '
+        '${products.map((p) => p.identifier).join(', ')}',
+      );
+    }
+  } on Object catch (e, st) {
+    debugPrint('RevenueCat [debug] StoreKit getProducts: $e');
+    debugPrint('$st');
+  }
 }

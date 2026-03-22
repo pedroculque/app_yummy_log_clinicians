@@ -224,9 +224,10 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo detalhado.
 | `users/{patientId}/meals/{mealId}` | Refeições do paciente | Leitura (se vinculado) |
 | `users/{patientId}/connections/{connectionId}` | Conexões do paciente | Leitura (se vinculado) |
 | `users/{patientId}/form_config` | Config do formulário de comportamento (clínico grava; paciente lê) | Escrita (clínico vinculado); leitura (paciente) |
+| `users/{userId}` (doc raiz) | Perfil (`displayName`, `photoUrl`, …) | Dono R/W; leitura cruzada paciente↔clínico só com vínculo em `clinicians/.../patients/...` — ver [FIRESTORE_RULES.md](FIRESTORE_RULES.md) |
 | `clinicians/{uid}/preferences/notification` | `pushEnabled`, `pushMode` (`all` / `critical_only`) | Escrita/leitura (próprio clínico) |
 
-Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) para detalhes.
+Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md), [FIRESTORE_RULES.md](FIRESTORE_RULES.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) para detalhes.
 
 ---
 
@@ -257,4 +258,5 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) e [BEHAVIOR_FORM_CONFIG.md](BEHAV
 - [BEHAVIOR_FORM_CONFIG.md](BEHAVIOR_FORM_CONFIG.md) – Configuração do formulário de comportamento (clínico)
 - [FIREBASE_SETUP_CLINICIANS.md](FIREBASE_SETUP_CLINICIANS.md) – Config Firebase (app do clínico)
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura Firestore e regras
+- [FIRESTORE_RULES.md](FIRESTORE_RULES.md) – Modelo de acesso em `users/{userId}` e diagnóstico
 - App do paciente: `/Users/pedroculque/dev-mobile/app_yummy_log`

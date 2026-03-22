@@ -79,6 +79,7 @@ app_yummy_log_clinicians/
 ├── docs/                         # Documentação detalhada
 │   ├── ARCHITECTURE.md
 │   ├── BACKEND_CONECTAR.md
+│   ├── FIRESTORE_RULES.md            # Regras Firestore (users cruzado, deploy)
 │   ├── FIREBASE_SETUP_CLINICIANS.md  # Config Firebase (app do clínico)
 │   ├── OBSERVABILITY.md              # Sentry, session logger, CrashReporter
 │   ├── ROADMAP.md
@@ -190,6 +191,8 @@ flutter gen-l10n --arb-dir="modules/shared/yummy_log_l10n/lib/l10n/arb"
 | [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) | Session logger, Sentry, arranque, privacidade, ID de Suporte ↔ UID |
 | [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md) | ID de Suporte nas Configurações (Firebase UID + Sentry) |
 | [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Firestore, vínculo, push e Cloud Functions |
+| [docs/FIRESTORE_RULES.md](docs/FIRESTORE_RULES.md) | Regras `firestore.rules`, perfil `users/{userId}`, leituras cruzadas |
+| [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md) | Firebase Console, `google-services` / plist, regras e deploy |
 | [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md) | Oferta Grátis/Pro, Insights, paywall |
 | [docs/THEMING.md](docs/THEMING.md) | Tema e design system |
 

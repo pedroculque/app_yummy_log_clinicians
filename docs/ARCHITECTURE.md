@@ -153,3 +153,4 @@ Documentação: [OBSERVABILITY.md](OBSERVABILITY.md), [lib/core/observability/RE
 - [get_it no pub.dev](https://pub.dev/packages/get_it)
 - [OBSERVABILITY.md](OBSERVABILITY.md) – Sentry e session logger
 - [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) – Estrutura Firestore
+- [FIRESTORE_RULES.md](FIRESTORE_RULES.md) – Regras de segurança e acesso a `users/{userId}`

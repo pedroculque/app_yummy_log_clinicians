@@ -114,6 +114,8 @@ app_yummy_log_clinicians/
 | [docs/APP_RATING.md](docs/APP_RATING.md) | Regras de avaliação na loja (triggers, modal, origens) |
 | [docs/ANALYTICS.md](docs/ANALYTICS.md) | Analytics mobile-foundation (Firebase, rotas, utilizador) |
 | [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore |
+| [docs/FIRESTORE_RULES.md](docs/FIRESTORE_RULES.md) | Regras de segurança (`users/{userId}` cruzado, deploy, diagnóstico) |
+| [docs/FIREBASE_SETUP_CLINICIANS.md](docs/FIREBASE_SETUP_CLINICIANS.md) | Registrar app do clínico no Firebase + deploy de regras |
 
 ---
 
