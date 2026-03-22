@@ -540,13 +540,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansFeatureMealPushNotifications => 'Real-time alerts when patients log meals';
 
   @override
-  String get plansFeatureClinicalDashboard => 'Dashboard with metrics, risk alerts, and attention ranking';
+  String get plansFeatureClinicalDashboard => 'Full insights dashboard: 30- and 90-day views, operational summary, clinical priority, detailed risk alerts, and patient ranking';
 
   @override
-  String get plansFeaturePatientDiaryInsight => 'Patient diary: timeline, calendar, photos, and risk tags';
+  String get plansFeatureInsightsPerPatientDeepDive => 'Advanced per-patient analysis: trends, feelings, comparisons, and deeper clinical view';
 
   @override
-  String get plansFeatureBehaviorFormByPatient => 'Behavior questionnaire tailored to each patient';
+  String get plansProActiveInsightsIncluded => 'Includes the full insights dashboard (longer periods, alerts, prioritization, and per-patient analysis).';
 
   @override
   String get plansAnnual => 'Annual';
@@ -719,6 +719,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareEmail => 'Email';
 
   @override
+  String get shareInviteEmailSubject => 'YummyLog invite — connection code';
+
+  @override
+  String get inviteShareNeedValidCode => 'Generate a valid invite code before sharing.';
+
+  @override
   String shareInviteMessage(String code) {
     return 'Use code $code to connect with me on YummyLog!';
   }
@@ -856,6 +862,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get insightsNotLoggedIn => 'Sign in to see insights from your patients.';
+
+  @override
+  String get insightsFreeTeaserPeriodBadge => '7 days';
+
+  @override
+  String get insightsFreeTeaserPeriodHint => 'On the free plan the dashboard only uses the last 7 days.';
+
+  @override
+  String get insightsFreeTeaserTitle => 'Dashboard preview';
+
+  @override
+  String get insightsFreeTeaserBody => 'Recent alerts, attention ranking, and per-patient deep dives (30- and 90-day windows) are part of the Clinicians plan.';
+
+  @override
+  String get insightsProLockedAttentionTitle => 'Needs attention';
+
+  @override
+  String get insightsProLockedAttentionBody => 'Clinical prioritization and patient lists are available on the Clinicians plan.';
+
+  @override
+  String get insightsProLockedAnalyticsTitle => 'Per-patient analysis';
+
+  @override
+  String get insightsProLockedAnalyticsBody => 'Charts, trends, and per-patient detail are on the Clinicians plan.';
+
+  @override
+  String get insightsProUpsellTitle => 'Clinicians plan feature';
+
+  @override
+  String get insightsProUpsellBody => 'Subscribe to unlock this insight and the full dashboard.';
 
   @override
   String get insightsAlertForcedVomit => 'Forced vomiting';

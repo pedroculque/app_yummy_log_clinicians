@@ -7,27 +7,44 @@ import 'package:feature_contract/crash_reporter.dart';
 import 'package:insights_feature/src/cubit/insights_state.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
 import 'package:insights_feature/src/domain/insights_summary.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 
 class InsightsCubit extends Cubit<InsightsState> {
   InsightsCubit({
     required InsightsRepository repository,
     required AuthRepository authRepository,
+    required SubscriptionEntitlementCubit subscriptionCubit,
     CliniciansAnalytics? analytics,
     CrashReporter? crashReporter,
   })  : _repository = repository,
         _authRepository = authRepository,
+        _subscriptionCubit = subscriptionCubit,
         _analytics = analytics,
         _crashReporter = crashReporter,
         super(const InsightsState()) {
     _authSubscription = authRepository.authStateChanges.listen(_onAuthChanged);
+    _entitlementSubscription = subscriptionCubit.stream.listen((subState) {
+      if (isClosed || subState.loading) return;
+      unawaited(load());
+    });
   }
 
   final InsightsRepository _repository;
   final AuthRepository _authRepository;
+  final SubscriptionEntitlementCubit _subscriptionCubit;
   final CliniciansAnalytics? _analytics;
   final CrashReporter? _crashReporter;
   StreamSubscription<dynamic>? _subscription;
   late final StreamSubscription<AuthUser?> _authSubscription;
+  late final StreamSubscription<SubscriptionEntitlementState>
+      _entitlementSubscription;
+
+  static const int _freeInsightsPeriodDays = 7;
+
+  int get _effectivePeriodDays {
+    if (_subscriptionCubit.state.isPro) return state.period.days;
+    return _freeInsightsPeriodDays;
+  }
 
   void _onAuthChanged(AuthUser? user) {
     final uid = user?.uid;
@@ -56,7 +73,7 @@ class InsightsCubit extends Cubit<InsightsState> {
     try {
       final summary = await _repository.getInsights(
         user.uid,
-        periodDays: state.period.days,
+        periodDays: _effectivePeriodDays,
       );
       emit(
         state.copyWith(
@@ -82,6 +99,7 @@ class InsightsCubit extends Cubit<InsightsState> {
   }
 
   Future<void> changePeriod(InsightsPeriod period) async {
+    if (!_subscriptionCubit.state.isPro) return;
     if (period == state.period) return;
     emit(state.copyWith(period: period));
     await load();
@@ -99,6 +117,7 @@ class InsightsCubit extends Cubit<InsightsState> {
   @override
   Future<void> close() async {
     await _subscription?.cancel();
+    await _entitlementSubscription.cancel();
     await _authSubscription.cancel();
     return super.close();
   }

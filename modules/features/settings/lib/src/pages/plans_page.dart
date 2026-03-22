@@ -106,6 +106,14 @@ class PlansPage extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.plansProActiveInsightsIncluded,
+                      style: AppTextStyles.body2.copyWith(
+                        color: appColors.grayDark,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                     const Spacer(),
                   ],
                 ),
@@ -249,8 +257,7 @@ class _FeaturesList extends StatelessWidget {
     final features = [
       l10n.plansFeatureUnlimitedPatients,
       l10n.plansFeatureClinicalDashboard,
-      l10n.plansFeaturePatientDiaryInsight,
-      l10n.plansFeatureBehaviorFormByPatient,
+      l10n.plansFeatureInsightsPerPatientDeepDive,
       l10n.plansFeatureMealPushNotifications,
     ];
 

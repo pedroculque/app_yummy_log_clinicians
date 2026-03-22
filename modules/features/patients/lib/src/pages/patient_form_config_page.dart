@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:patients_feature/patients_feature.dart'
-    show trackActionAndRequestAppRatingIfEligible;
 import 'package:patients_feature/src/cubit/form_config_cubit.dart';
 import 'package:patients_feature/src/cubit/form_config_state.dart';
 import 'package:patients_feature/src/data/behavior_catalog.dart';
@@ -56,39 +54,61 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
           icon: Icon(Icons.arrow_back_ios_new, color: appColors.neutralBlack),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.formConfigTitle,
-              style: AppTextStyles.h4.copyWith(
-                color: appColors.neutralBlack,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              l10n.formConfigPatientSubtitle(displayName),
-              style: AppTextStyles.body3.copyWith(color: appColors.gray),
-            ),
-          ],
+        title: BlocBuilder<FormConfigCubit, FormConfigState>(
+          buildWhen: (p, c) => p.status != c.status,
+          builder: (context, state) {
+            return Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.formConfigTitle,
+                        style: AppTextStyles.h4.copyWith(
+                          color: appColors.neutralBlack,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        l10n.formConfigPatientSubtitle(displayName),
+                        style: AppTextStyles.body3.copyWith(
+                          color: appColors.gray,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (state.status == FormConfigStatus.saving)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: appColors.primary,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
         ),
         centerTitle: false,
       ),
       body: BlocListener<FormConfigCubit, FormConfigState>(
         listenWhen: (previous, current) =>
-            previous.status == FormConfigStatus.saving &&
-            current.status == FormConfigStatus.loaded,
+            current.saveFailure != null &&
+            current.saveFailure != previous.saveFailure,
         listener: (context, state) {
+          final msg = state.saveFailure;
+          if (msg == null) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(context.l10n.formConfigSaved),
+              content: Text(msg),
               behavior: SnackBarBehavior.floating,
-            ),
-          );
-          unawaited(
-            trackActionAndRequestAppRatingIfEligible(
-              context,
-              origin: 'form_config_saved',
             ),
           );
         },
@@ -130,7 +150,6 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
           }
 
           final config = state.config;
-          final isSaving = state.status == FormConfigStatus.saving;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -219,36 +238,6 @@ class _PatientFormConfigPageState extends State<PatientFormConfigPage> {
                   changeLog: config.changeLog,
                   l10n: l10n,
                   appColors: appColors,
-                ),
-                const SizedBox(height: 24),
-
-                // Botão Salvar
-                FilledButton(
-                  onPressed: isSaving
-                      ? null
-                      : () => context.read<FormConfigCubit>().save(),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: appColors.primary,
-                    minimumSize: const Size(double.infinity, 52),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: isSaving
-                      ? Text(
-                          l10n.formConfigSaving,
-                          style: AppTextStyles.body1.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
-                      : Text(
-                          l10n.formConfigSave,
-                          style: AppTextStyles.body1.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                 ),
               ],
             ),

@@ -12,6 +12,7 @@ import 'package:insights_feature/src/domain/risk_alert.dart';
 import 'package:intl/intl.dart';
 import 'package:patients_feature/patients_feature.dart'
     show trackActionAndRequestAppRatingIfEligible;
+import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
@@ -101,15 +102,25 @@ class _InsightsPageState extends State<InsightsPage> {
               return _EmptyView(appColors: appColors, l10n: l10n);
             }
 
-            return RefreshIndicator(
-              onRefresh: () => context.read<InsightsCubit>().refresh(),
-              child: _InsightsContent(
-                summary: state.summary,
-                period: state.period,
-                lastUpdated: state.lastUpdated,
-                appColors: appColors,
-                l10n: l10n,
-              ),
+            return BlocBuilder<SubscriptionEntitlementCubit,
+                SubscriptionEntitlementState>(
+              buildWhen: (previous, current) =>
+                  previous.isPro != current.isPro ||
+                  previous.loading != current.loading,
+              builder: (context, subState) {
+                final isPro = !subState.loading && subState.isPro;
+                return RefreshIndicator(
+                  onRefresh: () => context.read<InsightsCubit>().refresh(),
+                  child: _InsightsContent(
+                    summary: state.summary,
+                    period: state.period,
+                    lastUpdated: state.lastUpdated,
+                    appColors: appColors,
+                    l10n: l10n,
+                    isPro: isPro,
+                  ),
+                );
+              },
             );
           },
         ),
@@ -125,6 +136,7 @@ class _InsightsContent extends StatelessWidget {
     required this.lastUpdated,
     required this.appColors,
     required this.l10n,
+    required this.isPro,
   });
 
   final InsightsSummary summary;
@@ -132,6 +144,7 @@ class _InsightsContent extends StatelessWidget {
   final DateTime? lastUpdated;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final bool isPro;
 
   @override
   Widget build(BuildContext context) {
@@ -143,23 +156,30 @@ class _InsightsContent extends StatelessWidget {
           lastUpdated: lastUpdated,
           appColors: appColors,
           l10n: l10n,
+          isPro: isPro,
         ),
-        const SizedBox(height: 16),
-        _OperationalSummarySection(
-          summary: summary,
-          appColors: appColors,
-          l10n: l10n,
-        ),
-        const SizedBox(height: 16),
-        _ClinicalPrioritySection(
-          summary: summary,
-          appColors: appColors,
-          l10n: l10n,
-        ),
+        if (!isPro) ...[
+          const SizedBox(height: 12),
+          _InsightsFreeTeaserBanner(appColors: appColors, l10n: l10n),
+        ],
+        if (isPro) ...[
+          const SizedBox(height: 16),
+          _OperationalSummarySection(
+            summary: summary,
+            appColors: appColors,
+            l10n: l10n,
+          ),
+          const SizedBox(height: 16),
+          _ClinicalPrioritySection(
+            summary: summary,
+            appColors: appColors,
+            l10n: l10n,
+          ),
+        ],
         const SizedBox(height: 16),
         _SummaryCards(summary: summary, appColors: appColors, l10n: l10n),
         const SizedBox(height: 24),
-        if (summary.hasAlerts) ...[
+        if (isPro && summary.hasAlerts) ...[
           _AlertsSection(
             alerts: summary.recentAlerts,
             appColors: appColors,
@@ -167,18 +187,156 @@ class _InsightsContent extends StatelessWidget {
           ),
           const SizedBox(height: 24),
         ],
-        _AttentionSection(
-          patients: summary.patientsNeedingAttention,
-          appColors: appColors,
-          l10n: l10n,
-        ),
-        const SizedBox(height: 24),
-        _PatientAnalyticsSection(
-          patients: summary.patientInsights,
-          appColors: appColors,
-          l10n: l10n,
-        ),
+        if (isPro) ...[
+          _AttentionSection(
+            patients: summary.patientsNeedingAttention,
+            appColors: appColors,
+            l10n: l10n,
+          ),
+          const SizedBox(height: 24),
+          _PatientAnalyticsSection(
+            patients: summary.patientInsights,
+            appColors: appColors,
+            l10n: l10n,
+          ),
+        ],
+        if (!isPro) ...[
+          _InsightsProLockedFeatureCard(
+            icon: Icons.priority_high_rounded,
+            title: l10n.insightsProLockedAttentionTitle,
+            body: l10n.insightsProLockedAttentionBody,
+            appColors: appColors,
+            l10n: l10n,
+          ),
+          const SizedBox(height: 16),
+          _InsightsProLockedFeatureCard(
+            icon: Icons.analytics_outlined,
+            title: l10n.insightsProLockedAnalyticsTitle,
+            body: l10n.insightsProLockedAnalyticsBody,
+            appColors: appColors,
+            l10n: l10n,
+          ),
+        ],
       ],
+    );
+  }
+}
+
+class _InsightsFreeTeaserBanner extends StatelessWidget {
+  const _InsightsFreeTeaserBanner({
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: appColors.secondary.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: appColors.secondary.withValues(alpha: 0.25),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.info_outline, color: appColors.secondary, size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.insightsFreeTeaserTitle,
+                  style: AppTextStyles.body1.copyWith(
+                    color: appColors.neutralBlack,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.insightsFreeTeaserBody,
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+          const SizedBox(height: 12),
+          FilledButton.tonal(
+            onPressed: () => context.push('/plans'),
+            style: FilledButton.styleFrom(
+              foregroundColor: appColors.primary,
+            ),
+            child: Text(l10n.upgradeToPro),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InsightsProLockedFeatureCard extends StatelessWidget {
+  const _InsightsProLockedFeatureCard({
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.appColors,
+    required this.l10n,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+  final AppColors appColors;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: appColors.gray.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: appColors.gray.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: appColors.gray, size: 22),
+              const SizedBox(width: 8),
+              Icon(Icons.lock_outline, color: appColors.gray, size: 18),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTextStyles.body1.copyWith(
+                    color: appColors.neutralBlack,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            body,
+            style: AppTextStyles.body3.copyWith(color: appColors.grayDark),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: () => context.push('/plans'),
+            child: Text(l10n.upgradeToPro),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1592,12 +1750,14 @@ class _HeaderSection extends StatelessWidget {
     required this.lastUpdated,
     required this.appColors,
     required this.l10n,
+    required this.isPro,
   });
 
   final InsightsPeriod period;
   final DateTime? lastUpdated;
   final AppColors appColors;
   final AppLocalizations l10n;
+  final bool isPro;
 
   @override
   Widget build(BuildContext context) {
@@ -1609,17 +1769,47 @@ class _HeaderSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              l10n.insightsDashboard,
-              style: AppTextStyles.h2.copyWith(color: appColors.neutralBlack),
+            Expanded(
+              child: Text(
+                l10n.insightsDashboard,
+                style: AppTextStyles.h2.copyWith(
+                  color: appColors.neutralBlack,
+                ),
+              ),
             ),
-            _PeriodSelector(
-              currentPeriod: period,
-              appColors: appColors,
-              l10n: l10n,
-            ),
+            if (isPro)
+              _PeriodSelector(
+                currentPeriod: period,
+                appColors: appColors,
+                l10n: l10n,
+              )
+            else
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: appColors.gray.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  l10n.insightsFreeTeaserPeriodBadge,
+                  style: AppTextStyles.body3.copyWith(
+                    color: appColors.grayDark,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
           ],
         ),
+        if (!isPro) ...[
+          const SizedBox(height: 6),
+          Text(
+            l10n.insightsFreeTeaserPeriodHint,
+            style: AppTextStyles.body3.copyWith(color: appColors.gray),
+          ),
+        ],
         if (lastUpdated != null) ...[
           const SizedBox(height: 4),
           Text(

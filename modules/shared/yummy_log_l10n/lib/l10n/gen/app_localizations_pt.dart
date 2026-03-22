@@ -540,13 +540,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get plansFeatureMealPushNotifications => 'Alertas em tempo real quando o paciente registra no diário';
 
   @override
-  String get plansFeatureClinicalDashboard => 'Dashboard com métricas, alertas de risco e ranking de atenção';
+  String get plansFeatureClinicalDashboard => 'Dashboard de insights completo: 30 e 90 dias, resumo operacional, prioridade clínica, alertas detalhados e ranking de pacientes';
 
   @override
-  String get plansFeaturePatientDiaryInsight => 'Diário do paciente: timeline, calendário, fotos e tags de risco';
+  String get plansFeatureInsightsPerPatientDeepDive => 'Análises avançadas por paciente: tendências, sentimentos, comparativos e visão aprofundada';
 
   @override
-  String get plansFeatureBehaviorFormByPatient => 'Formulário de comportamento personalizado por paciente';
+  String get plansProActiveInsightsIncluded => 'Inclui dashboard de insights completo (períodos longos, alertas, priorização e análise por paciente).';
 
   @override
   String get plansAnnual => 'Anual';
@@ -719,6 +719,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shareEmail => 'E-mail';
 
   @override
+  String get shareInviteEmailSubject => 'Convite YummyLog — código de conexão';
+
+  @override
+  String get inviteShareNeedValidCode => 'Gere ou aguarde o código de convite válido antes de compartilhar.';
+
+  @override
   String shareInviteMessage(String code) {
     return 'Use o código $code para se conectar comigo no YummyLog!';
   }
@@ -856,6 +862,36 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get insightsNotLoggedIn => 'Faça login para ver insights dos seus pacientes.';
+
+  @override
+  String get insightsFreeTeaserPeriodBadge => '7 dias';
+
+  @override
+  String get insightsFreeTeaserPeriodHint => 'No plano gratuito o dashboard usa só os últimos 7 dias.';
+
+  @override
+  String get insightsFreeTeaserTitle => 'Prévia do dashboard';
+
+  @override
+  String get insightsFreeTeaserBody => 'Alertas recentes, ranking de atenção e análises detalhadas por paciente (períodos de 30 e 90 dias) fazem parte do plano Clínicos.';
+
+  @override
+  String get insightsProLockedAttentionTitle => 'Precisam de atenção';
+
+  @override
+  String get insightsProLockedAttentionBody => 'Priorização e lista clínica de pacientes estão disponíveis no plano Clínicos.';
+
+  @override
+  String get insightsProLockedAnalyticsTitle => 'Análise por paciente';
+
+  @override
+  String get insightsProLockedAnalyticsBody => 'Gráficos, tendências e aprofundamento por paciente estão no plano Clínicos.';
+
+  @override
+  String get insightsProUpsellTitle => 'Recurso do plano Clínicos';
+
+  @override
+  String get insightsProUpsellBody => 'Assine para desbloquear este insight e o dashboard completo.';
 
   @override
   String get insightsAlertForcedVomit => 'Vômito forçado';

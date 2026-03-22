@@ -25,6 +25,8 @@ dependencies:
     path: ../../shared/meal_domain
   patients_feature:
     path: ../patients
+  subscription_foundation:
+    path: ../../foundation/subscription
   ui_kit:
     git:
       url: https://github.com/pedroculque/flutter_ui_kit.git

@@ -8,6 +8,7 @@ class FormConfigState extends Equatable {
     this.status = FormConfigStatus.initial,
     this.config = const BehaviorFormConfig(),
     this.error,
+    this.saveFailure,
     this.patientId,
     this.patientName,
   });
@@ -15,6 +16,8 @@ class FormConfigState extends Equatable {
   final FormConfigStatus status;
   final BehaviorFormConfig config;
   final String? error;
+  /// Erro ao persistir (autosave); não substitui a tela como [error] de carga.
+  final String? saveFailure;
   final String? patientId;
   final String? patientName;
 
@@ -22,18 +25,23 @@ class FormConfigState extends Equatable {
     FormConfigStatus? status,
     BehaviorFormConfig? config,
     String? error,
+    bool clearError = false,
+    String? saveFailure,
+    bool clearSaveFailure = false,
     String? patientId,
     String? patientName,
   }) {
     return FormConfigState(
       status: status ?? this.status,
       config: config ?? this.config,
-      error: error,
+      error: clearError ? null : (error ?? this.error),
+      saveFailure: clearSaveFailure ? null : (saveFailure ?? this.saveFailure),
       patientId: patientId ?? this.patientId,
       patientName: patientName ?? this.patientName,
     );
   }
 
   @override
-  List<Object?> get props => [status, config, error, patientId, patientName];
+  List<Object?> get props =>
+      [status, config, error, saveFailure, patientId, patientName];
 }

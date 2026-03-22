@@ -188,8 +188,19 @@ class ClinicianNotificationService {
 
   void _handleMessage(RemoteMessage message) {
     final router = _router;
+    if (router == null) {
+      return;
+    }
+    final eventType =
+        message.data['eventType'] as String? ?? 'new_meal_entry';
+
+    if (eventType == 'patient_unlinked') {
+      router.go('/patients');
+      return;
+    }
+
     final patientId = message.data['patientId'] as String?;
-    if (router == null || patientId == null || patientId.isEmpty) {
+    if (patientId == null || patientId.isEmpty) {
       return;
     }
     final patientName = message.data['patientName'] as String? ?? patientId;

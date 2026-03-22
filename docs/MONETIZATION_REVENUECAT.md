@@ -26,7 +26,7 @@ Hoje só existe **gate** explícito de assinatura para **limite de pacientes**:
 | **Aba Pacientes** (lista, convite, diário read-only, swipe remover) | Sim (até 2) | Sim |
 | **Diário do paciente** (timeline, calendário, detalhes, tags de risco) | Sim (para os pacientes que tens) | Sim |
 | **Configurar formulário de comportamento** por paciente | Sim | Sim |
-| **Aba Insights** (dashboard, métricas, gráficos, ranking, 3.2 / 3.3) | **Sim** (mesmo conteúdo que Pro, com ≤2 pacientes) | Sim |
+| **Aba Insights** (dashboard, métricas, gráficos, ranking, 3.2 / 3.3) | **Teaser:** KPIs + **7 dias**; sem operacional/prioridade/alertas/ranking/análise por paciente; rotas Pro mostram upsell | **Completo** (7/30/90 dias, todas as secções) |
 | **Notificações push** (novas entradas / alertas de risco) | **Sim** (se login + prefs; não há `isPro` no fluxo) | Sim |
 | **Tela de planos + restaurar compras** | Sim | Sim |
 
@@ -36,7 +36,7 @@ Ou seja: **tecnicamente**, o Pro compra sobretudo **escalar além de 2 pacientes
 
 ## Decisões tomadas (oferta) — 2026-03-20
 
-Decisões de produto acordadas (implementação no código **pendente** para Insights; ver tabela “Estado atual no código”).
+Decisões de produto acordadas (**gate de Insights** implementado no cliente; ver tabela “Estado atual no código”).
 
 | Tema | Decisão |
 |------|---------|
@@ -55,7 +55,7 @@ Decisões de produto acordadas (implementação no código **pendente** para Ins
 | Insights | **Teaser** + CTA | **Completo** |
 | Push (com login) | Sim | Sim |
 
-**Implementação técnica (checklist):** `SubscriptionEntitlementCubit` na feature Insights ou no shell da aba; UX do teaser + strings (l10n); opcional: regras Firestore/backend se quiserem enforcement forte.
+**Implementação técnica:** `InsightsCubit` usa `SubscriptionEntitlementCubit` (janela 7 dias no grátis; períodos 30/90 só Pro); teaser + CTA + `InsightsProUpsellPage` em rotas Pro; l10n pt/en/es. **Opcional:** regras Firestore/backend para enforcement forte.
 
 ### Mapa rápido: paywall vs código
 
@@ -69,7 +69,7 @@ Os bullets da `PlansPage` mencionam dashboard completo — após o gate, isso fi
 - Chaves públicas por loja via `--dart-define` (sem commit de secrets).
 - `SubscriptionEntitlementCubit` (singleton no `get_it`): sincroniza `Purchases.logIn` / `logOut` com o UID do Firebase Auth; expõe `isPro`.
 - Entitlement esperado: **`clinicians_pro`** (constante `kCliniciansProEntitlementId`).
-- Tela de planos: compra mensal/anual a partir do *offering* atual (`PackageType.monthly` / `annual`); bullets de benefícios alinhados ao produto (dashboard, diário, formulário por paciente, push).
+- Tela de planos: compra mensal/anual a partir do *offering* atual (`PackageType.monthly` / `annual`); bullets de benefícios: pacientes ilimitados, dashboard de insights completo, análises avançadas por paciente, push (diário e formulário não são vendidos como diferenciais no paywall).
 - Limite gratuito: **2 pacientes** quando `isPro` é falso (`SubscriptionLimits.maxFreePatients`).
 - Restaurar compras nas Configurações.
 

@@ -9,8 +9,10 @@ import 'package:insights_feature/src/cubit/patient_analytics_cubit.dart';
 import 'package:insights_feature/src/data/insights_repository.dart';
 import 'package:insights_feature/src/domain/patient_insight.dart';
 import 'package:insights_feature/src/pages/insights_page.dart';
+import 'package:insights_feature/src/pages/insights_pro_upsell_page.dart';
 import 'package:insights_feature/src/pages/patient_analytics_page.dart';
 import 'package:patients_feature/patients_feature.dart';
+import 'package:subscription_foundation/subscription_foundation.dart';
 
 class InsightsFeature implements YummyLogFeature {
   @override
@@ -29,6 +31,7 @@ class InsightsFeature implements YummyLogFeature {
         () => InsightsCubit(
           repository: getIt<InsightsRepository>(),
           authRepository: getIt<AuthRepository>(),
+          subscriptionCubit: getIt<SubscriptionEntitlementCubit>(),
           analytics: getIt.isRegistered<CliniciansAnalytics>()
               ? getIt<CliniciansAnalytics>()
               : null,
@@ -59,10 +62,6 @@ class InsightsFeature implements YummyLogFeature {
         path: '/insights/score-help',
         builder: (context, state) => const _ScoreHelpRoutePage(),
       ),
-      GoRoute(
-        path: '/insights/score-help',
-        builder: (context, state) => const _ScoreHelpRoutePage(),
-      ),
     ];
   }
 
@@ -76,7 +75,15 @@ class InsightsFeature implements YummyLogFeature {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
           final insight = state.extra as PatientInsight?;
-          return _PatientDetailRoutePage(insight: insight);
+          return BlocProvider.value(
+            value: getIt<SubscriptionEntitlementCubit>(),
+            child: _InsightsProRouteGate(
+              buildForAccess: ({required hasPro}) {
+                if (!hasPro) return const InsightsProUpsellPage();
+                return _PatientDetailRoutePage(insight: insight);
+              },
+            ),
+          );
         },
       ),
       GoRoute(
@@ -86,20 +93,28 @@ class InsightsFeature implements YummyLogFeature {
           final patientId = state.pathParameters['patientId']!;
           final patientName =
               state.uri.queryParameters['name'] ?? '';
-          final cubit = PatientAnalyticsCubit(
-            patientId: patientId,
-            mealsRepository: getIt<PatientMealsRepository>(),
-            analytics: getIt.isRegistered<CliniciansAnalytics>()
-                ? getIt<CliniciansAnalytics>()
-                : null,
-            crashReporter: getIt.isRegistered<CrashReporter>()
-                ? getIt<CrashReporter>()
-                : null,
-          );
-          return PatientAnalyticsPage(
-            patientId: patientId,
-            patientName: patientName,
-            cubit: cubit,
+          return BlocProvider.value(
+            value: getIt<SubscriptionEntitlementCubit>(),
+            child: _InsightsProRouteGate(
+              buildForAccess: ({required hasPro}) {
+                if (!hasPro) return const InsightsProUpsellPage();
+                final cubit = PatientAnalyticsCubit(
+                  patientId: patientId,
+                  mealsRepository: getIt<PatientMealsRepository>(),
+                  analytics: getIt.isRegistered<CliniciansAnalytics>()
+                      ? getIt<CliniciansAnalytics>()
+                      : null,
+                  crashReporter: getIt.isRegistered<CrashReporter>()
+                      ? getIt<CrashReporter>()
+                      : null,
+                );
+                return PatientAnalyticsPage(
+                  patientId: patientId,
+                  patientName: patientName,
+                  cubit: cubit,
+                );
+              },
+            ),
           );
         },
       ),
@@ -113,6 +128,29 @@ class _ScoreHelpRoutePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const InsightsPage(scoreHelpMode: true);
+  }
+}
+
+class _InsightsProRouteGate extends StatelessWidget {
+  const _InsightsProRouteGate({required this.buildForAccess});
+
+  final Widget Function({required bool hasPro}) buildForAccess;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SubscriptionEntitlementCubit,
+        SubscriptionEntitlementState>(
+      buildWhen: (p, c) =>
+          p.isPro != c.isPro || p.loading != c.loading,
+      builder: (context, sub) {
+        if (sub.loading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return buildForAccess(hasPro: sub.isPro);
+      },
+    );
   }
 }
 

@@ -93,9 +93,15 @@ class BehaviorFormConfig {
   final List<FormConfigChangeLogEntry> changeLog;
 
   /// Valor do comportamento (true = mostrar no form).
-  /// Se não definido, considera true para MVP.
-  bool isBehaviorEnabled(String behaviorId) =>
-      behaviors[behaviorId] ?? true;
+  /// Sem chave no mapa: ligado por padrão, exceto bingeEating
+  /// (opt-in do clínico).
+  bool isBehaviorEnabled(String behaviorId) {
+    if (behaviors.containsKey(behaviorId)) {
+      return behaviors[behaviorId]!;
+    }
+    if (behaviorId == 'bingeEating') return false;
+    return true;
+  }
 
   BehaviorFormConfig copyWith({
     bool? sectionEnabled,
@@ -121,7 +127,7 @@ class BehaviorFormConfig {
   Map<String, dynamic> toFirestore() {
     final fullBehaviors = Map<String, bool>.from(behaviors);
     for (final id in BehaviorCatalog.ids) {
-      fullBehaviors.putIfAbsent(id, () => true);
+      fullBehaviors.putIfAbsent(id, () => id != 'bingeEating');
     }
     return {
       'sectionEnabled': sectionEnabled,

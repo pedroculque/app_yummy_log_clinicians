@@ -1146,20 +1146,20 @@ abstract class AppLocalizations {
   /// No description provided for @plansFeatureClinicalDashboard.
   ///
   /// In en, this message translates to:
-  /// **'Dashboard with metrics, risk alerts, and attention ranking'**
+  /// **'Full insights dashboard: 30- and 90-day views, operational summary, clinical priority, detailed risk alerts, and patient ranking'**
   String get plansFeatureClinicalDashboard;
 
-  /// No description provided for @plansFeaturePatientDiaryInsight.
+  /// No description provided for @plansFeatureInsightsPerPatientDeepDive.
   ///
   /// In en, this message translates to:
-  /// **'Patient diary: timeline, calendar, photos, and risk tags'**
-  String get plansFeaturePatientDiaryInsight;
+  /// **'Advanced per-patient analysis: trends, feelings, comparisons, and deeper clinical view'**
+  String get plansFeatureInsightsPerPatientDeepDive;
 
-  /// No description provided for @plansFeatureBehaviorFormByPatient.
+  /// No description provided for @plansProActiveInsightsIncluded.
   ///
   /// In en, this message translates to:
-  /// **'Behavior questionnaire tailored to each patient'**
-  String get plansFeatureBehaviorFormByPatient;
+  /// **'Includes the full insights dashboard (longer periods, alerts, prioritization, and per-patient analysis).'**
+  String get plansProActiveInsightsIncluded;
 
   /// No description provided for @plansAnnual.
   ///
@@ -1485,6 +1485,18 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get shareEmail;
 
+  /// No description provided for @shareInviteEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'YummyLog invite — connection code'**
+  String get shareInviteEmailSubject;
+
+  /// No description provided for @inviteShareNeedValidCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate a valid invite code before sharing.'**
+  String get inviteShareNeedValidCode;
+
   /// No description provided for @shareInviteMessage.
   ///
   /// In en, this message translates to:
@@ -1754,6 +1766,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in to see insights from your patients.'**
   String get insightsNotLoggedIn;
+
+  /// No description provided for @insightsFreeTeaserPeriodBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get insightsFreeTeaserPeriodBadge;
+
+  /// No description provided for @insightsFreeTeaserPeriodHint.
+  ///
+  /// In en, this message translates to:
+  /// **'On the free plan the dashboard only uses the last 7 days.'**
+  String get insightsFreeTeaserPeriodHint;
+
+  /// No description provided for @insightsFreeTeaserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard preview'**
+  String get insightsFreeTeaserTitle;
+
+  /// No description provided for @insightsFreeTeaserBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent alerts, attention ranking, and per-patient deep dives (30- and 90-day windows) are part of the Clinicians plan.'**
+  String get insightsFreeTeaserBody;
+
+  /// No description provided for @insightsProLockedAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get insightsProLockedAttentionTitle;
+
+  /// No description provided for @insightsProLockedAttentionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinical prioritization and patient lists are available on the Clinicians plan.'**
+  String get insightsProLockedAttentionBody;
+
+  /// No description provided for @insightsProLockedAnalyticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Per-patient analysis'**
+  String get insightsProLockedAnalyticsTitle;
+
+  /// No description provided for @insightsProLockedAnalyticsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Charts, trends, and per-patient detail are on the Clinicians plan.'**
+  String get insightsProLockedAnalyticsBody;
+
+  /// No description provided for @insightsProUpsellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Clinicians plan feature'**
+  String get insightsProUpsellTitle;
+
+  /// No description provided for @insightsProUpsellBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe to unlock this insight and the full dashboard.'**
+  String get insightsProUpsellBody;
 
   /// No description provided for @insightsAlertForcedVomit.
   ///

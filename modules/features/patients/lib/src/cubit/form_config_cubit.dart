@@ -26,6 +26,7 @@ class FormConfigCubit extends Cubit<FormConfigState> {
   final CliniciansAnalytics? _analytics;
   final CrashReporter? _crashReporter;
   StreamSubscription<BehaviorFormConfig>? _subscription;
+  Timer? _persistDebounce;
 
   /// Carrega a config do paciente e passa a observar alterações.
   Future<void> load({
@@ -44,6 +45,8 @@ class FormConfigCubit extends Cubit<FormConfigState> {
         emit(state.copyWith(
           status: FormConfigStatus.loaded,
           config: config,
+          clearError: true,
+          clearSaveFailure: true,
         ));
       },
       onError: (Object e, StackTrace st) {
@@ -65,6 +68,7 @@ class FormConfigCubit extends Cubit<FormConfigState> {
     emit(state.copyWith(
       config: state.config.copyWith(sectionEnabled: value),
     ));
+    _schedulePersist();
   }
 
   void setBehaviorEnabled(String behaviorId, {required bool value}) {
@@ -73,6 +77,20 @@ class FormConfigCubit extends Cubit<FormConfigState> {
     emit(state.copyWith(
       config: state.config.copyWith(behaviors: newBehaviors),
     ));
+    _schedulePersist();
+  }
+
+  static const _persistDebounceDuration = Duration(milliseconds: 550);
+
+  void _schedulePersist() {
+    if (state.status == FormConfigStatus.loading ||
+        state.status == FormConfigStatus.initial) {
+      return;
+    }
+    _persistDebounce?.cancel();
+    _persistDebounce = Timer(_persistDebounceDuration, () {
+      unawaited(save());
+    });
   }
 
   /// Persiste a config no Firestore com o usuário atual no changeLog.
@@ -82,13 +100,17 @@ class FormConfigCubit extends Cubit<FormConfigState> {
       emit(state.copyWith(
         status: FormConfigStatus.error,
         error: 'not_logged_in',
+        clearSaveFailure: true,
       ));
       return;
     }
     final patientId = state.patientId;
     if (patientId == null) return;
 
-    emit(state.copyWith(status: FormConfigStatus.saving));
+    emit(state.copyWith(
+      status: FormConfigStatus.saving,
+      clearSaveFailure: true,
+    ));
     try {
       await _repository.saveFormConfig(
         patientId,
@@ -97,7 +119,7 @@ class FormConfigCubit extends Cubit<FormConfigState> {
         clinicianDisplayName: user.displayName,
       );
       _analytics?.logFormConfigSave();
-      // Estado já é atualizado pelo stream watchFormConfig
+      emit(state.copyWith(status: FormConfigStatus.loaded));
     } on Object catch (e, st) {
       debugPrint('[FormConfigCubit] save failed: $e');
       debugPrint('[FormConfigCubit] stack: $st');
@@ -108,15 +130,15 @@ class FormConfigCubit extends Cubit<FormConfigState> {
         hint: 'save',
       );
       emit(state.copyWith(
-        status: FormConfigStatus.error,
-        error: e.toString(),
+        status: FormConfigStatus.loaded,
+        saveFailure: e.toString(),
       ));
-      // Não emitir loaded aqui: deixar o erro visível (ex.: permission-denied).
     }
   }
 
   @override
   Future<void> close() async {
+    _persistDebounce?.cancel();
     await _subscription?.cancel();
     await super.close();
   }

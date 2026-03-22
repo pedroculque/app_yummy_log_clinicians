@@ -15,6 +15,7 @@ import 'package:patients_feature/src/data/patient.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
 
 class PatientsPage extends StatefulWidget {
@@ -1327,8 +1328,56 @@ class _InviteBottomSheetState extends State<_InviteBottomSheet> {
   }
 
   Future<void> _shareVia(String method, String code) async {
-    final message = context.l10n.shareInviteMessage(code);
-    await Share.share(message);
+    final l10n = context.l10n;
+    final normalized = code
+        .trim()
+        .toUpperCase()
+        .replaceAll(RegExp('[^A-Z0-9]'), '');
+    if (normalized.length != 6) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.inviteShareNeedValidCode),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    final message = l10n.shareInviteMessage(normalized);
+    final subject = l10n.shareInviteEmailSubject;
+
+    final uri = switch (method) {
+      'whatsapp' => Uri.parse(
+          'https://wa.me/?text=${Uri.encodeComponent(message)}',
+        ),
+      'sms' => Uri.parse('sms:?body=${Uri.encodeComponent(message)}'),
+      'email' => Uri(
+          scheme: 'mailto',
+          queryParameters: <String, String>{
+            'subject': subject,
+            'body': message,
+          },
+        ),
+      _ => null,
+    };
+
+    if (uri == null) {
+      await Share.share(message);
+      if (!mounted) return;
+      context.read<PatientsCubit>().logInviteShare(channel: method);
+      return;
+    }
+
+    try {
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && mounted) {
+        await Share.share(message);
+      }
+    } on Object {
+      if (mounted) {
+        await Share.share(message);
+      }
+    }
     if (!mounted) return;
     context.read<PatientsCubit>().logInviteShare(channel: method);
   }
