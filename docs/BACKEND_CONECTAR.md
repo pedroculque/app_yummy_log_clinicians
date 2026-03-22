@@ -91,7 +91,7 @@ Quando um paciente registra uma nova refeição, cada clínico vinculado pode re
 5. **Tokens FCM** → lê `clinicians/{clinicianUid}/notification_tokens`.
 6. **Envia FCM** → texto depende se a refeição é considerada **com risco** (mesma lógica de booleans + `behaviorFlags` na function). Independente de `pushMode` ser `all` ou `critical_only`: se houver risco, usa cópia de alerta; senão, genérica.
 7. **data:** `patientId`, `patientName`, `mealType`, `eventType: 'new_meal_entry'`, `criticalOnly` (`'true'` / `'false'`).
-8. **Clínico toca na notificação** → app abre e navega para `/patients/{patientId}/diary`.
+8. **Clínico toca na notificação** → app abre e navega conforme `eventType` no payload (ver abaixo).
 
 ### Textos da notificação (FCM)
 
@@ -102,7 +102,27 @@ Quando um paciente registra uma nova refeição, cada clínico vinculado pode re
 
 O app do clínico é responsável por:
 - **Configurações:** `NotificationPushPreferencesRepository` grava `pushEnabled` e `pushMode` em `preferences/notification` (aba Alertas).
-- **`ClinicianNotificationService`:** permissão, token FCM, logout remove token, deep link ao diário. Re-sync ao voltar ao foreground e ao reabrir o shell após login; evita ficar preso após APNS atrasado no iOS (contador de retries reiniciado no login e no resume).
+- **`ClinicianNotificationService`:** permissão, token FCM, logout remove token, deep link por `eventType`, **`app_badge_plus`** (badge do ícone reposto a 0 ao iniciar, ao voltar ao foreground e ao abrir notificação). Re-sync ao voltar ao foreground e ao reabrir o shell após login; evita ficar preso após APNS atrasado no iOS (contador de retries reiniciado no login e no resume).
+
+---
+
+## Cloud Functions: vínculo paciente–clínico
+
+Além de `notifyCliniciansOnNewMeal`, o backend inclui triggers na subcoleção **`clinicians/{clinicianUid}/patients/{patientId}`**:
+
+| Function | Trigger | Comportamento |
+|----------|---------|---------------|
+| **`onClinicianPatientRemoved`** | `onDelete` do doc `clinicians/.../patients/...` | Com SDK **Admin**, apaga em `users/{patientId}/connections` todos os documentos cujo campo `clinicianUid` coincide com o clínico dono do path. Em seguida envia FCM ao clínico com `eventType: 'patient_unlinked'` (sincroniza UX quando o **paciente** remove o vínculo; o clínico não pode escrever em `users/.../connections`). |
+| **`onClinicianPatientLinked`** | `onCreate` do mesmo path | Push ao clínico com `eventType: 'patient_linked'` (paciente acabou de vincular-se). |
+
+**Payload útil para o app:** `eventType` (`new_meal_entry` \| `patient_linked` \| `patient_unlinked`), `patientId`, e campos opcionais (`patientName`, etc., conforme implementação em `functions/src/index.ts`).
+
+**Navegação no app ao tocar na notificação:**
+
+- `patient_unlinked` → `/patients` (lista).
+- `new_meal_entry` e `patient_linked` → `/patients/:patientId/diary` (com query `criticalOnly` quando aplicável às refeições).
+
+**Simulador iOS:** o token APNS/FCM costuma **não** ser obtido; push e testes reais exigem dispositivo físico.
 
 ---
 
@@ -142,6 +162,8 @@ Ou seja: quando existe documento em `clinicians/{clinicianUid}/patients/{patient
 ---
 
 ## Exclusão de conta do clínico
+
+**Remoção do paciente na lista do clínico (swipe / desvincular):** quando o documento `clinicians/{clinicianUid}/patients/{patientId}` é apagado (pelo fluxo do paciente ou equivalente), **`onClinicianPatientRemoved`** limpa as conexões do lado do paciente e pode enviar push — isto **não** substitui o backlog **C38** abaixo (exclusão da **conta Auth** do clínico).
 
 **No app (implementado):** o fluxo in-app (requisito Apple para apps com login) remove, enquanto a sessão ainda é válida:
 

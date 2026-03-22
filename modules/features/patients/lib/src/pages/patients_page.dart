@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:auth_foundation/auth_foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_contract/feature_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,10 @@ import 'package:subscription_foundation/subscription_foundation.dart';
 import 'package:ui_kit/ui_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yummy_log_l10n/yummy_log_l10n.dart';
+
+// Subscrições Auth + Firestore do perfil: canceladas em
+// `_PatientsPageState.dispose` (e ao trocar de utilizador).
+// ignore_for_file: cancel_subscriptions
 
 class PatientsPage extends StatefulWidget {
   const PatientsPage({
@@ -36,10 +41,75 @@ class _PatientsPageState extends State<PatientsPage> {
   /// Ao fazer login ou trocar conta, forçamos reload e zeramos estado antigo.
   String? _lastLoadedUserId;
 
+  /// Snapshot vindo do [AuthRepository] (Firebase userChanges).
+  AuthUser? _authUser;
+
+  /// `photoUrl` em `users/{uid}` — alinhado à secção Conta nas Configurações.
+  String? _firestoreProfilePhotoUrl;
+
+  StreamSubscription<AuthUser?>? _authSubscription;
+  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
+      _firestoreProfileSubscription;
+
   @override
   void initState() {
     super.initState();
     _loadIfLoggedIn();
+    final authRepo = context.read<AuthRepository>();
+    _authSubscription = authRepo.authStateChanges.listen(_onAuthStream);
+    _onAuthStream(authRepo.currentUser);
+  }
+
+  @override
+  void dispose() {
+    final authSub = _authSubscription;
+    final profileSub = _firestoreProfileSubscription;
+    _authSubscription = null;
+    _firestoreProfileSubscription = null;
+    if (authSub != null) unawaited(authSub.cancel());
+    if (profileSub != null) unawaited(profileSub.cancel());
+    super.dispose();
+  }
+
+  void _onAuthStream(AuthUser? user) {
+    final previousUid = _authUser?.uid;
+    final uidChanged = user?.uid != previousUid;
+    if (uidChanged) {
+      final old = _firestoreProfileSubscription;
+      _firestoreProfileSubscription = null;
+      if (old != null) unawaited(old.cancel());
+    }
+    if (!mounted) return;
+    setState(() {
+      _authUser = user;
+      if (uidChanged) _firestoreProfilePhotoUrl = null;
+    });
+    _onAuthUserChanged(user);
+    if (user != null &&
+        (uidChanged || _firestoreProfileSubscription == null)) {
+      final old = _firestoreProfileSubscription;
+      if (old != null) unawaited(old.cancel());
+      _firestoreProfileSubscription = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots()
+          .listen((snap) {
+        final url = snap.data()?['photoUrl'] as String?;
+        if (!mounted) return;
+        setState(() => _firestoreProfilePhotoUrl = url);
+      });
+    }
+  }
+
+  /// Cabeçalho: prioriza `photoUrl` do Firestore (upload de perfil).
+  AuthUser? get _userForHeader {
+    final u = _authUser;
+    if (u == null) return null;
+    final fromFs = _firestoreProfilePhotoUrl;
+    if (fromFs != null && fromFs.isNotEmpty) {
+      return u.copyWith(photoUrl: fromFs);
+    }
+    return u;
   }
 
   void _loadIfLoggedIn() {
@@ -67,23 +137,18 @@ class _PatientsPageState extends State<PatientsPage> {
   @override
   Widget build(BuildContext context) {
     final appColors = AppColors.fromContext(context);
+    final user = _authUser;
 
-    return StreamBuilder<AuthUser?>(
-      stream: context.read<AuthRepository>().authStateChanges,
-      builder: (context, snapshot) {
-        final user = snapshot.data;
-
-        _onAuthUserChanged(user);
-
-        return Scaffold(
-          backgroundColor: appColors.backgroundDefault,
-          body: SafeArea(
-            child: user != null
-                ? _buildLoggedInContent(user)
-                : _buildLoggedOutContent(),
-          ),
-        );
-      },
+    return Scaffold(
+      backgroundColor: appColors.backgroundDefault,
+      body: SafeArea(
+        child: user != null
+            ? _buildLoggedInContent(
+                user,
+                headerUser: _userForHeader ?? user,
+              )
+            : _buildLoggedOutContent(),
+      ),
     );
   }
 
@@ -103,7 +168,10 @@ class _PatientsPageState extends State<PatientsPage> {
     );
   }
 
-  Widget _buildLoggedInContent(AuthUser user) {
+  Widget _buildLoggedInContent(
+    AuthUser user, {
+    required AuthUser headerUser,
+  }) {
     return BlocConsumer<PatientsCubit, PatientsState>(
       listenWhen: (previous, current) =>
           current.status == PatientsStatus.loaded &&
@@ -142,9 +210,9 @@ class _PatientsPageState extends State<PatientsPage> {
           children: [
             _PageHeader(
               patientCount: state.patients.length,
-              clinicianName: user.displayName,
+              clinicianName: headerUser.displayName,
               l10n: context.l10n,
-              user: user,
+              user: headerUser,
               showSyncIndicator: true,
               isSynced: state.status == PatientsStatus.loaded
                   && !state.isRefreshing,

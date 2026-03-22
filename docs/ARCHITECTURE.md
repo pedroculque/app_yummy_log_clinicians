@@ -45,7 +45,7 @@ Login **NÃO é obrigatório** para navegar pelo app. Quando o usuário tenta co
 - **Configuração no startup:** `await configureDependencies(flavor: …)` registra:
   - `AppBuildFlavorConfig` (development / staging / production) — ex.: debug de tokens push só fora de prod
   - `PatientsFeature` → `PatientsRepository`, `PatientsCubit`, `FormConfigCubit`, `PatientDiaryCubit`
-  - `InsightsFeature` → `InsightsCubit`, repositórios de métricas
+  - `InsightsFeature` → `InsightsCubit`, `SubscriptionEntitlementCubit` (gate Pro), repositórios de métricas
   - `SettingsFeature` → `AuthCubit`
   - Cubits globais: `ThemeModeCubit`, `LocaleCubit`
 - **Acesso:** `getIt<PatientsRepository>()`, `getIt<AuthRepository>()`, etc.

@@ -15,7 +15,7 @@ App para **profissionais de saúde** acompanharem os diários alimentares de seu
 ### Gerenciamento de Pacientes
 - **Lista de pacientes** — Cards com avatar/iniciais, nome, data de vínculo
 - **Código de convite** — Gerar código de 6 caracteres para pacientes se vincularem
-- **Compartilhar código** — SMS, WhatsApp, E-mail ou copiar
+- **Compartilhar código** — WhatsApp, SMS, e-mail (`url_launcher`), copiar ou `Share`
 - **Remover paciente** — Swipe para esquerda no card para remover vínculo
 
 ### Visualização de Diário (Read-Only)
@@ -31,8 +31,8 @@ App para **profissionais de saúde** acompanharem os diários alimentares de seu
 
 ### Outros
 - **Login opcional** — Firebase Auth (Google + Apple no iOS); necessário para convidar
-- **Insights** — Dashboard, alertas de risco, ranking, análises por paciente e tendências; período 7/30/90 dias
-- **Push** — Notificação quando o paciente registra refeição (todas ou só com risco), com deep link para o diário
+- **Insights** — Dashboard com **gate Pro** (grátis: teaser 7 dias; Pro: 7/30/90 dias, alertas, ranking e análises completas); ver [docs/INSIGHTS.md](docs/INSIGHTS.md) e [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md)
+- **Push** — Nova refeição (todas ou só com risco), vínculo/desvínculo com o paciente; deep link por tipo de evento; **badge** do ícone reposto ao abrir a app
 - **Internacionalização** — pt-BR, en, es
 - **Design system** — `ui_kit` (AppColors, AppTextStyles, UiCard, etc.)
 
@@ -105,6 +105,7 @@ app_yummy_log_clinicians/
 ├──────────────────────┴──────────────────────┴────────────────────────────┤
 │  Full screen (acima da tab bar):                                         │
 │  • Diário do paciente (/patients/:id/diary) — Timeline + Calendário      │
+│  • Formulário de comportamentos (/patients/:id/form-config) — Autosave   │
 │  • Tela de planos (/plans) — Upgrade para Pro                            │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -183,12 +184,13 @@ flutter gen-l10n --arb-dir="modules/shared/yummy_log_l10n/lib/l10n/arb"
 |-----------|-----------|
 | [PROJECT.md](PROJECT.md) | Visão do produto, stack, estrutura |
 | [STATE.md](STATE.md) | Posição atual, decisões recentes, próximos passos |
-| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1–C37, ver tabelas no arquivo) |
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Requisitos por versão (C1–C38 e extensões; ver tabelas no arquivo) |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Fases de desenvolvimento e prioridades |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | go_router, get_it, módulos |
 | [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) | Session logger, Sentry, arranque, privacidade, ID de Suporte ↔ UID |
 | [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md) | ID de Suporte nas Configurações (Firebase UID + Sentry) |
-| [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Estrutura Firestore compartilhada |
+| [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) | Firestore, vínculo, push e Cloud Functions |
+| [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md) | Oferta Grátis/Pro, Insights, paywall |
 | [docs/THEMING.md](docs/THEMING.md) | Tema e design system |
 
 ---

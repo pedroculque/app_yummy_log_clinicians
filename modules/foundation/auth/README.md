@@ -4,7 +4,8 @@ Camada de autenticação do Yummy Log: interface de repositório e implementaç�
 
 ## Funcionalidades
 
-- **AuthRepository:** stream de estado do usuário, login com Google e Apple, logout.
+- **AuthRepository:** stream de estado do usuário, login com Google e Apple, logout. Na implementação Firebase, o getter **`authStateChanges`** está ligado ao stream **`userChanges()`** do SDK (não só `authStateChanges()`), para que alterações de **perfil** (ex.: `photoURL`, nome) emitam nova snapshot — ecrãs que só escutam este stream atualizam o avatar sem novo login.
+- **UserAvatar:** foto de perfil com **`cached_network_image`** (cache em disco); iniciais quando não há URL.
 - **AuthUser:** modelo com `uid`, `email`, `displayName`, `photoUrl`. O **`uid`** é o Firebase UID — mesmo valor do **ID de Suporte** nas Configurações e propagado ao session logger / Sentry; ver [docs/OBSERVABILITY.md](../../../docs/OBSERVABILITY.md) e [settings/docs/support-id.md](../../features/settings/docs/support-id.md).
 - **Implementações:** `FirebaseAuthRepository` (produção), `StubAuthRepository` (testes/desenvolvimento).
 - **AuthException:** exceção com `code` e `message` para tratamento na UI.
@@ -42,7 +43,7 @@ lib/
 
 ## Dependências
 
-- `firebase_core`, `firebase_auth`, `google_sign_in`, `sign_in_with_apple`, `get_it`
+- `firebase_core`, `firebase_auth`, `google_sign_in`, `sign_in_with_apple`, `get_it`, `cached_network_image`
 
 ## Referências
 

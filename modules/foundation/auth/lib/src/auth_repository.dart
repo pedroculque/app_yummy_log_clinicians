@@ -42,6 +42,9 @@ class AuthUser {
 /// Interface do repositório de autenticação (Firebase Auth, etc.).
 abstract class AuthRepository {
   /// Stream do usuário atual (null = deslogado).
+  ///
+  /// Na implementação Firebase, inclui alterações de perfil (foto, nome)
+  /// via o stream `userChanges` do SDK, não só login/logout.
   Stream<AuthUser?> get authStateChanges;
 
   /// Usuário atual de forma síncrona (pode ser null).

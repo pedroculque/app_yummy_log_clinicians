@@ -24,7 +24,7 @@ Especificação da feature que permite ao **clínico** configurar quais pergunta
    - Lista de **cards** agrupados por categoria (ver lista abaixo).
    - Em cada card: **nome do comportamento** + **toggle** (mostrar / ocultar).
    - Opcional: toggle global **"Habilitar seção de comportamento"** (se desligado, o paciente não vê nenhum comportamento).
-4. Ao alterar toggles, o app persiste no Firestore (ex.: debounce ou botão "Salvar").
+4. Ao alterar toggles, o app **grava automaticamente** no Firestore com **debounce** (sem botão "Salvar"); o app bar pode mostrar estado de gravação ou erro.
 5. Voltar fecha a tela e retorna à lista ou ao diário do paciente.
 
 **Onde colocar o botão (definido):**
@@ -60,6 +60,8 @@ Categorias e itens para exibir na tela de configuração (textos podem ser ajust
 | Chave (ID)     | Label (pt)          |
 |----------------|---------------------|
 | `bingeEating`  | Compulsão alimentar |
+
+**Padrão (opt-in):** se a chave `bingeEating` **não** existir no mapa `behaviors` (config nova ou legado), o app do clínico trata como **desligada** até o clínico ativar explicitamente.
 
 ### Outros
 
@@ -147,7 +149,7 @@ A lógica foi implementada no app do paciente.
 
 | Fase | Escopo | App clínico | App paciente | Firestore |
 |------|--------|-------------|--------------|-----------|
-| **1 (MVP)** | Só os 5 comportamentos atuais | Tela de config com lista de cards + toggles; salvar em `users/{patientId}/form_config` | Ler config; mostrar seção e perguntas somente dos habilitados | Doc `form_config` + regras |
+| **1 (MVP)** | Só os 5 comportamentos atuais | Tela de config com lista de cards + toggles; **autosave** em `users/{patientId}/form_config/behavior` | Ler config; mostrar seção e perguntas somente dos habilitados | Doc `form_config` + regras |
 | **2** | Catálogo completo | Incluir todos os itens do catálogo; categorias (Métodos compensatórios, etc.) | Novos campos ou mapa em MealEntry; formulário dinâmico por config | Mesmo doc; chaves estendidas |
 
 ---
@@ -160,7 +162,7 @@ A lógica foi implementada no app do paciente.
 - **Lista:** agrupada por categoria (ex.: "Métodos compensatórios", "Restrição alimentar", …). Cada categoria é um bloco com título; dentro, cards (ou list tiles) com:
   - Nome do comportamento.
   - Switch (mostrar / ocultar).
-- **Persistência:** ao mudar um toggle, atualizar Firestore (com debounce, ex.: 500 ms) ou botão "Salvar" que grava tudo.
+- **Persistência:** ao mudar um toggle, atualizar Firestore com **debounce** (ex.: 500 ms); sem botão "Salvar" dedicado.
 - **Log de alterações (UX):** na própria tela de config, exibir quem alterou e quando, por exemplo:
   - Texto em destaque: **"Última alteração: por [nome do clínico] em [data/hora]"** (dados de `updatedByDisplayName` e `updatedAt`).
   - Opcional: seção expansível ou lista **"Histórico de alterações"** com as últimas entradas de `changeLog` (ex.: "Dr. Maria Silva – 15/03/2025 12:00", "Dr. João Santos – 14/03/2025 09:30"). Assim fica claro que vários clínicos podem editar e quando foi a última mudança.

@@ -30,13 +30,13 @@ Hoje só existe **gate** explícito de assinatura para **limite de pacientes**:
 | **Notificações push** (novas entradas / alertas de risco) | **Sim** (se login + prefs; não há `isPro` no fluxo) | Sim |
 | **Tela de planos + restaurar compras** | Sim | Sim |
 
-Ou seja: **tecnicamente**, o Pro compra sobretudo **escalar além de 2 pacientes**; o resto do valor é **percepção + paywall**, até haver mais gates no código (**Insights** — ver oferta alvo abaixo).
+Ou seja: o Pro compra **escala** (mais de 2 pacientes) + **Insights completo**; o paywall comunica esses eixos sem vender diário/formulário como exclusivos Pro.
 
 ---
 
 ## Decisões tomadas (oferta) — 2026-03-20
 
-Decisões de produto acordadas (**gate de Insights** implementado no cliente; ver tabela “Estado atual no código”).
+Decisões de produto acordadas (**gate de Insights** no cliente; ver tabela “Estado atual no código”).
 
 | Tema | Decisão |
 |------|---------|
@@ -45,7 +45,7 @@ Decisões de produto acordadas (**gate de Insights** implementado no cliente; ve
 | **Formulário de comportamento** | Mantém-se no **plano grátis** (até 2 pacientes), como gancho de valor clínico; Pro continua a pagar sobretudo por **escala de pacientes** + **Insights completo**. |
 | **Preço** | Manter **R\$ 24,90/mês** e **R\$ 179,90/ano** (alinhado à UI e às lojas) ao introduzir os gates de Insights. **Rever** trimestralmente com métricas: conversão free→Pro, churn, custo médio Firebase/Functions por clínico ativo. |
 
-### Oferta alvo (após implementar gate de Insights)
+### Resumo comercial (referência)
 
 | Funcionalidade | Grátis | Pro |
 |----------------|--------|-----|
@@ -55,11 +55,11 @@ Decisões de produto acordadas (**gate de Insights** implementado no cliente; ve
 | Insights | **Teaser** + CTA | **Completo** |
 | Push (com login) | Sim | Sim |
 
-**Implementação técnica:** `InsightsCubit` usa `SubscriptionEntitlementCubit` (janela 7 dias no grátis; períodos 30/90 só Pro); teaser + CTA + `InsightsProUpsellPage` em rotas Pro; l10n pt/en/es. **Opcional:** regras Firestore/backend para enforcement forte.
+**Implementação técnica:** `InsightsCubit` + `SubscriptionEntitlementCubit` (7 dias no grátis; 30/90 só Pro); `InsightsProUpsellPage` nas rotas Pro; l10n pt/en/es. **Opcional:** enforcement forte no Firestore/backend.
 
 ### Mapa rápido: paywall vs código
 
-Os bullets da `PlansPage` mencionam dashboard completo — após o gate, isso fica **coerente** com Pro; no grátis, o teaser deve usar copy honesta (“resumo” / “experimente o dashboard completo no plano Clínicos”). Até lá, a tabela “Estado atual no código” descreve o comportamento real.
+Os bullets da `PlansPage` focam pacientes ilimitados, insights/dashboard Pro e push; **não** listam diário nem formulário como benefícios exclusivos Pro — coerente com a tabela “Estado atual no código”.
 
 ---
 

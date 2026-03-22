@@ -84,6 +84,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | C28 | **Quantidade consumida:** distribuição de `amountEaten` por paciente para identificar restrição. | Média | ✅ |
 | C29 | **Análise por refeição:** quais refeições são mais puladas, correlação com sentimentos. | Baixa | ✅ |
 | C30 | **Filtros de período:** 7 dias, 30 dias, 90 dias. | Média | ✅ |
+| C30b | **Gate monetização (Insights):** plano grátis com janela de 7 dias e teaser no dashboard; períodos 30/90, ranking, alertas e análises completas só com Pro (`clinicians_pro`). | Alta | ✅ |
 
 ---
 
@@ -104,6 +105,9 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 |----|-----------|--------|
 | C35 | **Token e preferências:** registro FCM em `clinicians/{uid}/notification_tokens`; `pushEnabled` e `pushMode` (todas vs só risco) na UI de configurações. | ✅ |
 | C36 | **Entrega:** Cloud Function `notifyCliniciansOnNewMeal` ao criar refeição; mensagem genérica ou de alerta conforme risco; deep link para `/patients/:patientId/diary`. | ✅ |
+| C36b | **Vínculo — CF e dados:** `onClinicianPatientRemoved` limpa `users/{patientId}/connections` com mesmo `clinicianUid`; `onClinicianPatientLinked` notifica o clínico. | ✅ |
+| C36c | **Deep link por evento:** `patient_unlinked` → lista `/patients`; demais eventos de push relevantes → diário do paciente. | ✅ |
+| C36d | **Badge:** repor contagem do ícone a zero ao abrir/resume/tratar notificação (`app_badge_plus`). | ✅ |
 
 ---
 
@@ -112,7 +116,7 @@ Referência: [docs/ROADMAP.md](docs/ROADMAP.md), [PROJECT.md](PROJECT.md).
 | ID | Descrição | Status |
 |----|-----------|--------|
 | C37 | **Exportar relatórios:** PDF com resumo do paciente para consultas. | Pendente |
-| C38 | **Pós-exclusão do clínico (backend):** Cloud Function (ou processo admin equivalente) ao apagar o usuário no Firebase Auth, para limpar ou atualizar documentos em `users/{patientId}/connections` que referenciem o `clinicianUid` removido (o app do clínico não pode escrever nesses docs). | Pendente |
+| C38 | **Pós-exclusão do clínico no Auth (backend):** CF ou processo admin ao apagar o **usuário** no Firebase Auth, para limpar `users/{patientId}/connections` órfãs (distinto da remoção de paciente na lista do clínico, já coberta por `onClinicianPatientRemoved`). | Pendente |
 
 ---
 

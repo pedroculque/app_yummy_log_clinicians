@@ -10,6 +10,20 @@ A tela de Insights transforma dados brutos do diário alimentar em **informaçã
 
 ---
 
+## Plano gratuito vs Pro (RevenueCat)
+
+O módulo `insights_feature` usa **`SubscriptionEntitlementCubit`** (`clinicians_pro` via `subscription_foundation`).
+
+| Aspeto | Grátis | Pro |
+|--------|--------|-----|
+| Janela de dados no repositório | **7 dias** | **7 / 30 / 90 dias** (seletor completo) |
+| Dashboard | Cartões resumo + **teaser** (CTA para `/plans`) | Todas as secções: operacional, prioridade clínica, alertas, ranking, tendências |
+| Rotas de análise | `/insights/patient-detail`, `/patients/:id/analytics`, etc. | Iguais, mas **acesso** a conteúdo completo só com Pro; utilizador grátis vê **`InsightsProUpsellPage`** |
+
+Detalhe comercial e checklist técnico: [MONETIZATION_REVENUECAT.md](MONETIZATION_REVENUECAT.md).
+
+---
+
 ## Dados Disponíveis
 
 ### Patient (paciente vinculado)

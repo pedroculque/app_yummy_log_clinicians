@@ -11,11 +11,12 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Tab bar:** 3 abas (Pacientes, Insights, Configurações) com `StatefulShellRoute.indexedStack`.
 - **Auth:** Login **NÃO é obrigatório** para acessar o app. Login é solicitado apenas quando o usuário tenta convidar pacientes.
 - **Pacientes:** Feature `patients_feature` implementada com:
-  - Header com saudação personalizada (nome do clínico)
-  - Lista de pacientes (cards com avatar/foto de perfil ou iniciais, nome destacado, data de vínculo)
+  - Header com saudação personalizada (nome do clínico); foto do clínico alinhada à **Conta**: escuta `users/{uid}` e, se existir `photoUrl` no Firestore, usa essa URL no cabeçalho (o Auth por vezes fica desatualizado após upload de perfil)
+  - Lista de pacientes (cards com avatar/foto de perfil ou iniciais, nome destacado, data de vínculo); fotos remotas com **cache em disco** (`CachedNetworkImage`) e placeholder a carregar (evita “círculo branco”)
   - Swipe-to-remove com confirmação via bottom sheet
   - Tap no card → abre diário do paciente
   - Botão "CONVIDAR PACIENTE" (bloqueado se limite atingido)
+  - **Partilha do código:** WhatsApp (`wa.me`), SMS e e-mail (`mailto`) via `url_launcher`, com fallback `Share`; cópia para clipboard
   - Limite de 2 pacientes no plano gratuito
 - **Diário do Paciente:** `PatientDiaryPage` com:
   - Timeline de refeições (últimos 14 dias via day strip)
@@ -30,42 +31,43 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
   - Botão "Configurar formulário" no card do paciente e no header do diário
   - Tela full-screen `/patients/:patientId/form-config` com categorias e toggles
   - Toggle global para habilitar/desabilitar seção de comportamento
+  - **Persistência automática** (debounce) ao alterar toggles; indicador no app bar
+  - **`bingeEating` (compulsão):** opt-in — padrão desligado para configs novas / chave ausente no mapa (alinhamento com app paciente recomendado)
   - Persistência em `users/{patientId}/form_config/behavior`
   - Histórico de alterações (quem alterou e quando)
-- **Monetização:** Sistema de planos implementado (RevenueCat + paywall); **oferta comercial** detalhada e decisões em [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md):
-  - Grátis: até 2 pacientes; formulário de comportamento e push (com login); **Insights em teaser** + CTA (a implementar no código — hoje Insights é igual ao Pro até ao gate)
-  - Pro: pacientes ilimitados; Insights **completo**; preços R$ 24,90/mês ou R$ 179,90/ano (rever trimestralmente com métricas)
-  - Seção "Assinatura" e `PlansPage`
-- **Insights:** Feature `insights_feature` implementada com:
-  - Dashboard resumo (pacientes ativos, registros do período, alertas)
-  - Seletor de período (7 dias, 30 dias, 90 dias)
-  - Data/hora da última atualização
-  - Alertas de comportamentos de risco (vômito forçado, laxantes, regurgitação, etc.)
-  - Ranking de pacientes por necessidade de atenção (score baseado em comportamentos)
-  - Navegação direta para o diário do paciente
-  - **Análises por paciente (Fase 3.2):** Sentimentos, quantidade consumida, calendário de frequência
-  - **Análises avançadas (Fase 3.3):** Tendências agregadas (atual vs anterior), refeições puladas por tipo, correlação sentimentos em refeições puladas
+- **Monetização:** Sistema de planos implementado (RevenueCat + paywall); **oferta comercial** em [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md):
+  - Grátis: até 2 pacientes; formulário de comportamento e push (com login); **Insights em teaser** (só janela de 7 dias, KPIs resumidos, sem ranking/alertas/análise por paciente no dashboard; CTA para `/plans`)
+  - Pro: pacientes ilimitados; Insights **completo** (7/30/90 dias, todas as secções e rotas de análise); preços R$ 24,90/mês ou R$ 179,90/ano (rever trimestralmente)
+  - Paywall: bullets focam escala + insights Pro + push (diário e formulário **não** são vendidos como exclusivos Pro)
+  - Seção "Assinatura" e `PlansPage`; ecrã Pro ativo menciona dashboard de insights completo
+- **Insights:** Feature `insights_feature` com `SubscriptionEntitlementCubit`; **Pro** vê:
+  - Dashboard resumo, seletor 7/30/90 dias, operacional, prioridade clínica, alertas, ranking, análises por paciente e avançadas
+  - **Grátis:** mesmos dados agregados só para **7 dias** no repositório; UI mostra cartões resumo + teaser e cartões bloqueados para funcionalidades Pro
 - **Configurações:** Adaptado do app paciente + seção de Assinatura + **exclusão de conta** (requisito Apple para apps com login): fluxo in-app com confirmação; remove dados do clínico no Firestore (`clinicians/*`, `clinician_codes`, `users/{uid}` se existir), tokens de push, avatar no Storage e usuário no Firebase Auth. **ID de Suporte** (Firebase UID) na secção Suporte quando logado — copiável; alinhado ao `SessionLogger` e tags Sentry `user` / `support_id` — ver [modules/features/settings/docs/support-id.md](modules/features/settings/docs/support-id.md).
 - **Design system:** `ui_kit` em uso (AppColors, AppTextStyles, UiCard, etc.).
 - **i18n:** pt-BR, en, es via package `yummy_log_l10n`; nome do app e textos de assinatura/Pro alinhados à identidade **Clinicians** (stores + strings nativas Android por locale).
 - **Firebase:** App do clínico registrado no projeto **app-yummy-log-diary**.
-- **Notificações push:** Implementado fluxo completo:
-  - `ClinicianNotificationService` registra token FCM em `clinicians/{uid}/notification_tokens`
-  - Cloud Function `notifyCliniciansOnNewMeal` dispara ao criar refeição em `users/{patientId}/meals`
-  - Preferências em `clinicians/{uid}/preferences/notification`: `pushEnabled`, `pushMode`; UI na aba Configurações (Alertas, switches)
-  - FCM: refeição **com** risco → título/corpo de alerta; **sem** risco → “Nova entrada no diário” (vale no modo todas e no só-risco)
-  - Busca clínicos via `connections` (clinicianUid) e envia push conforme preferência
-  - Ao tocar na notificação, app navega para `/patients/:patientId/diary`
-  - Config iOS por ambiente (dev/stg/prod) em `ios/Runner/config/`; plists no `.gitignore`
+- **Notificações push:** Fluxo completo:
+  - `ClinicianNotificationService` regista token FCM em `clinicians/{uid}/notification_tokens` (simulador iOS **não** obtém APNS → sem token)
+  - **`app_badge_plus`:** repõe o badge do ícone a **0** ao abrir a app / resume / ao tratar notificação aberta
+  - Cloud Functions (ver [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md)):
+    - `notifyCliniciansOnNewMeal` — nova refeição
+    - `onClinicianPatientLinked` — paciente vinculado (push ao clínico)
+    - `onClinicianPatientRemoved` — remove `users/{patientId}/connections` com mesmo `clinicianUid` (Admin) e push ao clínico quando some `clinicians/.../patients/...`
+  - Preferências: `pushEnabled`, `pushMode` (`all` / `critical_only`)
+  - FCM refeição: **com** risco → alerta; **sem** risco → “Nova entrada no diário” (em `critical_only`, só a crítica dispara)
+  - Toque na notificação → conforme `eventType`: `patient_unlinked` → `/patients`; caso contrário → `/patients/:patientId/diary` (`getInitialMessage` + `onMessageOpenedApp`)
+  - Config iOS por ambiente em `ios/Runner/config/`; plists no `.gitignore`
 
 ---
 
 ## Decisões recentes
 
+- **Auth / avatares:** `FirebaseAuthRepository.authStateChanges` usa o stream **`userChanges`** do Firebase Auth, para refletir atualizações de perfil em todo o app que escuta o repositório. Avatares com URL remota (auth `UserAvatar`, lista Pacientes, Insights) usam **`CachedNetworkImage`** onde aplicável.
 - **App Rating:** Regras de elegibilidade, triggers, UI do modal, origens (`origin`) e pontos de integração estão documentados em [docs/APP_RATING.md](docs/APP_RATING.md).
 - **Analytics:** Integração com `package_analytics` / `package_firebase_analytics` (mobile-foundation), observer de rotas, vínculo `setUserId`/`reset` com auth — ver [docs/ANALYTICS.md](docs/ANALYTICS.md).
 - **Observabilidade (Sentry + session logger):** `launchClinicianApp` chama `SentryFlutter.init` e, no `appRunner`, `initPersistence` → `registerSessionLogger` → `registerCrashReporterIfNeeded` (`SessionLoggerErrorReporter` → só `SessionLogger.error`) → auth/sync/DI → `bootstrap`. Em `bootstrap`, `FlutterError`, `PlatformDispatcher` e **`BlocObserver.onError`** enviam para `SessionLogger` quando registado. `SessionLoggerConfig.appVersion` inclui build number (`version+build`). Erros de sessão chegam ao Sentry via `session_sentry` (`SentrySessionClient`, fingerprint estável; `beforeSend` para compra cancelada). Utilizador no Sentry: `init_session_logger_user_binding` com `AuthUser.uid` (mesmo valor do ID de Suporte na UI). Ver [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) e [lib/core/observability/README.md](lib/core/observability/README.md).
-- **Oferta Grátis vs Pro (2026-03-20):** Ver [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md) — Insights: **teaser** no grátis e dashboard **completo** no Pro; **push** para todos com login; **formulário de comportamento** no grátis; preços mantidos com revisão trimestral.
+- **Oferta Grátis vs Pro (2026-03):** [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md) — gate de Insights no cliente; paywall alinhado (sem vender diário/form como Pro).
 - **Limite de pacientes:** Plano gratuito permite até 2 pacientes; Pro é ilimitado.
 - **Preços Pro:** R$ 24,90/mês ou R$ 179,90/ano (economia de 40%).
 - **Rotas full-screen:** `/patients/:patientId/diary`, `/patients/:patientId/form-config` e `/plans` ficam fora do `StatefulShellRoute` para não mostrar tab bar.
@@ -74,7 +76,8 @@ Documento de estado atual: posição, decisões recentes, bloqueios e próximos 
 - **Login NÃO obrigatório:** Usuário pode navegar pelo app sem login. Login é solicitado apenas ao tentar convidar pacientes.
 - **Mesmo projeto Firebase:** Compartilha Firestore e Auth com o app paciente para acesso às mesmas coleções.
 - **Bundle ID:** `com.yummylogdiaryforclinicians.app` (produção), `.dev` e `.stg` para flavors.
-- **Exclusão de conta — gap de dados:** documentos em `users/{patientId}/connections` que referenciam o `clinicianUid` excluído **não são apagados pelo app do clínico** (regras Firestore: só o paciente escreve nessa subcoleção). **Backlog:** Cloud Function disparada ao apagar o usuário no Auth (ex.: extensão *Delete User Data* ou trigger administrativo) para limpar/atualizar conexões afetadas e evitar vínculos órfãos no app do paciente. Ver [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md) § “Exclusão de conta do clínico”.
+- **Remoção paciente (lista do clínico):** ao apagar `clinicians/{clinicianUid}/patients/{patientId}`, a CF **`onClinicianPatientRemoved`** limpa `users/{patientId}/connections` onde `clinicianUid` coincide (SDK Admin).
+- **Exclusão de conta do clínico (Auth delete) — gap C38:** conexões em `users/{patientId}/connections` **não** são limpas só pelo fluxo in-app de apagar conta (ordem client vs dados em `clinicians/.../patients`). **Backlog:** CF em `auth.user().onDelete()` ou extensão *Delete User Data* com `collectionGroup('connections')` filtrado por `clinicianUid`. Ver [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md).
 
 ---
 
@@ -87,7 +90,7 @@ Nenhum no momento.
 ## Próximos passos (prioridade)
 
 1. **RevenueCat em produção:** Entitlement `clinicians_pro`, offering default, produtos nas lojas; `REVENUECAT_API_KEY` no `.env.prod` / `.env.dev` (Fastlane → `--dart-define`, ver [docs/MONETIZATION_REVENUECAT.md](docs/MONETIZATION_REVENUECAT.md)).
-2. **Cloud Function — limpeza pós-exclusão do clínico:** ao remover o usuário do Firebase Auth, executar rotina admin que percorre `users/*/connections` (ou índice/alternativa) e remove ou marca conexões cujo `clinicianUid` seja o UID deletado (requisito de produto/integridade; revisão Apple já coberta pelo fluxo in-app atual). Detalhes em [docs/BACKEND_CONECTAR.md](docs/BACKEND_CONECTAR.md).
+2. **Cloud Function — limpeza pós-exclusão Auth (C38):** quando o utilizador clínico é apagado no Firebase Auth, limpar conexões órfãs (ver acima); distinto da remoção de paciente na lista, já coberta por `onClinicianPatientRemoved`.
 3. **Exportar relatórios:** PDF com resumo do paciente para consultas.
 4. **Manutenção:** validar deep links de push e fluxo de convite após alterações de branding/l10n.
 

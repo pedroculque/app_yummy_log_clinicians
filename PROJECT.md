@@ -13,7 +13,7 @@ O **YummyLog for Clinicians** permite que nutricionistas, psicólogos e outros p
 3. **Configurem o formulário de comportamento** por paciente (quais perguntas aparecem no form "Adicionar comida")
 4. **Acompanhem sentimentos** associados às refeições
 5. **Identifiquem comportamentos de risco** (vômito forçado, laxantes, etc.)
-6. **Analisem métricas** de frequência e padrões alimentares via dashboard de Insights
+6. **Analisem métricas** via dashboard de Insights (**grátis:** resumo 7 dias + teaser; **Pro:** 7/30/90 dias e análises completas — ver [docs/INSIGHTS.md](docs/INSIGHTS.md))
 
 ### Modelo de Negócio
 

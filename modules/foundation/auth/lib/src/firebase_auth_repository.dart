@@ -32,9 +32,11 @@ class FirebaseAuthRepository implements AuthRepository {
     reportCaughtError(g, e, st, feature: 'auth', hint: hint);
   }
 
+  /// Usa o stream `userChanges` do Firebase Auth (inclui authState, token e
+  /// perfil). Assim `updatePhotoURL` / nome atualizado disparam nova emissão.
   @override
   Stream<AuthUser?> get authStateChanges =>
-      _auth.authStateChanges().map(_userFromFirebase);
+      _auth.userChanges().map(_userFromFirebase);
 
   @override
   AuthUser? get currentUser => _userFromFirebase(_auth.currentUser);

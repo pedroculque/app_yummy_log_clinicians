@@ -30,7 +30,7 @@ Se o Firebase não estiver inicializado (`Firebase.apps.isEmpty`), o DI usa só 
 
 1. **`AnalyticsLoggerImpl`** com `AnalyticsLoggerConfig(showDebugLogs: kDebugMode)` e targets padrão **Firebase**.
 2. **`await analyticsLogger.initialize()`** antes do registo no `GetIt`.
-3. **Login:** em cada emissão de `AuthRepository.authStateChanges` com utilizador, `setUserId(uid)`.
+3. **Login / sessão:** em cada emissão de `AuthRepository.authStateChanges` com utilizador, `setUserId(uid)`. O mesmo stream (na implementação Firebase) inclui **mudanças de perfil** (`userChanges` do SDK), não só login/logout — pode haver mais reconstruções da árvore onde há `listen`, sem alterar a regra do `setUserId`.
 4. **Logout:** `resetAnalyticsData()` (comportamento do cliente Firebase no mobile-foundation).
 5. **Rotas:** `AnalyticsRouteObserver` regista mudanças de rota; rotas com segmentos numéricos longos são normalizadas (ex. `:id`) conforme a documentação do pacote.
 

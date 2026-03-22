@@ -25,7 +25,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Shell do app | Tab bar: **Pacientes** \| **Insights** \| **Configurações** (3 abas) | ✅ |
 | Login opcional | Firebase Auth (Google + Apple no iOS); login solicitado ao convidar | ✅ |
 | Código de convite | Gerar código de 6 caracteres, salvar em `clinician_codes/{code}` | ✅ |
-| Compartilhar código | Bottom sheet com opções: SMS, WhatsApp, E-mail, Copiar | ✅ |
+| Compartilhar código | Bottom sheet: WhatsApp (`wa.me`), SMS, e-mail (`mailto`) via `url_launcher`, Copiar, fallback `Share` | ✅ |
 | Lista de pacientes | Cards com avatar/iniciais, nome, data de vínculo | ✅ |
 | Estado vazio | Empty state visual com ícone, descrição e feature chips | ✅ |
 | Alerta de login | Ao convidar sem login, mostra alerta e direciona para Configurações | ✅ |
@@ -108,7 +108,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Entrada na config | Botão "Configurar formulário" no card do paciente ou no header do diário | ✅ |
 | Tela de comportamentos | Lista de cards por categoria (Métodos compensatórios, Restrição, etc.) com toggle mostrar/ocultar | ✅ |
 | Toggle global | Habilitar/desabilitar toda a seção de comportamento no form do paciente | ✅ |
-| Persistência | Salvar config em `users/{patientId}/form_config` (clínico escreve; paciente lê) | ✅ |
+| Persistência | Gravar em `users/{patientId}/form_config/behavior` com **autosave** (debounce); clínico escreve, paciente lê | ✅ |
 | Regras Firestore | Clínico pode escrever em `form_config` apenas para pacientes vinculados | ✅ |
 
 **MVP (Fase 2.2.1):** Apenas os 5 comportamentos atuais do `MealEntry` (hiddenFood, regurgitated, forcedVomit, ateInSecret, usedLaxatives) com toggle cada um. ✅ Implementado com catálogo estendido (6+ comportamentos).
@@ -135,7 +135,7 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Feature | Descrição | Status |
 |---------|-----------|--------|
 | Dashboard resumo | Cards: pacientes ativos, registros do período, alertas ativos | ✅ |
-| Seletor de período | 7 dias, 30 dias, 90 dias | ✅ |
+| Seletor de período | 7 dias, 30 dias, 90 dias (**grátis:** só 7 dias + teaser; **Pro:** seletor completo) | ✅ |
 | Última atualização | Data/hora da última carga de dados | ✅ |
 | Alertas de risco | Lista de comportamentos de risco detectados (vômito, laxantes, etc.) | ✅ |
 | Ranking de atenção | Pacientes ordenados por necessidade de atenção | ✅ |
@@ -169,13 +169,15 @@ O YummyLog for Clinicians é um aplicativo para **profissionais de saúde** (nut
 | Cloud Function | `notifyCliniciansOnNewMeal` dispara em `users/{patientId}/meals` onCreate | ✅ |
 | Busca de clínicos | Function lê `connections` do paciente (clinicianUid) para saber quem notificar | ✅ |
 | Envio FCM | Push por clínico vinculado; texto **genérico** ou **alerta** conforme risco na refeição | ✅ |
-| Deep link | Ao tocar na notificação, navega para `/patients/:patientId/diary` | ✅ |
+| Deep link | Por `eventType`: refeição / vínculo → `/patients/:patientId/diary`; desvínculo → `/patients` | ✅ |
+| Badge do ícone | `app_badge_plus`: zerar ao abrir app, resume e ao tratar notificação | ✅ |
 | Config iOS por ambiente | Plists em `ios/Runner/config/{dev,stg,prod}/` (ver config/README.md) | ✅ |
 | Preferência push | Aba Alertas: ligar/desligar (`pushEnabled`); modo todas vs só risco (`pushMode`) | ✅ |
+| CF vínculo | `onClinicianPatientLinked`, `onClinicianPatientRemoved` (limpeza `users/.../connections` + push) | ✅ |
 
 **Entregáveis:**
-- [x] `ClinicianNotificationService` (permissão, token, persistência, deep link)
-- [x] Firebase Functions: `notifyCliniciansOnNewMeal` (mensagem diferenciada para refeição com risco)
+- [x] `ClinicianNotificationService` (permissão, token, persistência, deep link, badge)
+- [x] Firebase Functions: `notifyCliniciansOnNewMeal`; `onClinicianPatientLinked`; `onClinicianPatientRemoved`
 - [x] Firestore indexes e firebase.json
 - [x] AppDelegate, Info.plist, Runner.entitlements para push iOS
 
@@ -196,16 +198,17 @@ Ver [BACKEND_CONECTAR.md](BACKEND_CONECTAR.md) para o fluxo detalhado.
 │                         Tab Bar (3 abas)                                 │
 ├──────────────────────┬──────────────────────┬────────────────────────────┤
 │  Tab: Pacientes      │  Tab: Insights       │  Tab: Configurações        │
-│  • Header saudação   │  • Dashboard         │  • Assinatura (Free/Pro)   │
-│  • Lista pacientes   │  • Estatísticas      │  • Login/Logout            │
-│  • Swipe → remover   │  • Gráficos          │  • Push: todas ou só risco │
+│  • Header saudação   │  • Dashboard (gating) │  • Assinatura (Free/Pro)   │
+│  • Lista pacientes   │  • Estatísticas Pro  │  • Login/Logout            │
+│  • Swipe → remover   │  • Gráficos Pro      │  • Push: todas ou só risco │
 │  • Tap → diário      │                      │  • Idioma, Aparência       │
 │  • Convidar paciente │                      │  • Sobre, Suporte          │
 ├──────────────────────┴──────────────────────┴────────────────────────────┤
 │  Full screen (acima da tab bar):                                         │
 │  • Diário do paciente (/patients/:id/diary) — Timeline + Calendário      │
-│  • Configurar formulário (/patients/:id/form-config) — Comportamentos     │
+│  • Configurar formulário (/patients/:id/form-config) — Autosave           │
 │  • Tela de planos (/plans) — Upgrade para Pro                            │
+│  • Insights: detalhe paciente / analytics — upsell Pro se grátis        │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 

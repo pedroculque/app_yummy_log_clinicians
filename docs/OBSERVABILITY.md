@@ -75,7 +75,7 @@ flowchart LR
 
 O valor que o clínico vê em **Configurações → Suporte → ID de Suporte** é o **Firebase UID** (`AuthUser.uid`), o mesmo que:
 
-1. **`init_session_logger_user_binding`** (`lib/core/observability/init_session_logger_user_binding.dart`) envia a `SessionLogger.setUser` em cada mudança de `AuthRepository.authStateChanges`.
+1. **`init_session_logger_user_binding`** (`lib/core/observability/init_session_logger_user_binding.dart`) envia a `SessionLogger.setUser` em cada mudança de `AuthRepository.authStateChanges` (na implementação Firebase, este stream segue `userChanges` do SDK, incluindo atualizações de perfil; o UID mantém-se o mesmo).
 2. **`SentrySessionClient.setUserId`** (`package:session_sentry`) aplica no Sentry: `SentryUser(id: …)` e tags **`user`** e **`support_id`** com esse UID — útil para filtrar issues por identificador que o utilizador enviou ao suporte.
 
 Sem login, o cartão do ID não é mostrado; no logout, o utilizador e as tags são limpos no scope.
