@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:feature_contract/feature_contract.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
-    show TargetPlatform, defaultTargetPlatform;
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -1076,14 +1076,17 @@ class _LoggedOutSection extends StatelessWidget {
                 textColor: const Color(0xFF1F1F1F),
                 onTap: onGoogleSignIn,
               ),
-              const SizedBox(height: 10),
-              _SignInButton(
-                label: l10n.loginWithApple,
-                icon: Icons.apple,
-                backgroundColor: const Color(0xFF1F1F1F),
-                textColor: const Color(0xFFFFFFFF),
-                onTap: onAppleSignIn,
-              ),
+              if (!kIsWeb &&
+                  defaultTargetPlatform == TargetPlatform.iOS) ...[
+                const SizedBox(height: 10),
+                _SignInButton(
+                  label: l10n.loginWithApple,
+                  icon: Icons.apple,
+                  backgroundColor: const Color(0xFF1F1F1F),
+                  textColor: const Color(0xFFFFFFFF),
+                  onTap: onAppleSignIn,
+                ),
+              ],
             ],
           ),
         ),
