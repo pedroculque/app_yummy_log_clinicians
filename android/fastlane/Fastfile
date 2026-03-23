@@ -21,8 +21,8 @@ platform :android do
   end
 
   lane :prod do
-    # upload_crashlytics_symbols
-    # upload_sentry_symbols
+    upload_crashlytics_symbols
+    upload_sentry_symbols
     upload_store
   end
 end
