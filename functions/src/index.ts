@@ -239,10 +239,10 @@ export const notifyCliniciansOnNewMeal = firestore
         }
 
         const title = isCritical
-          ? 'Alerta: comportamento de risco'
+          ? '⚠️ Alerta: comportamento de risco'
           : 'Nova entrada no diário';
         const body = isCritical
-          ? `Alerta: ${userName} registrou comportamento de risco nesta refeição.`
+          ? `⚠️ ${userName} registrou comportamento de risco nesta refeição.`
           : `${userName} registrou uma nova refeição.`;
 
         await sendFcmToClinician(db, clinicianId, title, body, {
