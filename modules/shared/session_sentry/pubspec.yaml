@@ -15,7 +15,7 @@ dependencies:
       url: https://github.com/pedroculque/mobile-foundation.git
       ref: main
       path: packages/session_logger
-  sentry_flutter: ^8.14.2
+  sentry_flutter: ^9.14.0
 
 dev_dependencies:
   very_good_analysis: ^10.2.0
