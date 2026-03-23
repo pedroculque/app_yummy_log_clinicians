@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Deploy YummyLog for Clinicians – iOS (e opcionalmente Android).
-# Uso: ./deploy.sh → escolhe flavor [dev] ou [prod] e roda fastlane na pasta atual.
-# Flavors: dev (development/.stg), prod (production). Ver PROJECT.md e STATE.md.
+# Deploy YummyLog for Clinicians – iOS e/ou Android.
+# Uso: ./deploy.sh → escolhe flavor [dev|prod], depois plataforma [iOS|Android|ambos].
+# Flavors: dev (development / Firebase App Distribution), prod (TestFlight / produção). Ver PROJECT.md e STATE.md.
 
 eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null)"
 
@@ -19,6 +19,7 @@ cyan='\e[36m'
 you_re_here="Estamos rodando a seguinte lane: "
 
 flavor='dev'
+platform='both'
 
 run_fastlane() {
   fastlane "$1"
@@ -27,7 +28,7 @@ run_fastlane() {
 select_flavor() {
   echo "YummyLog for Clinicians – Deploy"
   printf "\n${red}${bold}[1]${reset}${green}: [dev] Development (Firebase App Distribution)${reset}\n"
-  printf "${yellow}${bold}[2]${reset}${green}: [prod] Production (TestFlight / App Store)${reset}\n"
+  printf "${yellow}${bold}[2]${reset}${green}: [prod] Production (TestFlight / App Store / Play)${reset}\n"
   printf "${green}Escolha o flavor (Enter = [dev]): ${reset}"
   read -r value
 
@@ -36,16 +37,45 @@ select_flavor() {
   fi
 }
 
+select_platform() {
+  echo ""
+  printf "${cyan}${bold}Plataforma${reset}\n"
+  printf "${red}${bold}[1]${reset}${green}  iOS apenas${reset}\n"
+  printf "${yellow}${bold}[2]${reset}${green}  Android apenas${reset}\n"
+  printf "${green}${bold}[3]${reset}${green}  Ambos (iOS + Android)${reset} ${bold}— padrão${reset}\n"
+  printf "${green}Escolha (Enter = ambos): ${reset}"
+  read -r value
+
+  case "$value" in
+    1) platform="ios" ;;
+    2) platform="android" ;;
+    3 | '') platform="both" ;;
+    *)
+      printf "${yellow}Opção não reconhecida; usando ambos.${reset}\n"
+      platform="both"
+      ;;
+  esac
+}
+
 deploy() {
+  # Sempre a partir da raiz do repositório (onde está este script)
+  cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 1
+
   select_flavor
-  # iOS (TestFlight / App Store ou Firebase App Distribution)
-  cd ios || exit 1
-  printf "\n${you_re_here}${white}${bold}${greenBg}$(pwd)${reset}\n"
-  run_fastlane "$flavor"
-  # Android – desabilitado; reativar quando for usar deploy Android
-  # cd ../android || exit 1
-  # printf "\n${you_re_here}${white}${bold}${greenBg}$(pwd)${reset}\n"
-  # run_fastlane "$flavor"
+  select_platform
+
+  if [ "$platform" = "ios" ] || [ "$platform" = "both" ]; then
+    cd ios || exit 1
+    printf "\n${you_re_here}${white}${bold}${greenBg}$(pwd)${reset}\n"
+    run_fastlane "$flavor"
+    cd ..
+  fi
+
+  if [ "$platform" = "android" ] || [ "$platform" = "both" ]; then
+    cd android || exit 1
+    printf "\n${you_re_here}${white}${bold}${greenBg}$(pwd)${reset}\n"
+    run_fastlane "$flavor"
+  fi
 }
 
 deploy

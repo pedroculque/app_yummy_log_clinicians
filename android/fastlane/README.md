@@ -91,7 +91,7 @@ Upload Dart obfuscation symbols to Firebase Crashlytics (prod only)
 [bundle exec] fastlane upload_sentry_symbols
 ```
 
-Upload Dart debug symbols to Sentry (prod only). O **DSN** do SDK em runtime é configurado à parte (`--dart-define=SENTRY_DSN`); ver [docs/OBSERVABILITY.md](../../docs/OBSERVABILITY.md) e [docs/DEPLOY.md](../../docs/DEPLOY.md).
+Upload Dart debug symbols to Sentry (prod only)
 
 ### uploading_firebase_distribution
 
@@ -139,7 +139,15 @@ Download provisioning profiles
 [bundle exec] fastlane certificates
 ```
 
-Get certificates and provisioning profiles from gtihub run: fastlane certificates
+Download certificates and profiles from repo (readonly). Run from ios/: fastlane certificates
+
+### match_init
+
+```sh
+[bundle exec] fastlane match_init
+```
+
+Create and push certs/profiles for clinicians app (first-time setup)
 
 ----
 

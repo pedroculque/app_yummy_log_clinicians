@@ -62,12 +62,14 @@ unlinked_spec.ds
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
 **/android/upload-keystore.jks
+**/android/upload-keystore.p12
 **/android/play-store-service-account.json
 **/android/.idea/
 **/android/app/debug
 **/android/app/profile
 **/android/app/release
 *.jks
+*.p12
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
